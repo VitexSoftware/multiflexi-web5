@@ -37,6 +37,10 @@ class MainMenu extends \Ease\Html\DivTag
      */
     public function afterAdd(): void
     {
+        if (!empty($this->pageParts)) {
+            return;
+        }
+
         $nav = $this->addItem(new BootstrapMenu('main-menu', null, ['class' => 'navbar navbar-expand-lg navbar-light bg-light']));
 
         if (\Ease\Shared::user()->isLogged()) { // Authenticated user
