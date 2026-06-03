@@ -73,20 +73,19 @@ foreach ($jobs as $job) {
         'runtemplate.php?id='.$job['runtemplate_id'],
         [
             new \Ease\TWB5\Badge(
-                'light',
                 [
                     new \Ease\Html\ImgTag('appimage.php?uuid='.$job['uuid'], $job['appname'], ['width' => 50, 'height' => 50, 'style' => 'object-fit: contain;', 'title' => $job['appname']]),
                     '&nbsp;',
-                    // Přidejte styl pro nezalamování názvu aplikace
                     new \Ease\Html\SpanTag($job['appname'], ['style' => 'white-space: nowrap;']),
                 ],
+                'light',
                 ['style' => 'white-space: nowrap;'],
             ),
         ],
     );
     unset($job['appname'], $job['runtemplate_id'], $job['app_id']);
 
-    $job['id'] = new \Ease\Html\ATag('job.php?id='.$job['id'], [new ExitCode($job['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), '<br>', new \Ease\TWB5\Badge('info', '🏁 '.$job['id'])], ['title' => _('Job Info')]);
+    $job['id'] = new \Ease\Html\ATag('job.php?id='.$job['id'], [new ExitCode($job['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), '<br>', new \Ease\TWB5\Badge('🏁 '.$job['id'], 'info')], ['title' => _('Job Info')]);
 
     if ($job['begin']) {
         $job['begin'] = [$job['begin'], '<br>', new \Ease\Html\SmallTag(new \Ease\Html\Widgets\LiveAge(new \DateTime($job['begin'], \MultiFlexi\DateTimeHelper::getConfiguredTimezone())))];
@@ -96,7 +95,7 @@ foreach ($jobs as $job) {
 
     $job['launched_by'] = [
         new ExecutorImage($job['executor'], ['align' => 'right', 'height' => '50px']),
-        new \Ease\Html\DivTag($job['launched_by'] ? new \Ease\Html\ATag('user.php?id='.$job['launched_by'], new \Ease\TWB5\Badge('info', $job['login'])) : _('Timer')),
+        new \Ease\Html\DivTag($job['launched_by'] ? new \Ease\Html\ATag('user.php?id='.$job['launched_by'], new \Ease\TWB5\Badge($job['login'], 'info')) : _('Timer')),
         new \Ease\Html\DivTag(\MultiFlexi\Scheduler::getIntervalEmoji(\MultiFlexi\Scheduler::intervalToCode((string) $job['schedule_type'])).'&nbsp;'.$job['scheduled']),
     ];
     unset($job['executor'], $job['scheduled'], $job['login'], $job['schedule_type'], $job['exitcode']);

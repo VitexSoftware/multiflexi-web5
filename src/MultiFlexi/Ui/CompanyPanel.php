@@ -37,25 +37,33 @@ class CompanyPanel extends \Ease\TWB5\Panel
     public function __construct($company, $content = null, $footer = null)
     {
         $cid = $company->getMyKey();
-        $headRow = new \Ease\TWB5\Row();
+        $headRow = new \Ease\TWB5\Row(null, 0, ['class' => 'g-2 align-items-center']);
 
-        $logoCol = $headRow->addColumn(2, new \Ease\Html\ATag('company.php?id='.$cid, [new CompanyLogo($company, ['style' => 'height: 60px', 'class' => 'img-thumbnail shadow-sm'])]));
-        $logoCol->addTagClass('text-center my-auto');
+        $headRow->addItem(new \Ease\Html\DivTag(
+            new \Ease\Html\ATag('company.php?id='.$cid, [new CompanyLogo($company, ['style' => 'height: 52px; width: auto; max-width: 140px; object-fit: contain;', 'class' => 'img-thumbnail shadow-sm'])]),
+            ['class' => 'col-auto text-center'],
+        ));
 
-        $titleCol = $headRow->addColumn(4, [
-            new \Ease\Html\H2Tag($company->getRecordName() ?: $company->getDataValue('code'), ['class' => 'mb-0']),
+        $headRow->addItem(new \Ease\Html\DivTag([
+            new \Ease\Html\H2Tag($company->getRecordName() ?: $company->getDataValue('code'), ['class' => 'mb-0 fs-5']),
             new \Ease\Html\SmallTag($company->getDataValue('code'), ['class' => 'text-muted d-block small']),
-        ]);
-        $titleCol->addTagClass('my-auto');
+        ], ['class' => 'col']));
 
-        $actionsRow = new \Ease\TWB5\Row();
-        $actionsRow->addColumn(4, new \Ease\TWB5\LinkButton('companysetup.php?id='.$cid, '🛠️&nbsp;'._('Setup'), 'outline-secondary btn-sm btn-block shadow-sm mb-1', ['title' => _('Setup Company')]));
-        $actionsRow->addColumn(4, new \Ease\TWB5\LinkButton('companyapps.php?company_id='.$cid, '📌&nbsp;'._('Applications'), 'outline-secondary btn-sm btn-block shadow-sm mb-1', ['title' => _('Manage Applications')]));
-        $actionsRow->addColumn(4, new \Ease\TWB5\LinkButton('activation-wizard.php?company='.$cid, '🧙&nbsp;'._('Wizard'), 'outline-primary btn-sm btn-block shadow-sm mb-1', ['title' => _('Activation Wizard')]));
-        $actionsRow->addColumn(4, new \Ease\TWB5\LinkButton('companycreds.php?company_id='.$cid, '🔐&nbsp;'._('Credentials'), 'outline-secondary btn-sm btn-block shadow-sm', ['title' => _('Manage Credentials')]));
-        $actionsRow->addColumn(4, new \Ease\TWB5\LinkButton('joblist.php?company_id='.$cid, '🏁&nbsp;'._('Jobs'), 'outline-info btn-sm btn-block shadow-sm', ['title' => _('Job List')]));
+        $actionsRow = new \Ease\TWB5\Row(null, 0, ['class' => 'g-1']);
+        foreach ([
+            ['companysetup.php?id='.$cid,          '🛠️ '._('Setup'),        'outline-secondary'],
+            ['companyapps.php?company_id='.$cid,    '📌 '._('Applications'), 'outline-secondary'],
+            ['activation-wizard.php?company='.$cid, '🧙 '._('Wizard'),       'outline-primary'],
+            ['companycreds.php?company_id='.$cid,   '🔐 '._('Credentials'),  'outline-secondary'],
+            ['joblist.php?company_id='.$cid,        '🏁 '._('Jobs'),         'outline-info'],
+        ] as [$url, $label, $style]) {
+            $actionsRow->addItem(new \Ease\Html\DivTag(
+                new \Ease\TWB5\LinkButton($url, $label, $style.' btn-sm w-100 shadow-sm'),
+                ['class' => 'col-6 col-md-4'],
+            ));
+        }
 
-        $headRow->addColumn(6, $actionsRow)->addTagClass('my-auto');
+        $headRow->addItem(new \Ease\Html\DivTag($actionsRow, ['class' => 'col-12 col-md-6']));
 
         parent::__construct($headRow, 'default', $content, $footer);
     }

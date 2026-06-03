@@ -23,19 +23,25 @@ if ((null === \Ease\Shared::user()->getUserID()) === false) {
 
 WebPage::singleton()->addItem(new PageTop(_('Sign Off')));
 
-$byerow = new \Ease\TWB5\Row();
-$byerow->addColumn(6, new \Ease\Html\ImgTag('images/openclipart/'.\MultiFlexi\Ui\OpenClipart::randomImage('images/openclipart')));
-$byeInfo = $byerow->addColumn(6, new \Ease\Html\H1Tag(_('Good bye')));
+$logoutFace = new \Ease\Html\DivTag(null, ['id' => 'LogoutFace']);
 
-$byeInfo->addItem('<br/><br/><br/><br/>');
-$byeInfo->addItem(new \Ease\Html\DivTag(new \Ease\Html\ATag(
-    'login.php',
-    _('Thank you for your patronage and look forward to another visit'),
-    ['class' => 'jumbotron'],
-)));
-$byeInfo->addItem('<br/><br/><br/><br/>');
+$logoutCard = new \Ease\Html\DivTag(null, ['class' => 'mf-login-card text-center']);
+$logoutCard->addItem(new \Ease\Html\DivTag(
+    new \Ease\Html\ImgTag('images/project-logo.svg', 'MultiFlexi', ['style' => 'height: 90px']),
+    ['class' => 'mf-login-logo'],
+));
+$logoutCard->addItem(new \Ease\Html\H2Tag('👋 '._('Good bye'), ['class' => 'mt-2 mb-1']));
+$logoutCard->addItem(new \Ease\Html\PTag(
+    _('You have been signed out successfully.'),
+    ['class' => 'text-muted mb-4'],
+));
+$logoutCard->addItem(new \Ease\Html\DivTag(
+    new \Ease\TWB5\LinkButton('login.php', '🚪 '._('Sign in again'), 'primary btn-lg w-100', ['id' => 'signinagainbutton']),
+    ['class' => 'd-grid'],
+));
 
-WebPage::singleton()->container->addItem($byerow);
+$logoutFace->addItem($logoutCard);
+WebPage::singleton()->container->addItem($logoutFace);
 
 WebPage::singleton()->addItem(new PageBottom());
 

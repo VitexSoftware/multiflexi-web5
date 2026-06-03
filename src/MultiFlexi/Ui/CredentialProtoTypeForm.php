@@ -31,7 +31,7 @@ class CredentialProtoTypeForm extends SecureForm
         $this->prototype = $prototype;
 
         // Main prototype information
-        $prototypeRow1 = new \Ease\TWB5\Row(null, ['class' => 'border border-secondary rounded p-3']);
+        $prototypeRow1 = new \Ease\TWB5\Row(null, 0, ['class' => 'border border-secondary rounded p-3']);
         $prototypeRow1->addItem(new \Ease\Html\H4Tag(_('Prototype Information')));
         $prototypeRow1->addColumn(6, [
             new \Ease\TWB5\FormGroup(_('Code'), new \Ease\Html\InputTextTag('code', $prototype->getDataValue('code'), ['required'])),
@@ -46,7 +46,7 @@ class CredentialProtoTypeForm extends SecureForm
         ]);
 
         // Description section
-        $prototypeRow2 = new \Ease\TWB5\Row(null, ['class' => 'border border-secondary rounded p-3 mt-3']);
+        $prototypeRow2 = new \Ease\TWB5\Row(null, 0, ['class' => 'border border-secondary rounded p-3 mt-3']);
         $prototypeRow2->addItem(new \Ease\Html\H4Tag(_('Description')));
         $prototypeRow2->addColumn(12, [
             new \Ease\TWB5\FormGroup(_('Description'), new \Ease\Html\TextareaTag('description', $prototype->getDataValue('description'), ['rows' => 4])),
@@ -54,7 +54,7 @@ class CredentialProtoTypeForm extends SecureForm
 
         // Metadata section
         if ($prototype->getMyKey()) {
-            $metadataRow = new \Ease\TWB5\Row(null, ['class' => 'border border-secondary rounded p-3 mt-3']);
+            $metadataRow = new \Ease\TWB5\Row(null, 0, ['class' => 'border border-secondary rounded p-3 mt-3']);
             $metadataRow->addItem(new \Ease\Html\H4Tag(_('Metadata')));
             $metadataRow->addColumn(6, [
                 new \Ease\TWB5\FormGroup(_('Created'), new \Ease\Html\InputTextTag('', $prototype->getDataValue('created_at'), ['readonly'])),
@@ -299,7 +299,7 @@ JS;
             if (!empty($existingFields)) {
                 foreach ($existingFields as $field) {
                     // Reduce spacing to keep form compact and avoid visible gaps
-                    $fieldRow = new \Ease\TWB5\Row(null, ['class' => 'border border-secondary rounded p-3 mt-3']);
+                    $fieldRow = new \Ease\TWB5\Row(null, 0, ['class' => 'border border-secondary rounded p-3 mt-3']);
                     $fieldRow->addItem(new \Ease\Html\H5Tag(_('Field').': '.$field['keyword']));
 
                     $fieldRow->addColumn(4, [
@@ -392,7 +392,7 @@ JS;
         }
 
         // Add new field form (available for both new and existing prototypes)
-        $newFieldRow = new \Ease\TWB5\Row(null, ['class' => 'border border-secondary rounded p-3 mt-3']);
+        $newFieldRow = new \Ease\TWB5\Row(null, 0, ['class' => 'border border-secondary rounded p-3 mt-3']);
         $newFieldRow->addItem(new \Ease\Html\H4Tag(_('Add New Field')));
 
         $newFieldRow->addColumn(4, [

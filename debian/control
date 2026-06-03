@@ -6,9 +6,10 @@ Build-Depends: debhelper-compat (= 13), jq, moreutils, pkg-php-tools, php-yaml, 
 Standards-Version: 4.6.2
 Homepage: https://github.com/VitexSoftware/MultiFlexi
 
-Package: multiflexi-web
+Package: multiflexi-web5
 Multi-Arch: foreign
 Architecture: all
+Conflicts: multiflexi-web
 Depends: ${misc:Depends},
  multiflexi-common,
  php-vitexsoftware-multiflexi-core,

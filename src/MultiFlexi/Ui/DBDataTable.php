@@ -342,12 +342,10 @@ EOD.$tableID.' = $(\'#'.$tableID.<<<'EOD'
 EOD.$this->footerCallback($this->engine->foterCallback($tableID)).<<<'EOD'
 
         "dom": "Bfrtip",
-        "colReorder": true,
-        "stateSave": true,
-        "bStateSave": true,
-        "responsive": true,
+        "stateSave": false,
         "processing": true,
         "serverSide": true,
+        "scrollX": true,
         "pageLength": 100,
         "lengthMenu": [[100, 10, 25, 50, 200, 500, -1], [100, 10, 25, 50, 200, 500, "
 EOD._('All pages').<<<'EOD'
@@ -433,8 +431,7 @@ EOD.$this->engine->columnDefs().<<<'EOD'
 
 EOD.self::getColumnsScript($columns).<<<'EOD'
 
-        ],
-        select: true
+        ]
 
 EOD.($this->buttons ? ',        buttons: [ '.\Ease\Part::partPropertiesToString($this->buttons).']' : '').<<<'EOD'
 

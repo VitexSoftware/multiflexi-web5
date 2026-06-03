@@ -41,13 +41,13 @@ class MainMenu extends \Ease\Html\DivTag
             return;
         }
 
-        $nav = $this->addItem(new BootstrapMenu('main-menu', null, ['class' => 'navbar navbar-expand-lg navbar-light bg-light']));
+        $nav = $this->addItem(new BootstrapMenu('main-menu', null, ['class' => 'navbar navbar-expand-lg navbar-dark mf-navbar']));
 
         if (\Ease\Shared::user()->isLogged()) { // Authenticated user
             $oPage = WebPage::singleton();
 
             // Add Home link
-            $nav->addMenuItem(new \Ease\Html\ATag('home.php', new \Ease\TWB5\Widgets\FaIcon('home').' '._('Home')));
+            $nav->addMenuItem(new \Ease\Html\ATag('home.php', new \Ease\TWB5\Widgets\BsIcon('house').' '._('Home')));
 
             $customers = $this->getMenuList(new \MultiFlexi\Customer(), null, WebPage::singleton()->customer);
             $companies = $this->getMenuList(new \MultiFlexi\Company(), 'logo');
@@ -98,14 +98,14 @@ class MainMenu extends \Ease\Html\DivTag
 
             // Privacy menu with dropdown
             $privacyMenu = [
-                'consent-preferences.php' => new \Ease\TWB5\Widgets\FaIcon('user-shield').' '._('Privacy Preferences'),
-                'data-export-page.php' => new \Ease\TWB5\Widgets\FaIcon('download').' '._('Export My Data'),
-                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\FaIcon('user-times').' '._('Request Account Deletion'),
+                'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy Preferences'),
+                'data-export-page.php' => new \Ease\TWB5\Widgets\BsIcon('download').' '._('Export My Data'),
+                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\BsIcon('person-x').' '._('Request Account Deletion'),
                 '' => '',
-                'privacy-policy.php' => new \Ease\TWB5\Widgets\FaIcon('shield-alt').' '._('Privacy Policy'),
-                'cookie-policy.php' => new \Ease\TWB5\Widgets\FaIcon('cookie-bite').' '._('Cookie Policy'),
+                'privacy-policy.php' => new \Ease\TWB5\Widgets\BsIcon('shield').' '._('Privacy Policy'),
+                'cookie-policy.php' => new \Ease\TWB5\Widgets\BsIcon('cookie').' '._('Cookie Policy'),
             ];
-            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\FaIcon('user-shield').' '._('Privacy'), $privacyMenu);
+            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy'), $privacyMenu);
 
             $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=30 src=images/application-exit.svg> '._('Sign Off')), 'right');
 
@@ -232,7 +232,7 @@ class MainMenu extends \Ease\Html\DivTag
         $nav->addDropDownMenu(
             '<img width=30 src=images/system-users.svg> '._('Admin'),
             array_merge([
-                'profile.php' => new \Ease\TWB5\Widgets\FaIcon('user-circle').'&nbsp;'._('My Profile'),
+                'profile.php' => new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('My Profile'),
                 'createaccount.php' => '🤬&nbsp;'._('New Admin'),
                 'createuser.php' => '👤&nbsp;'._('New User Account'),
                 'envmods.php' => '🌦️&nbsp;'._('Environment Modules'),
@@ -243,7 +243,7 @@ class MainMenu extends \Ease\Html\DivTag
                 'admin-deletion-requests.php' => '🗑️&nbsp;'._('Deletion Requests'),
                 'admin-data-corrections.php' => '✏️&nbsp;'._('Data Corrections'),
                 '' => '',
-                'users.php' => new \Ease\TWB5\Widgets\FaIcon('list').'&nbsp;'._('Users'),
+                'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
             ], $this->getMenuList(\Ease\Shared::user())),
         );
     }
@@ -294,10 +294,12 @@ EOD);
             $search = '#';
         }
 
-        $searchForm = new SecureForm(['class' => 'form-inline my-2 my-lg-0', 'action' => 'search.php', 'style' => 'flex-wrap: nowrap;']);
-        $searchForm->addItem(new \Ease\Html\InputTextTag('search', $search, ['aria-label' => _('Search'), 'class' => 'form-control mr-1', 'type' => 'search', 'placeholder' => _('Search'), 'title' => _('#number to jump on record'), 'style' => 'width: 100px;']));
-        $searchForm->addItem(new SearchSelect('what', [], $search));
-        $searchForm->addItem(new \Ease\Html\ButtonTag(_('Search'), ['class' => 'btn btn-outline-success ml-1', 'type' => 'submit', 'title' => _('Search in selected area'), 'id' => 'mainmenusearchbutton']));
+        $searchForm = new SecureForm(['class' => 'my-2 my-lg-0', 'action' => 'search.php']);
+        $inputGroup = new \Ease\Html\DivTag(null, ['class' => 'input-group input-group-sm mf-search-group']);
+        $inputGroup->addItem(new \Ease\Html\InputTextTag('search', $search, ['aria-label' => _('Search'), 'class' => 'form-control mf-search-input', 'type' => 'search', 'placeholder' => _('Search …'), 'title' => _('#number to jump on record'), 'style' => 'min-width: 80px; max-width: 120px;']));
+        $inputGroup->addItem(new SearchSelect('what', [], $search, ['class' => 'form-select mf-search-select']));
+        $inputGroup->addItem(new \Ease\Html\ButtonTag(new \Ease\TWB5\Widgets\BsIcon('search'), ['class' => 'btn btn-outline-light', 'type' => 'submit', 'title' => _('Search in selected area'), 'id' => 'mainmenusearchbutton']));
+        $searchForm->addItem($inputGroup);
 
         return $searchForm;
     }

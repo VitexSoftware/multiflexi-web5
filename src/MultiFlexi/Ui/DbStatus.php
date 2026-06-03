@@ -37,23 +37,23 @@ class DbStatus extends \Ease\TWB5\Row
         $assigned = (string) (new \MultiFlexi\RunTemplate())->listingQuery()->count();
 
         $this->addColumn(2, new \Ease\Html\ButtonTag(
-            [_('Jobs').'&nbsp;', new \Ease\TWB5\PillBadge('success', $jobs)],
+            [_('Jobs').'&nbsp;', new \Ease\TWB5\Badge($jobs, 'success', ['class' => 'rounded-pill'])],
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
         $this->addColumn(2, new \Ease\Html\ButtonTag(
-            [_('Apps').'&nbsp;', new \Ease\TWB5\PillBadge('success', $apps)],
+            [_('Apps').'&nbsp;', new \Ease\TWB5\Badge($apps, 'success', ['class' => 'rounded-pill'])],
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
         $this->addColumn(2, new \Ease\Html\ButtonTag(
-            [_('Customers').'&nbsp;', new \Ease\TWB5\PillBadge('success', $customers)],
+            [_('Customers').'&nbsp;', new \Ease\TWB5\Badge($customers, 'success', ['class' => 'rounded-pill'])],
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
         $this->addColumn(2, new \Ease\Html\ButtonTag(
-            [_('Companies').'&nbsp;', new \Ease\TWB5\PillBadge('success', $companies)],
+            [_('Companies').'&nbsp;', new \Ease\TWB5\Badge($companies, 'success', ['class' => 'rounded-pill'])],
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
         $this->addColumn(2, new \Ease\Html\ButtonTag(
-            [_('Assigned').'&nbsp;', new \Ease\TWB5\PillBadge('success', $assigned)],
+            [_('Assigned').'&nbsp;', new \Ease\TWB5\Badge($assigned, 'success', ['class' => 'rounded-pill'])],
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
     }

@@ -60,7 +60,7 @@ class CredentialTypeForm extends SecureForm
 
             if ($credtype->getPrototype()) {
                 foreach ($credtype->getPrototype()->fieldsProvided() as $fieldProvided) {
-                    $fieldRow = new \Ease\TWB5\Row(null, ['style' => 'padding: 5px']);
+                    $fieldRow = new \Ease\TWB5\Row(null, 0, ['style' => 'padding: 5px']);
 
                     $fieldRow->addColumn(4, $fieldProvided->getCode().'<br><small>'.($fieldProvided->isRequired() ? _('Required') : _('Optional')).' '.$fieldProvided->getType().'</small>');
                     $fieldRow->addColumn(6, $fieldProvided->getName().'<br>'.$fieldProvided->getDescription());

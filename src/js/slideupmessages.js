@@ -14,6 +14,12 @@ $(document).ready(function () {
     }, 6000);
 
     $('#smdrag').on('mousedown', function (e) {
+        if ($("#status-messages").is(':visible')) {
+            $("#status-messages").slideUp("slow");
+            $("#smdrag").fadeTo("slow", 0.25);
+            return;
+        }
+
         $("#smdrag").fadeTo("slow", 1);
         $("#status-messages").slideDown("slow");
 
