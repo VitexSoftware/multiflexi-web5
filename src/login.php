@@ -64,14 +64,13 @@ if (isset($_GET['logout'])) {
 }
 
 try {
-    $hasAdmin = false;
+    // Show first-run setup only when no users exist at all in the database.
+    // The RBAC user_roles table is empty for users created outside the RBAC
+    // system, so isRoleAssigned() was always returning false — use a direct
+    // count of the user table instead.
+    $userCount = (new \MultiFlexi\User())->listingQuery()->count();
 
-    if (isset($GLOBALS['rbac'])) {
-        $rbac = $GLOBALS['rbac'];
-        $hasAdmin = $rbac->isRoleAssigned('admin') || $rbac->isRoleAssigned('super_admin');
-    }
-
-    if (!$hasAdmin) {
+    if ($userCount === 0) {
         Shared::user()->addStatusMessage(_('There are no administrators in the database.'), 'warning');
         WebPage::singleton()->container->addItem(new LinkButton('createaccount.php', _('Create first Administrator Account'), 'success', ['id' => 'createAdmin']));
     }
