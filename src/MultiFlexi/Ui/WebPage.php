@@ -264,25 +264,49 @@ class WebPage extends \Ease\TWB5\WebPage
             .card > .card-header h4 { color: #fff; margin: 0; }
 
             /* ── DataTables ───────────────────────────── */
+            /* Bootstrap 5 .table paints cell backgrounds via --bs-table-bg AND an
+               inset box-shadow, which hid the navy header. Override all three. */
             table.dataTable thead th, table.dataTable thead td {
-                background: #1e2d4a;
-                color: rgba(255,255,255,0.88);
-                border-color: rgba(255,255,255,0.08);
-                font-size: 0.73rem;
-                letter-spacing: 0.07em;
+                --bs-table-bg: #1e2d4a;
+                --bs-table-color: #ffffff;
+                background-color: #1e2d4a !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
+                border-color: rgba(255,255,255,0.10);
+                font-size: 0.74rem;
+                letter-spacing: 0.06em;
                 text-transform: uppercase;
                 font-weight: 600;
                 padding: 0.65rem 0.8rem;
                 white-space: nowrap;
             }
-            table.dataTable thead th:hover { background: #243a5e; }
+            /* Header wrapper used when scrollX is enabled */
+            .dt-scroll-head, .dataTables_scrollHead { background-color: #1e2d4a; border-radius: 8px 8px 0 0; }
+            .dt-scroll-head table.dataTable, .dataTables_scrollHead table.dataTable { background-color: #1e2d4a; }
+            table.dataTable thead th:hover { background-color: #28406a !important; }
             table.dataTable thead th.sorting:after,
             table.dataTable thead th.sorting_asc:after,
-            table.dataTable thead th.sorting_desc:after { color: rgba(255,255,255,0.5); }
+            table.dataTable thead th.sorting_desc:after,
+            table.dataTable thead th.dt-orderable-asc span.dt-column-order:before,
+            table.dataTable thead th.dt-orderable-desc span.dt-column-order:after { color: rgba(255,255,255,0.55) !important; opacity: 1; }
+            table.dataTable thead th.dt-ordering-asc span.dt-column-order:before,
+            table.dataTable thead th.dt-ordering-desc span.dt-column-order:after { color: #ffffff !important; }
+
+            /* Body rows — stronger text contrast + visible zebra striping */
             table.dataTable tbody tr { transition: background 0.1s ease; }
-            table.dataTable tbody tr:hover > td { background: #eef2ff !important; }
-            table.dataTable tbody tr.odd { background: #fafbff; }
-            table.dataTable tbody td { vertical-align: middle; padding: 0.5rem 0.8rem; font-size: 0.875rem; border-color: #f0f1f5; }
+            table.dataTable tbody td {
+                --bs-table-bg: transparent;
+                vertical-align: middle;
+                padding: 0.5rem 0.8rem;
+                font-size: 0.875rem;
+                color: #25303f;
+                border-color: #e3e7ee;
+            }
+            table.dataTable tbody td a { color: #15539e; }
+            table.dataTable tbody td a:hover { color: #0d3b75; }
+            table.dataTable.table-striped > tbody > tr:nth-of-type(odd) > td,
+            table.dataTable tbody tr.odd > td { background-color: #f2f5fb !important; box-shadow: none !important; }
+            table.dataTable tbody tr:hover > td { background-color: #e1eaff !important; box-shadow: none !important; }
             table.dataTable { border-radius: 8px; overflow: hidden; }
 
             /* DataTable toolbar buttons */
@@ -333,8 +357,11 @@ class WebPage extends \Ease\TWB5\WebPage
 
             /* ── General tables (non-DT) ──────────────── */
             .table:not(.dataTable) thead th {
-                background: #1e2d4a;
-                color: rgba(255,255,255,0.88);
+                --bs-table-bg: #1e2d4a;
+                --bs-table-color: #ffffff;
+                background-color: #1e2d4a !important;
+                box-shadow: none !important;
+                color: #ffffff !important;
                 text-transform: uppercase;
                 font-size: 0.73rem;
                 letter-spacing: 0.07em;
