@@ -148,6 +148,9 @@ class WebPage extends \Ease\TWB5\WebPage
             .mf-navbar .navbar-toggler { border-color: rgba(255,255,255,0.25); padding: 0.3rem 0.6rem; }
             .mf-navbar .navbar-toggler-icon { filter: invert(1) opacity(0.8); }
 
+            /* Language selector — always the last nav-item; push it to the far right */
+            .mf-navbar .navbar-nav > li.nav-item:last-child { margin-left: auto; }
+
             /* Language button (LangSelect renders btn-secondary) */
             .mf-navbar .btn-secondary, .mf-navbar .btn-secondary:focus {
                 background: rgba(255,255,255,0.1) !important;

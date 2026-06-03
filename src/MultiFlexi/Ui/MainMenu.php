@@ -121,7 +121,7 @@ class MainMenu extends \Ease\Html\DivTag
             $nav->addItem($this->searchFrom());
         }
 
-        // Add language selector for all users (logged in or not) - placed last to appear on far right
+        // Add language selector — last item in leftContent; CSS pushes it to the far right
         $nav->addMenuItem(new \Ease\TWB5\Widgets\LangSelect('locale'), 'right');
     }
 
