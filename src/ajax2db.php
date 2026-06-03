@@ -136,7 +136,20 @@ if ($engine instanceof \MultiFlexi\CompanyAppRunTemplateLister) {
 $requestData = $_REQUEST;
 unset($requestData['csrf_token']);
 
-echo json_encode($engine->getAllForDataTable($requestData));
+try {
+    $result = $engine->getAllForDataTable($requestData);
+    echo json_encode($result);
+} catch (\PDOException $e) {
+    http_response_code(200); // Keep 200 so DataTables reads the body
+    echo json_encode([
+        'draw'            => isset($requestData['draw']) ? (int) $requestData['draw'] : 0,
+        'recordsTotal'    => 0,
+        'recordsFiltered' => 0,
+        'data'            => [],
+        'error'           => 'Database error: '.$e->getMessage(),
+    ]);
+    error_log('ajax2db PDOException ('.$class.'): '.$e->getMessage());
+}
 // } else {
 //    $editor = new DataTableSaver($db, $engine);
 //    $editor->process($_POST)->json();
