@@ -264,6 +264,10 @@ class WebPage extends \Ease\TWB5\WebPage
             .card > .card-header h4 { color: #fff; margin: 0; }
 
             /* ── DataTables ───────────────────────────── */
+            /* Horizontal scroll for wide tables at any width (replaces scrollX,
+               which created a duplicate header row). */
+            .dataTables_wrapper, .dt-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
             /* Bootstrap 5 .table paints cell backgrounds via --bs-table-bg AND an
                inset box-shadow, which hid the navy header. Override all three. */
             table.dataTable thead th, table.dataTable thead td {
@@ -280,9 +284,6 @@ class WebPage extends \Ease\TWB5\WebPage
                 padding: 0.65rem 0.8rem;
                 white-space: nowrap;
             }
-            /* Header wrapper used when scrollX is enabled */
-            .dt-scroll-head, .dataTables_scrollHead { background-color: #1e2d4a; border-radius: 8px 8px 0 0; }
-            .dt-scroll-head table.dataTable, .dataTables_scrollHead table.dataTable { background-color: #1e2d4a; }
             table.dataTable thead th:hover { background-color: #28406a !important; }
             table.dataTable thead th.sorting:after,
             table.dataTable thead th.sorting_asc:after,
