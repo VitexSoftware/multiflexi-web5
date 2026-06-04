@@ -34,11 +34,12 @@ $welcomeCard->addItem(new \Ease\Html\PTag(_('This is your personal dashboard wit
 // Quick actions — col-12 col-sm-6 col-md-3: full-width on phones, 2×2 on sm, 4 across on md+
 $actionRow = new \Ease\TWB5\Row(null, 0, ['class' => 'g-2']);
 $actions = [
-    ['profile.php',            new \Ease\TWB5\Widgets\BsIcon('person'),      _('Edit Profile'),     'primary',   'editProfileButton'],
-    ['data-export-page.php',   new \Ease\TWB5\Widgets\BsIcon('download'),    _('Export My Data'),   'info',      'exportDataButton'],
-    ['consent-preferences.php',new \Ease\TWB5\Widgets\BsIcon('person-lock'),_('Privacy Settings'), 'secondary', 'privacySettingsButton'],
-    ['joblist.php',            new \Ease\TWB5\Widgets\BsIcon('list'),        _('All Jobs'),         'success',   'allJobsButton'],
+    ['profile.php', new \Ease\TWB5\Widgets\BsIcon('person'), _('Edit Profile'), 'primary', 'editProfileButton'],
+    ['data-export-page.php', new \Ease\TWB5\Widgets\BsIcon('download'), _('Export My Data'), 'info', 'exportDataButton'],
+    ['consent-preferences.php', new \Ease\TWB5\Widgets\BsIcon('person-lock'), _('Privacy Settings'), 'secondary', 'privacySettingsButton'],
+    ['joblist.php', new \Ease\TWB5\Widgets\BsIcon('list'), _('All Jobs'), 'success', 'allJobsButton'],
 ];
+
 foreach ($actions as [$url, $icon, $label, $style, $id]) {
     $actionRow->addItem(new \Ease\Html\DivTag(
         new \Ease\TWB5\LinkButton($url, $icon.' '.$label, $style.' w-100', ['id' => $id]),
@@ -76,17 +77,19 @@ $totalLogsCount = $logEngine->getFluentPDO()->from('log')
 
 // Display statistics cards — col-6 col-md-3 = 2×2 on mobile, 4 across on desktop
 $statDefs = [
-    [$totalJobsCount,      _('Total Jobs in System'), 'text-center',         ''],
-    [$successfulJobsCount, _('Successful Jobs'),       'text-center text-success', ''],
-    [$failedJobsCount,     _('Failed Jobs'),           'text-center text-danger',  ''],
-    [$totalLogsCount,      _('Log Entries'),           'text-center',         ''],
+    [$totalJobsCount, _('Total Jobs in System'), 'text-center', ''],
+    [$successfulJobsCount, _('Successful Jobs'), 'text-center text-success', ''],
+    [$failedJobsCount, _('Failed Jobs'), 'text-center text-danger', ''],
+    [$totalLogsCount, _('Log Entries'), 'text-center', ''],
 ];
+
 foreach ($statDefs as [$count, $label, $numClass, $extra]) {
     $card = new \Ease\TWB5\Card();
     $card->addItem(new \Ease\Html\H3Tag($count, ['class' => $numClass]));
     $card->addItem(new \Ease\Html\PTag($label, ['class' => 'text-center text-muted mb-0']));
     $statsRow->addItem(new \Ease\Html\DivTag($card, ['class' => 'col-6 col-md-3 mb-3']));
 }
+
 $container->addItem($statsRow);
 
 // Recent jobs section
