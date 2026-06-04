@@ -95,12 +95,21 @@ class WebPage extends \Ease\TWB5\WebPage
                 background: linear-gradient(135deg, #1a1f36 0%, #1e2d4a 60%, #0f3460 100%) !important;
                 box-shadow: 0 2px 16px rgba(0,0,0,0.35);
                 border-bottom: 1px solid rgba(255,255,255,0.07);
-                padding: 0.35rem 1rem;
+                padding: 0.15rem 1rem;
                 z-index: 1030;
             }
-            .mf-navbar .navbar-brand { padding: 0.2rem 0.5rem 0.2rem 0; }
-            .mf-navbar .navbar-brand img { transition: transform 0.2s ease, filter 0.2s ease; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.4)); }
+            /* Keep brand + menu on a single row (the navbar-nav width:100% used for
+               right-aligning the language switcher otherwise wraps the menu below
+               the brand, doubling the navbar height). Also cancel the page
+               content-area padding that the global .container-fluid rule adds. */
+            .mf-navbar > .container-fluid { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
+            /* The search form is a direct child of <nav>; align it with the menu row */
+            .mf-navbar > form { align-self: center; }
+            .mf-navbar .navbar-brand { padding: 0; }
+            .mf-navbar .navbar-brand img { height: 36px; width: 36px; transition: transform 0.2s ease, filter 0.2s ease; filter: drop-shadow(0 1px 4px rgba(0,0,0,0.4)); }
             .mf-navbar .navbar-brand:hover img { transform: scale(1.08); filter: drop-shadow(0 2px 8px rgba(80,160,255,0.5)); }
+            /* Compact menu icons/images */
+            .mf-navbar .navbar-nav .nav-link img { height: 22px !important; width: auto !important; vertical-align: middle; }
 
             /* Nav links */
             .mf-navbar .navbar-nav .nav-link {
