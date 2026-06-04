@@ -202,13 +202,13 @@ class MultiFxiConsentBanner {
                                     <div class="consent-actions mt-4">
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <button type="button" class="btn btn-outline-secondary btn-block" id="consent-decline-all">
+                                                <button type="button" class="btn btn-outline-secondary w-100" id="consent-decline-all">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512" class="font-awesome-icon" width="1em" height="1em" fill="currentColor"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc. --><path d="M342.6 150.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 210.7 86.6 105.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3L146.7 256 41.4 361.4c-12.5 12.5-12.5 32.8 0 45.3s32.8 12.5 45.3 0L192 301.3 297.4 406.6c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L237.3 256 342.6 150.6z"/></svg>
                                                     ${this.translate('Decline All')}
                                                 </button>
                                             </div>
                                             <div class="col-md-6">
-                                                <button type="button" class="btn btn-success btn-block" id="consent-accept-all">
+                                                <button type="button" class="btn btn-success w-100" id="consent-accept-all">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="font-awesome-icon" width="1em" height="1em" fill="currentColor"><path d="M173.898 439.404l-166.4-166.4c-10.72-10.72-10.72-28.08 0-38.8l38.8-38.8c10.72-10.72 28.08-10.72 38.8 0l117.6 117.6 204.4-204.4c10.72-10.72 28.08-10.72 38.8 0l38.8 38.8c10.72 10.72 10.72 28.08 0 38.8l-240 240c-10.72 10.72-28.08 10.72-38.8 0z"></path></svg>
                                                     ${this.translate('Accept All')}
                                                 </button>
@@ -216,7 +216,7 @@ class MultiFxiConsentBanner {
                                         </div>
                                         <div class="row mt-2">
                                             <div class="col-md-12">
-                                                <button type="button" class="btn btn-primary btn-block" id="consent-save-preferences">
+                                                <button type="button" class="btn btn-primary w-100" id="consent-save-preferences">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="font-awesome-icon" width="1em" height="1em" fill="currentColor"><path d="M500.3 373.6c-10.3 21.2-22.8 40.7-37.6 58.1c-2.5 3-5.1 5.9-7.8 8.8c-15.7 17.2-33.2 32.5-52.1 45.1c-10.3 6.9-20.9 13.1-31.8 18.4c-13.5 6.6-27.4 12.1-41.6 16.4c-2.5 .8-5.1 1.6-7.6 2.3c-20.8 5.7-42.2 9.1-64 9.1c-21.8 0-43.2-3.4-64-9.1c-2.5-.7-5.1-1.5-7.6-2.3c-14.2-4.3-28.1-9.8-41.6-16.4c-10.9-5.3-21.5-11.5-31.8-18.4c-18.9-12.6-36.4-27.9-52.1-45.1c-2.7-2.9-5.3-5.8-7.8-8.8c-14.8-17.4-27.3-36.9-37.6-58.1c-6.9-14.2-12.1-29-16.1-44.2c-.7-2.5-1.4-5-2-7.6c-5.7-20.8-9.1-42.2-9.1-64s3.4-43.2 9.1-64c.6-2.6 1.3-5.1 2-7.6c4-15.2 9.2-30 16.1-44.2c10.3-21.2 22.8-40.7 37.6-58.1c2.5-3 5.1-5.9 7.8-8.8c15.7-17.2 33.2-32.5 52.1-45.1c10.3-6.9 20.9-13.1 31.8-18.4c13.5-6.6 27.4-12.1 41.6-16.4c2.5-.8 5.1-1.6 7.6-2.3c20.8-5.7 42.2-9.1 64-9.1s43.2 3.4 64 9.1c2.5 .7 5.1 1.5 7.6 2.3c14.2 4.3 28.1 9.8 41.6 16.4c10.9 5.3 21.5 11.5 31.8 18.4c18.9 12.6 36.4 27.9 52.1 45.1c2.7 2.9 5.3 5.8 7.8 8.8c14.8 17.4 27.3 36.9 37.6 58.1c6.9 14.2 12.1 29 16.1 44.2c.7 2.5 1.4 5 2 7.6c5.7 20.8 9.1 42.2 9.1 64s-3.4 43.2-9.1 64c-.6 2.6-1.3 5.1-2 7.6c-4 15.2-9.2 30-16.1 44.2zM256 320a64 64 0 1 0 0-128 64 64 0 1 0 0 128z"/></svg>
                                                     ${this.translate('Save My Preferences')}
                                                 </button>
@@ -255,11 +255,11 @@ class MultiFxiConsentBanner {
                             <h6 class="mb-1">${this.translate(config.name)}</h6>
                             <small class="text-muted">${this.translate(config.description)}</small>
                         </div>
-                        <div class="consent-toggle ml-3">
-                            <div class="custom-control custom-switch">
-                                <input type="checkbox" class="custom-control-input consent-checkbox" 
+                        <div class="consent-toggle ms-3">
+                            <div class="form-check form-switch">
+                                <input type="checkbox" role="switch" class="form-check-input consent-checkbox"
                                        id="consent-${type}" data-consent-type="${type}" ${checked}>
-                                <label class="custom-control-label ${switchClass}" for="consent-${type}">
+                                <label class="form-check-label ${switchClass}" for="consent-${type}">
                                     ${config.required ? this.translate('Required') : ''}
                                 </label>
                             </div>
@@ -596,7 +596,7 @@ const consentBannerCSS = `
     border-bottom: none;
 }
 
-.consent-toggle .custom-control-label::before {
+.consent-toggle .form-check-input {
     transition: all 0.3s ease;
 }
 
