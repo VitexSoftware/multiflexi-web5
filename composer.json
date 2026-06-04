@@ -22,7 +22,10 @@
         "vitexsoftware/ease-fluentpdo": "dev-main",
         "vitexsoftware/ease-bootstrap5-widgets": "^1.4",
         "robmorgan/phinx": "^0.14",
-        "datatables.net/datatables.net-bs5": "*",
+        "datatables.net/datatables.net": "^2.3",
+        "datatables.net/datatables.net-bs5": "^2.3",
+        "datatables.net/datatables.net-buttons": "^3.2",
+        "datatables.net/datatables.net-buttons-bs5": "^3.2",
         "sensiolabs/ansi-to-html": "^2.0",
         "rcubitto/json-pretty": "^1.0",
         "goat1000/svggraph": "^3.20",
@@ -78,10 +81,10 @@
     },
     "scripts": {
         "post-install-cmd": [
-            "php -r \"copy('vendor/datatables.net/datatables.net-bs5/js/dataTables.bootstrap5.js', 'src/js/dataTables.bootstrap5.js');copy('vendor/datatables.net/datatables.net/js/dataTables.js', 'src/js/jquery.dataTables.js');copy('vendor/datatables.net/datatables.net-bs5/css/dataTables.bootstrap5.css','src/css/dataTables.bootstrap5.css');\""
+            "@php copy-datatables-assets.php"
         ],
         "post-update-cmd": [
-            "php -r \"copy('vendor/datatables.net/datatables.net-bs5/js/dataTables.bootstrap5.js', 'src/js/dataTables.bootstrap5.js');copy('vendor/datatables.net/datatables.net/js/dataTables.js', 'src/js/jquery.dataTables.js');copy('vendor/datatables.net/datatables.net-bs5/css/dataTables.bootstrap5.css','src/css/dataTables.bootstrap5.css');\""
+            "@php copy-datatables-assets.php"
         ]
     },
     "config": {

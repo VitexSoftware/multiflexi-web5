@@ -95,16 +95,18 @@ class DBDataTable extends \Ease\Html\TableTag
         $this->includeCss('css/selectize.css');
         $this->includeCss('css/selectize.bootstrap5.css');
         $this->setTagClass('table table-bordered');
-        $this->includeJavaScript('assets/Buttons-1.5.6/js/dataTables.buttons.js');
-        $this->includeJavaScript('assets/Buttons-1.5.6/js/buttons.bootstrap5.min.js');
-        $this->includeCss('assets/Buttons-1.5.6/css/buttons.bootstrap5.min.css');
+        // Buttons 3.x (matches DataTables 2.x core) — copied from vendor by
+        // copy-datatables-assets.php; versions pinned in composer.lock.
+        $this->includeJavaScript('js/dataTables.buttons.js');
+        $this->includeJavaScript('js/buttons.bootstrap5.js');
+        $this->includeCss('css/buttons.bootstrap5.css');
         //
         //        $this->includeJavaScript('assets/JSZip-2.5.0/jszip.min.js');
         //        $this->includeJavaScript('assets/pdfmake-0.1.36/pdfmake.min.js');
         //        $this->includeJavaScript('assets/pdfmake-0.1.36/vfs_fonts.js');
-        $this->includeJavaScript('assets/Buttons-1.5.6/js/buttons.html5.min.js');
-        $this->includeJavaScript('assets/Buttons-1.5.6/js/buttons.print.min.js');
-        $this->includeJavaScript('assets/Buttons-1.5.6/js/buttons.colVis.min.js');
+        $this->includeJavaScript('js/buttons.html5.js');
+        $this->includeJavaScript('js/buttons.print.js');
+        $this->includeJavaScript('js/buttons.colVis.js');
         //        $this->includeCss('assets/RowGroup-1.1.0/css/rowGroup.bootstrap.min.css');
         //        $this->includeJavaScript('assets/RowGroup-1.1.0/js/rowGroup.bootstrap.min.js');
         //        $this->includeJavaScript('assets/RowGroup-1.1.0/js/dataTables.rowGroup.min.js');
