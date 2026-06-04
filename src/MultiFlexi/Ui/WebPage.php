@@ -152,6 +152,10 @@ class WebPage extends \Ease\TWB5\WebPage
             .mf-navbar .navbar-toggler-icon { filter: invert(1) opacity(0.8); }
 
             /* Language selector — always the last nav-item; push it to the far right */
+            /* Make the nav fill the collapse width so the last item's margin-left:auto
+               can push the language switcher to the far right (works even when there
+               are only a couple of items, e.g. the logged-out login form). */
+            .mf-navbar .navbar-collapse > .navbar-nav { flex-grow: 1; width: 100%; }
             .mf-navbar .navbar-nav > li.nav-item:last-child { margin-left: auto; }
 
             /* Language button (LangSelect renders btn-secondary) */
