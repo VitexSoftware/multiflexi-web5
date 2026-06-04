@@ -83,7 +83,7 @@ class ApplicationPanel extends Panel
 
         if ($application->getMyKey()) {
             $actionCol = $this->headRow->addColumn(2, new LinkButton('?id='.$application->getMyKey().'&action=delete', '🪦&nbsp;'._('Remove'), 'outline-danger btn-sm shadow-sm'));
-            $actionCol->addTagClass('text-right my-auto');
+            $actionCol->addTagClass('text-end my-auto');
         }
 
         parent::__construct($this->headRow, 'default', $content, $footer);

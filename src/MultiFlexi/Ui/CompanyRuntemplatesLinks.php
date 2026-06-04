@@ -58,7 +58,7 @@ CSS);
                     ->limit(1)
                     ->fetch();
 
-                $group = new \Ease\Html\DivTag(null, ['class' => 'btn-group runtemplate-compact-group shadow-sm mr-2 mb-2', 'role' => 'group']);
+                $group = new \Ease\Html\DivTag(null, ['class' => 'btn-group runtemplate-compact-group shadow-sm me-2 mb-2', 'role' => 'group']);
 
                 // RunTemplate Link
                 $group->addItem(new \Ease\Html\ATag(

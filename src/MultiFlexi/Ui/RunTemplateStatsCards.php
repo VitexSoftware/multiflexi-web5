@@ -52,7 +52,7 @@ class RunTemplateStatsCards extends \Ease\TWB5\Row
         $cardsCol->addItem(new \Ease\Html\DivTag(self::createCompactStatCard('🔄', (string) $this->stats['running_jobs'], _('Running'), 'info'), $statCardStyle));
 
         // 2) Metadata Column (Timings & Lifecycle) - Middle Column (5/12)
-        $metaCol = $mainRow->addColumn(5, new \Ease\Html\DivTag(null, ['class' => 'pl-2']));
+        $metaCol = $mainRow->addColumn(5, new \Ease\Html\DivTag(null, ['class' => 'ps-2']));
 
         // Timings Group
         $metaCol->addItem(new \Ease\Html\SmallTag(new \Ease\Html\StrongTag('TIMINGS:'), ['class' => 'text-muted d-block mb-1 font-weight-bold small']));
@@ -144,8 +144,8 @@ class RunTemplateStatsCards extends \Ease\TWB5\Row
      */
     private static function createInfoChip(string $icon, string $label, string $value, string $context): \Ease\Html\SpanTag
     {
-        $chip = new \Ease\Html\SpanTag(null, ['class' => 'badge badge-'.$context.' mr-2 mb-1 p-1 px-2 border', 'style' => 'font-weight: 500; font-size: 0.75rem; vertical-align: middle;']);
-        $chip->addItem(new \Ease\Html\SpanTag($icon, ['class' => 'mr-1']));
+        $chip = new \Ease\Html\SpanTag(null, ['class' => 'badge badge-'.$context.' me-2 mb-1 p-1 px-2 border', 'style' => 'font-weight: 500; font-size: 0.75rem; vertical-align: middle;']);
+        $chip->addItem(new \Ease\Html\SpanTag($icon, ['class' => 'me-1']));
         $chip->addItem(new \Ease\Html\SmallTag($label.': ', ['style' => 'opacity: 0.8; font-weight: normal;']));
         $chip->addItem($value);
 

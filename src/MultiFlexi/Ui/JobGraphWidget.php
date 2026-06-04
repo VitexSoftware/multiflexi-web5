@@ -73,9 +73,9 @@ class JobGraphWidget extends \Ease\Html\DivTag
         $legend = new \Ease\Html\DivTag(null, ['class' => 'mt-2 small text-muted']);
 
         $legend->addItem(new \Ease\Html\StrongTag(_('Legend').': '));
-        $legend->addItem(new \Ease\Html\SpanTag('🟩 '._('Success (0)'), ['class' => 'mr-2']));
-        $legend->addItem(new \Ease\Html\SpanTag('🟥 '._('Failed'), ['class' => 'mr-2']));
-        $legend->addItem(new \Ease\Html\SpanTag('⬜ '._('Not executed'), ['class' => 'mr-2']));
+        $legend->addItem(new \Ease\Html\SpanTag('🟩 '._('Success (0)'), ['class' => 'me-2']));
+        $legend->addItem(new \Ease\Html\SpanTag('🟥 '._('Failed'), ['class' => 'me-2']));
+        $legend->addItem(new \Ease\Html\SpanTag('⬜ '._('Not executed'), ['class' => 'me-2']));
 
         return $legend;
     }

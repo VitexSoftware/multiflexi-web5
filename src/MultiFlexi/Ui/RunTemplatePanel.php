@@ -154,7 +154,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             new \Ease\Html\DivTag([
                 new \Ease\Html\StrongTag(_('Executor')), $executorChooser,
             ], ['class' => 'card card-body bg-light']),
-            new \Ease\Html\DivTag($deleteButton, ['class' => 'mt-4 text-right']),
+            new \Ease\Html\DivTag($deleteButton, ['class' => 'mt-4 text-end']),
         ]);
 
         $runtemplateBottom = new \Ease\TWB5\Row();

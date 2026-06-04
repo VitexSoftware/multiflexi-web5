@@ -384,7 +384,7 @@ JS;
                         'danger btn-sm',
                         ['onclick' => 'return confirm(\''._('Really delete this field?').'\');'],
                     );
-                    $fieldRow->addColumn(12, new \Ease\Html\DivTag($deleteButton, ['class' => 'text-right']));
+                    $fieldRow->addColumn(12, new \Ease\Html\DivTag($deleteButton, ['class' => 'text-end']));
 
                     $formContents[] = $fieldRow;
                 }

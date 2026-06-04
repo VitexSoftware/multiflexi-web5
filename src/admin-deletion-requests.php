@@ -166,7 +166,7 @@ function createFilterForm(string $currentFilter): \Ease\TWB5\Form
 {
     $form = new \Ease\TWB5\Form(['method' => 'GET', 'class' => 'form-inline mb-3']);
 
-    $form->addItem(new \Ease\Html\LabelTag(_('Filter by Status: '), ['class' => 'mr-2']));
+    $form->addItem(new \Ease\Html\LabelTag(_('Filter by Status: '), ['class' => 'me-2']));
 
     $select = new \Ease\Html\SelectTag('status_filter', [
         'all' => _('All'),
@@ -174,7 +174,7 @@ function createFilterForm(string $currentFilter): \Ease\TWB5\Form
         'approved' => _('Approved'),
         'completed' => _('Completed'),
         'rejected' => _('Rejected'),
-    ], $currentFilter, ['class' => 'form-control mr-2']);
+    ], $currentFilter, ['class' => 'form-control me-2']);
 
     $form->addItem($select);
     $form->addItem(new \Ease\TWB5\SubmitButton(_('Filter'), 'primary', ['class' => 'btn-sm']));

@@ -180,7 +180,7 @@ $accountInfo->addItem(new \Ease\Html\DdTag(
 $accountCard->addItem($accountInfo);
 $accountCard->addItem(new \Ease\Html\DivTag(
     new \Ease\TWB5\LinkButton('profile.php', new \Ease\TWB5\Widgets\BsIcon('pencil').' '._('Edit Profile'), 'primary'),
-    ['class' => 'text-right mt-3'],
+    ['class' => 'text-end mt-3'],
 ));
 
 $container->addItem($accountCard);
