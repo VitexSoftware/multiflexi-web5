@@ -59,14 +59,11 @@ $runtemplatesHeader->addColumn(6, [
                     'id' => 'bulkActionsBtn',
                     'class' => 'btn btn-warning dropdown-toggle',
                     'type' => 'button',
-                    'data-toggle' => 'dropdown',
+                    'data-bs-toggle' => 'dropdown',
                     'aria-haspopup' => 'true',
                     'aria-expanded' => 'false',
                     'disabled' => 'disabled',
-                    'data-container' => 'body',
-                    'data-trigger' => 'hover',
-                    'data-placement' => 'top',
-                    'data-content' => _('Select one or more RunTemplates by clicking on table rows to enable bulk actions'),
+                    'title' => _('Select one or more RunTemplates by clicking on table rows to enable bulk actions'),
                 ],
             ),
             new \Ease\Html\DivTag(
@@ -160,7 +157,7 @@ $runtemplatesDiv->addItem($jobList);
 $runtemplatesDiv->addItem(new LinkButton(
     'joblist.php?app_id='.$application->getMyKey().'&company_id='.$companer->getMyKey(),
     '🏁 '._('View Complete Job History'),
-    'info btn-lg btn-block',
+    'info btn-lg w-100',
 ));
 
 // Wrap everything in CompanyPanel with CompanyApplicationPanel
@@ -248,8 +245,7 @@ EOD.$objectName.<<<'EOD'
 EOD.$objectName.<<<'EOD'
 _wrapper .dt-buttons'));
 
-        // Initialize popover for bulk actions button
-        $('#bulkActionsBtn').popover();
+        // Bulk actions button uses a native title tooltip (set in markup)
 
         // Restore selection after table redraw
         table.on('draw', function() {
@@ -325,15 +321,15 @@ EOD.$objectName.<<<'EOD'
         if (selectedRows.length > 0) {
             $button.prop('disabled', false);
             $button.html('⚙️ ' + selectedRows.length + ' selected');
-            // Hide popover when button is active
-            $button.popover('disable');
+            // Hide the hint tooltip when the button is active
+            $button.removeAttr('title');
             // Show clear selection button
             $clearBtn.show();
         } else {
             $button.prop('disabled', true);
             $button.html('⚙️ Bulk Actions');
-            // Re-enable popover when button is disabled
-            $button.popover('enable');
+            // Restore the hint tooltip when the button is disabled
+            $button.attr('title', 'Select one or more RunTemplates by clicking on table rows to enable bulk actions');
             // Hide clear selection button
             $clearBtn.hide();
         }
@@ -430,9 +426,7 @@ EOD.$objectName.<<<'EOD'
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">🔧 Bulk Reconfigure ` + selectedRows.length + ` RunTemplate(s)</h5>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span>&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
@@ -451,7 +445,7 @@ EOD.$objectName.<<<'EOD'
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary" id="executeBulkReconfigureBtn">Apply Changes</button>
                         </div>
                     </div>
@@ -464,7 +458,7 @@ EOD.$objectName.<<<'EOD'
 
         // Add and show modal
         $('body').append(modalHtml);
-        $('#bulkReconfigureModal').modal('show');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('bulkReconfigureModal')).show();
 
         // Initialize Selectize with search for configuration key dropdown
         $('#configKey').selectize({
@@ -513,7 +507,7 @@ EOD.$objectName.<<<'EOD'
                         selectedRows = [];
                     }
                     alert(message);
-                    $('#bulkReconfigureModal').modal('hide');
+                    bootstrap.Modal.getOrCreateInstance(document.getElementById('bulkReconfigureModal')).hide();
                     table.ajax.reload();
                     updateBulkActionsButton();
                 } else {
@@ -586,20 +580,16 @@ EOD.$objectName.<<<'EOD'
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title">🔘 Bulk Enable/Disable ` + selectedRows.length + ` RunTemplate(s)</h5>
-                            <button type="button" class="close" data-dismiss="modal">
-                                <span>&times;</span>
-                            </button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
                                 <label>Action:</label>
-                                <div class="btn-group btn-group-toggle d-flex" data-toggle="buttons">
-                                    <label class="btn btn-success active flex-fill">
-                                        <input type="radio" name="toggleAction" value="1" checked> ✅ Enable All
-                                    </label>
-                                    <label class="btn btn-danger flex-fill">
-                                        <input type="radio" name="toggleAction" value="0"> ❌ Disable All
-                                    </label>
+                                <div class="btn-group d-flex" role="group">
+                                    <input type="radio" class="btn-check" name="toggleAction" id="toggleEnableAll" value="1" checked>
+                                    <label class="btn btn-outline-success flex-fill" for="toggleEnableAll">✅ Enable All</label>
+                                    <input type="radio" class="btn-check" name="toggleAction" id="toggleDisableAll" value="0">
+                                    <label class="btn btn-outline-danger flex-fill" for="toggleDisableAll">❌ Disable All</label>
                                 </div>
                             </div>
                             <div class="alert alert-info">
@@ -607,7 +597,7 @@ EOD.$objectName.<<<'EOD'
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                             <button type="button" class="btn btn-primary" id="executeBulkToggleBtn">Apply Changes</button>
                         </div>
                     </div>
@@ -620,7 +610,7 @@ EOD.$objectName.<<<'EOD'
 
         // Add and show modal
         $('body').append(modalHtml);
-        $('#bulkToggleModal').modal('show');
+        bootstrap.Modal.getOrCreateInstance(document.getElementById('bulkToggleModal')).show();
 
         // Update action text when radio changes
         $('input[name="toggleAction"]').on('change', function() {
@@ -649,7 +639,7 @@ EOD.$objectName.<<<'EOD'
         function processNext(index) {
             if (index >= currentRows.length) {
                 // All done
-                $('#bulkToggleModal').modal('hide');
+                bootstrap.Modal.getOrCreateInstance(document.getElementById('bulkToggleModal')).hide();
 
                 var message = 'Successfully updated ' + completed + ' of ' + total + ' RunTemplate(s)';
                 if (errors.length > 0) {

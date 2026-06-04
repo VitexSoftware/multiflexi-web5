@@ -385,7 +385,7 @@ class RbacHelpers
             }
 
             $checked = \in_array($role['id'], $selectedRoles, true) ? 'checked' : '';
-            $systemBadge = $role['is_system'] ? '<small class="badge badge-secondary">System</small>' : '';
+            $systemBadge = $role['is_system'] ? '<small class="badge text-bg-secondary">System</small>' : '';
 
             $html .= '<div class="form-check">';
             $html .= '<input class="form-check-input" type="checkbox" name="'.htmlspecialchars($fieldName).'[]" ';

@@ -49,6 +49,6 @@ class CustomAppConfigForm extends EngineForm
 
         $this->addItem(new \Ease\Html\InputHiddenTag('app_id', $engine->getDataValue('app_id')));
         $this->addItem(new \Ease\Html\InputHiddenTag('company_id', $engine->getDataValue('company_id')));
-        $this->addItem(new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg btn-block'));
+        $this->addItem(new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg w-100'));
     }
 }

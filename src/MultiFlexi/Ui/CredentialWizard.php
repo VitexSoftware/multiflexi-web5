@@ -132,13 +132,13 @@ class CredentialWizard extends \Ease\Html\DivTag
         // Add prototype name
         if (!empty($this->wizardData['credential_prototype_id'])) {
             $prototype = new \MultiFlexi\CredentialProtoType($this->wizardData['credential_prototype_id']);
-            $steps[2] .= ' <span class="badge badge-info ml-2">'.$prototype->getRecordName().'</span>';
+            $steps[2] .= ' <span class="badge text-bg-info ml-2">'.$prototype->getRecordName().'</span>';
         }
 
         // Add credential type name
         if (!empty($this->wizardData['credential_type_id'])) {
             $credType = new \MultiFlexi\CredentialType($this->wizardData['credential_type_id']);
-            $steps[3] .= ' <span class="badge badge-success ml-2">'.$credType->getRecordName().'</span>';
+            $steps[3] .= ' <span class="badge text-bg-success ml-2">'.$credType->getRecordName().'</span>';
         }
 
         $stepList = new \Ease\Html\UlTag(null, ['class' => 'nav nav-pills nav-fill']);
@@ -155,7 +155,7 @@ class CredentialWizard extends \Ease\Html\DivTag
                 $linkClass[] = 'disabled';
             }
 
-            $stepNumber = new \Ease\Html\SpanTag($num, ['class' => 'badge badge-pill badge-light mr-2']);
+            $stepNumber = new \Ease\Html\SpanTag($num, ['class' => 'badge rounded-pill text-bg-light mr-2']);
             $link = new \Ease\Html\ATag('#', [$stepNumber, $label], ['class' => implode(' ', $linkClass)]);
 
             $stepList->addItem(new \Ease\Html\LiTag($link, ['class' => implode(' ', $itemClass)]));

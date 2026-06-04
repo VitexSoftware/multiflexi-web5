@@ -78,7 +78,7 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
                                 $statusBadge = new \Ease\TWB5\Badge('info', sprintf('📅 #%s/%s %s', $queuePosition, $totalInQueue, _('in queue')));
                             } else {
                                 // No schedule entry - orphaned job (queue was cleared) - make it clickable
-                                $orphanedLink = new \Ease\Html\ATag('reschedule.php?job_id='.$job['id'], '⚠️ '._('Orphaned'), ['class' => 'badge badge-warning', 'style' => 'text-decoration: none;', 'title' => _('Click to re-schedule this job')]);
+                                $orphanedLink = new \Ease\Html\ATag('reschedule.php?job_id='.$job['id'], '⚠️ '._('Orphaned'), ['class' => 'badge text-bg-warning', 'style' => 'text-decoration: none;', 'title' => _('Click to re-schedule this job')]);
                                 $statusBadge = $orphanedLink;
                             }
                         }

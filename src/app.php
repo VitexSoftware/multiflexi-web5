@@ -178,10 +178,10 @@ foreach ($jobs as $job) {
 }
 
 $instanceRow->addColumn(4, null === $apps->getMyKey() ?
-                new LinkButton('', _('Config fields'), 'inverse disabled  btn-block') :
+                new LinkButton('', _('Config fields'), 'inverse disabled  w-100') :
                 [
                     new ConfigFieldsView(Conffield::getAppConfigs($apps)),
-                    new LinkButton('conffield.php?app_id='.$apps->getMyKey(), _('Config fields editor'), 'secondary  btn-block'),
+                    new LinkButton('conffield.php?app_id='.$apps->getMyKey(), _('Config fields editor'), 'secondary  w-100'),
                 ]);
 
 $instanceRow->addColumn(4, new AppLogo($apps));

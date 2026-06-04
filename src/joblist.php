@@ -97,46 +97,20 @@ WebPage::singleton()->container->addItem(new DBDataTable($engine, ['buttons' => 
 WebPage::singleton()->addItem(new PageBottom());
 WebPage::singleton()->addJavaScript(<<<'EOD'
 
-    // Initialize Bootstrap popovers with delay to allow interaction
-    $(function () {
-        $('[data-toggle="popover"]').popover({
-            trigger: 'manual',
-            delay: { show: 100, hide: 300 }
-        }).on('mouseenter', function() {
-            var _this = this;
-            $(this).popover('show');
-            $('.popover').on('mouseleave', function() {
-                $(_this).popover('hide');
-            });
-        }).on('mouseleave', function() {
-            var _this = this;
-            setTimeout(function() {
-                if (!$('.popover:hover').length) {
-                    $(_this).popover('hide');
-                }
-            }, 300);
+    // Initialize Bootstrap 5 popovers (native API) — data-bs-* attributes are read automatically
+    function mfInitPopovers() {
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
+            if (!bootstrap.Popover.getInstance(el)) {
+                new bootstrap.Popover(el, { container: 'body' });
+            }
         });
-    });
+    }
+    document.addEventListener('DOMContentLoaded', mfInitPopovers);
+    mfInitPopovers();
 
-    // Reinitialize popovers after DataTable reload
-    $('#Molecule').on('draw.dt', function() {
-        $('[data-toggle="popover"]').popover({
-            trigger: 'manual',
-            delay: { show: 100, hide: 300 }
-        }).on('mouseenter', function() {
-            var _this = this;
-            $(this).popover('show');
-            $('.popover').on('mouseleave', function() {
-                $(_this).popover('hide');
-            });
-        }).on('mouseleave', function() {
-            var _this = this;
-            setTimeout(function() {
-                if (!$('.popover:hover').length) {
-                    $(_this).popover('hide');
-                }
-            }, 300);
-        });
+    // Reinitialize popovers after every DataTable redraw
+    $('#Molecule').on('draw.dt', function () {
+        mfInitPopovers();
     });
 
     setInterval(function () {

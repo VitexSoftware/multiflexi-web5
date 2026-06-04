@@ -206,7 +206,7 @@ $addAppForm->addItem($cardsRow);
 
 // Fixed submit button
 $addAppForm->addItem(new \Ease\Html\HrTag());
-$addAppForm->addItem(new SubmitButton('🍏 '._('Apply Changes'), 'success btn-lg btn-block', ['style' => 'position: sticky; bottom: 10px; z-index: 100;']));
+$addAppForm->addItem(new SubmitButton('🍏 '._('Apply Changes'), 'success btn-lg w-100', ['style' => 'position: sticky; bottom: 10px; z-index: 100;']));
 
 // Create a container with filters and form
 $contentContainer = new DivTag();
@@ -382,7 +382,7 @@ $(document).ready(function() {
         $('.tag-badge').each(function() {
             var tagText = $(this).text().trim();
 
-            $(this).removeClass('badge-primary badge-warning badge-success badge-info').addClass('badge-secondary');
+            $(this).removeClass('text-bg-primary text-bg-warning text-bg-success text-bg-info').addClass('text-bg-secondary');
             $(this).css({
                 'font-weight': 'normal',
                 'box-shadow': 'none',
@@ -391,7 +391,7 @@ $(document).ready(function() {
             });
 
             if (selectedTags.includes(tagText)) {
-                $(this).removeClass('badge-secondary').addClass('badge-primary');
+                $(this).removeClass('text-bg-secondary').addClass('text-bg-primary');
                 $(this).css({
                     'font-weight': 'bold',
                     'box-shadow': '0 2px 6px rgba(0,123,255,0.4)',

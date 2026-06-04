@@ -292,7 +292,7 @@ class CompanyJobLister extends CompanyJob
             $appPopoverContent .= '</div>';
 
             $dataRowRaw['app_id'] = sprintf(
-                '<a href="app.php?id=%d" tabindex="0" data-toggle="popover" data-trigger="hover focus" data-placement="right" data-html="true" data-content="%s" data-container="body"><img src="%s" height="24" alt="%s" style="vertical-align: middle;"></a>',
+                '<a href="app.php?id=%d" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="right" data-bs-html="true" data-bs-content="%s" data-bs-container="body"><img src="%s" height="24" alt="%s" style="vertical-align: middle;"></a>',
                 $dataRowRaw['app_id'],
                 htmlspecialchars($appPopoverContent),
                 htmlspecialchars($appImageUrl),
@@ -325,10 +325,10 @@ class CompanyJobLister extends CompanyJob
                     if ($isScheduled && isset($this->scheduledCounts[$jobId])) {
                         $queuePosition = $this->scheduledCounts[$jobId];
                         $totalInQueue = \count($this->scheduledCounts);
-                        $queueInfo = sprintf(' <span class="badge badge-info" style="font-size: 0.7em;">#%d/%d</span>', $queuePosition, $totalInQueue);
+                        $queueInfo = sprintf(' <span class="badge text-bg-info" style="font-size: 0.7em;">#%d/%d</span>', $queuePosition, $totalInQueue);
                     } elseif (!$isScheduled) {
                         // Orphaned - show clickable warning badge linking to reschedule page
-                        $queueInfo = sprintf(' <a href="reschedule.php?job_id=%d" class="badge badge-warning" style="font-size: 0.7em; text-decoration: none;" title="%s">⚠️ orphaned</a>', $jobId, htmlspecialchars(_('Click to re-schedule this job')));
+                        $queueInfo = sprintf(' <a href="reschedule.php?job_id=%d" class="badge text-bg-warning" style="font-size: 0.7em; text-decoration: none;" title="%s">⚠️ orphaned</a>', $jobId, htmlspecialchars(_('Click to re-schedule this job')));
                     }
 
                     $dataRowRaw['begin'] = sprintf(
@@ -446,7 +446,7 @@ class CompanyJobLister extends CompanyJob
             }
 
             if ($runtemplateInterv) {
-                $rtPopoverContent .= '<span class="badge badge-info">'.$intervalEmoji.' '.htmlspecialchars($intervalName).'</span><br>';
+                $rtPopoverContent .= '<span class="badge text-bg-info">'.$intervalEmoji.' '.htmlspecialchars($intervalName).'</span><br>';
             }
 
             if ($runtemplateLastSchedule) {
@@ -479,7 +479,7 @@ class CompanyJobLister extends CompanyJob
 
             // Format ID with fixed width (4 digits, right-aligned with monospace font)
             $dataRowRaw['runtemplate_id'] = sprintf(
-                '<a href="runtemplate.php?id=%d" style="font-size: 0.85em; white-space: nowrap;" tabindex="0" data-toggle="popover" data-trigger="hover focus" data-placement="right" data-html="true" data-content="%s" data-container="body">⚗️<span style="font-family: monospace; display: inline-block; width: 3em; text-align: right;">#%d</span> <span style="color: #666;">%s</span></a>',
+                '<a href="runtemplate.php?id=%d" style="font-size: 0.85em; white-space: nowrap;" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="right" data-bs-html="true" data-bs-content="%s" data-bs-container="body">⚗️<span style="font-family: monospace; display: inline-block; width: 3em; text-align: right;">#%d</span> <span style="color: #666;">%s</span></a>',
                 $runtemplateId,
                 htmlspecialchars($rtPopoverContent),
                 $runtemplateId,
@@ -514,8 +514,8 @@ class CompanyJobLister extends CompanyJob
             // Status badge
             if (isset($dataRowRaw['enabled'])) {
                 $statusBadge = $dataRowRaw['enabled']
-                    ? '<span class="badge badge-success">✓ '.htmlspecialchars(_('Enabled')).'</span>'
-                    : '<span class="badge badge-secondary">✗ '.htmlspecialchars(_('Disabled')).'</span>';
+                    ? '<span class="badge text-bg-success">✓ '.htmlspecialchars(_('Enabled')).'</span>'
+                    : '<span class="badge text-bg-secondary">✗ '.htmlspecialchars(_('Disabled')).'</span>';
                 $companyPopoverContent .= '<div style="text-align: center; margin-top: 8px;">'.$statusBadge.'</div>';
             }
 
@@ -530,7 +530,7 @@ class CompanyJobLister extends CompanyJob
                     ) : '';
             $companyName = htmlspecialchars($dataRowRaw['name'] ?? '');
             $dataRowRaw['company_id'] = sprintf(
-                '<a href="company.php?id=%d" style="display: inline-flex; align-items: center; font-size: 0.85em; white-space: nowrap;" tabindex="0" data-toggle="popover" data-trigger="hover focus" data-placement="right" data-html="true" data-content="%s" data-container="body">%s<span>%s</span></a>',
+                '<a href="company.php?id=%d" style="display: inline-flex; align-items: center; font-size: 0.85em; white-space: nowrap;" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="right" data-bs-html="true" data-bs-content="%s" data-bs-container="body">%s<span>%s</span></a>',
                 $dataRowRaw['company_id'],
                 htmlspecialchars($companyPopoverContent),
                 $companyLogo,

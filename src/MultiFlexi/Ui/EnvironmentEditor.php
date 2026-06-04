@@ -118,7 +118,7 @@ class EnvironmentEditor extends \Ease\Html\TableTag
         $btnCol->addItem(new \Ease\TWB5\SubmitButton(
             '<i class="fas fa-plus-circle me-1"></i>'._('Add Field'),
             'success',
-            ['title' => _('Add new environment field'), 'id' => 'addnewenvfieldbutton', 'class' => 'btn-block w-100'],
+            ['title' => _('Add new environment field'), 'id' => 'addnewenvfieldbutton', 'class' => 'w-100 w-100'],
         ));
         $formRow->addItem($btnCol);
 

@@ -40,7 +40,7 @@ class ActionsTab extends \Ease\TWB5\Form
         $this->addItem(new \Ease\Html\InputHiddenTag('company_id', $periodcalTaskInfo['company_id']));
         $this->addItem(new \Ease\Html\InputHiddenTag('interval', $periodcalTaskInfo['interv']));
         $this->addItem($actionsRow);
-        $this->addItem(new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg btn-block'));
+        $this->addItem(new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100'));
 
         $actionsData = [];
         $configRows = $actions->getRuntemplateConfig($runTemplater->getMyKey());

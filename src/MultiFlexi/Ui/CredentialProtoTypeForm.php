@@ -166,7 +166,7 @@ class CredentialProtoTypeForm extends SecureForm
                 ]));
             } else {
                 // Add indicator for current language
-                $langHeader->addItem(new \Ease\Html\SpanTag(_('(Current)'), ['class' => 'badge badge-primary']));
+                $langHeader->addItem(new \Ease\Html\SpanTag(_('(Current)'), ['class' => 'badge text-bg-primary']));
             }
 
             $langDiv->addItem($langHeader);
@@ -481,16 +481,16 @@ JS;
         $submitRow = new \Ease\TWB5\Row();
 
         if (null === $prototype->getMyKey()) {
-            $submitRow->addColumn(6, new \Ease\TWB5\SubmitButton(_('Create Prototype'), 'success btn-lg btn-block', ['name' => 'create', 'title' => _('Create new credential prototype'), 'id' => 'createprototypebutton']));
-            $submitRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialprototypes.php', _('Cancel'), 'secondary btn-lg btn-block', ['title' => _('Cancel creating new prototype'), 'id' => 'cancelprototypebutton']));
+            $submitRow->addColumn(6, new \Ease\TWB5\SubmitButton(_('Create Prototype'), 'success btn-lg w-100', ['name' => 'create', 'title' => _('Create new credential prototype'), 'id' => 'createprototypebutton']));
+            $submitRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialprototypes.php', _('Cancel'), 'secondary btn-lg w-100', ['title' => _('Cancel creating new prototype'), 'id' => 'cancelprototypebutton']));
         } else {
-            $submitRow->addColumn(3, new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg btn-block', ['name' => 'save']));
-            $submitRow->addColumn(3, new \Ease\TWB5\LinkButton('credentialprototype.php', _('New Prototype'), 'info btn-lg btn-block'));
-            $submitRow->addColumn(3, new \Ease\TWB5\LinkButton('credentialprototypes.php', _('Prototype List'), 'warning btn-lg btn-block'));
+            $submitRow->addColumn(3, new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg w-100', ['name' => 'save']));
+            $submitRow->addColumn(3, new \Ease\TWB5\LinkButton('credentialprototype.php', _('New Prototype'), 'info btn-lg w-100'));
+            $submitRow->addColumn(3, new \Ease\TWB5\LinkButton('credentialprototypes.php', _('Prototype List'), 'warning btn-lg w-100'));
             $submitRow->addColumn(3, new \Ease\TWB5\LinkButton(
                 'credentialprototype.php?delete='.$prototype->getMyKey(),
                 _('Delete'),
-                'danger btn-lg btn-block',
+                'danger btn-lg w-100',
                 ['onclick' => 'return confirm(\''._('Really delete credential prototype?').'\');'],
             ));
         }

@@ -190,7 +190,7 @@ EOD);
 
             $appPanel = new ApplicationPanel(
                 $app,
-                [$glassHourRow, $waitRow, new \Ease\Html\DivTag(nl2br($prepared)), new \Ease\TWB5\LinkButton('job.php?id='.$jobber->getMyKey(), _('Job details'), 'info btn-block')],
+                [$glassHourRow, $waitRow, new \Ease\Html\DivTag(nl2br($prepared)), new \Ease\TWB5\LinkButton('job.php?id='.$jobber->getMyKey(), _('Job details'), 'info w-100')],
             );
             $appPanel->headRow->addItem(new RuntemplateButton($runTemplate));
             WebPage::singleton()->container->addItem(new CompanyPanel($company, $appPanel));

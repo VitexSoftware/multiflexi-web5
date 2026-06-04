@@ -376,7 +376,7 @@ if ($step === 'complete' && isset($runtemplateId)) {
         new \Ease\TWB5\LinkButton(
             'runtemplate.php?id='.$runtemplateId,
             '⚗️ '._('View RunTemplate'),
-            'primary btn-lg btn-block',
+            'primary btn-lg w-100',
         ),
     );
     $buttonRow->addColumn(
@@ -384,7 +384,7 @@ if ($step === 'complete' && isset($runtemplateId)) {
         new \Ease\TWB5\LinkButton(
             'runtemplates.php',
             '📋 '._('All RunTemplates'),
-            'secondary btn-lg btn-block',
+            'secondary btn-lg w-100',
         ),
     );
     $buttonRow->addColumn(
@@ -392,7 +392,7 @@ if ($step === 'complete' && isset($runtemplateId)) {
         new \Ease\TWB5\LinkButton(
             'activation-wizard.php?reset=1',
             '🌟 '._('New Activation'),
-            'success btn-lg btn-block',
+            'success btn-lg w-100',
         ),
     );
 

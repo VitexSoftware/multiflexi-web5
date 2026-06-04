@@ -250,8 +250,8 @@ $policiesRow->addColumn(12, $policiesCard);
 
 // Add policy button
 $addPolicyBtn = new Button(_('Add New Policy'), 'success', [
-    'data-toggle' => 'modal',
-    'data-target' => '#addPolicyModal',
+    'data-bs-toggle' => 'modal',
+    'data-bs-target' => '#addPolicyModal',
 ]);
 $policiesCard->addItem($addPolicyBtn);
 
@@ -385,7 +385,7 @@ $addPolicyForm->addItem(new \Ease\Html\DivTag([
 ], ['class' => 'form-check']));
 
 $addPolicyModal->addFooterButton(new Button(_('Cancel'), 'secondary', [
-    'data-dismiss' => 'modal',
+    'data-bs-dismiss' => 'modal',
 ]));
 $addPolicyModal->addFooterButton(new Button(_('Create Policy'), 'primary', [
     'type' => 'submit',

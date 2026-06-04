@@ -60,9 +60,9 @@ class ArchivedJobPanel extends Panel
 
         $this->headRow->addItem(new RuntemplateButton($job->getRunTemplate()));
 
-        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('tasks.php?application_id=' . $cid, '🔧&nbsp;' . _('Setup tasks'), 'secondary btn-lg btn-block'));
-        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('adhoc.php?application_id=' . $cid, '🚀&nbsp;' . _('Application launcher'), 'secondary btn-lg btn-block'));
-        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('periodical.php?application_id=' . $cid, '🔁&nbsp;' . _('Periodical Tasks'), 'secondary btn-lg btn-block'));
+        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('tasks.php?application_id=' . $cid, '🔧&nbsp;' . _('Setup tasks'), 'secondary btn-lg w-100'));
+        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('adhoc.php?application_id=' . $cid, '🚀&nbsp;' . _('Application launcher'), 'secondary btn-lg w-100'));
+        //        $headRow->addColumn(2, new \Ease\TWB5\LinkButton('periodical.php?application_id=' . $cid, '🔁&nbsp;' . _('Periodical Tasks'), 'secondary btn-lg w-100'));
         parent::__construct($this->headRow, 'default', $content, $footer);
     }
 }

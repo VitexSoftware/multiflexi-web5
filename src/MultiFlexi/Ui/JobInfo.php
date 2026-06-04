@@ -72,7 +72,7 @@ class JobInfo extends \Ease\Html\DivTag
 
         $jobTabs = new \Ease\TWB5\Tabs();
 
-        $jobTabs->addTab('🏁 '._('Job').' <span class="badge badge-primary">'.$job->getMyKey().'</span>', '');
+        $jobTabs->addTab('🏁 '._('Job').' <span class="badge text-bg-primary">'.$job->getMyKey().'</span>', '');
 
         //        $scheduler = new \MultiFlexi\Scheduler();
         //        $scheduled = $scheduler->listingQuery()->where('job', $job->getMyKey())->fetch();
@@ -81,7 +81,7 @@ class JobInfo extends \Ease\Html\DivTag
         $envTabs->addTab(_('Overview'), new EnvironmentView($job->getEnvironment()));
         $envTabs->addTab(_('export .env'), new JobDotEnv($job));
 
-        $jobTabs->addTab(_('Environment').' <span class="badge badge-info">'.\count($job->getEnv()).'</span>', [$jobInfoRow, $envTabs]);
+        $jobTabs->addTab(_('Environment').' <span class="badge text-bg-info">'.\count($job->getEnv()).'</span>', [$jobInfoRow, $envTabs]);
 
         $this->addItem($jobTabs);
     }

@@ -27,6 +27,6 @@ class RuntemplateButton extends \Ease\TWB5\LinkButton
     // #[\Override]
     public function __construct(\MultiFlexi\RunTemplate $runTemplate, array $properties = [])
     {
-        parent::__construct('runtemplate.php?id='.$runTemplate->getMyKey(), '⚗️&nbsp;'.$runTemplate->getRecordName(), 'dark btn-lg btn-block', $properties);
+        parent::__construct('runtemplate.php?id='.$runTemplate->getMyKey(), '⚗️&nbsp;'.$runTemplate->getRecordName(), 'dark btn-lg w-100', $properties);
     }
 }

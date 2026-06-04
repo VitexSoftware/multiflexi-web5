@@ -70,22 +70,22 @@ class EventSourceForm extends SecureForm
         $submitRow = new \Ease\TWB5\Row();
 
         if (null === $eventSource->getMyKey()) {
-            $submitRow->addColumn(2, new \Ease\TWB5\SubmitButton('🚀 '._('Test Connection'), 'disabled btn-lg btn-block'));
+            $submitRow->addColumn(2, new \Ease\TWB5\SubmitButton('🚀 '._('Test Connection'), 'disabled btn-lg w-100'));
         } else {
-            $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?id='.$eventSource->getMyKey().'&test=true', '🚀 '._('Test Connection'), 'success btn-lg btn-block'));
+            $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?id='.$eventSource->getMyKey().'&test=true', '🚀 '._('Test Connection'), 'success btn-lg w-100'));
         }
 
-        $submitRow->addColumn(8, new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg btn-block', ['title' => _('Apply changes')]));
+        $submitRow->addColumn(8, new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100', ['title' => _('Apply changes')]));
 
         if (null === $eventSource->getMyKey()) {
-            $submitRow->addColumn(2, new \Ease\TWB5\SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg btn-block', ['disabled' => 'true']));
+            $submitRow->addColumn(2, new \Ease\TWB5\SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg w-100', ['disabled' => 'true']));
         } else {
             $this->addItem(new \Ease\Html\InputHiddenTag('id', $eventSource->getMyKey()));
 
             if (WebPage::getRequestValue('remove') === 'true') {
-                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?delete='.$eventSource->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg btn-block'));
+                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?delete='.$eventSource->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg w-100'));
             } else {
-                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?id='.$eventSource->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg btn-block'));
+                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('eventsource.php?id='.$eventSource->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg w-100'));
             }
         }
 

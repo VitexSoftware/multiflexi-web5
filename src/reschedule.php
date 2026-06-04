@@ -118,16 +118,16 @@ if (WebPage::isPosted() || $when === 'now') {
     ));
 
     $buttonRow = new \Ease\TWB5\Row();
-    $buttonRow->addColumn(6, new \Ease\TWB5\SubmitButton('⏰ '._('Re-schedule Now'), 'primary btn-block btn-lg'));
-    $buttonRow->addColumn(6, new \Ease\TWB5\LinkButton('job.php?id='.$jobID, _('Cancel'), 'secondary btn-block btn-lg'));
+    $buttonRow->addColumn(6, new \Ease\TWB5\SubmitButton('⏰ '._('Re-schedule Now'), 'primary w-100 btn-lg'));
+    $buttonRow->addColumn(6, new \Ease\TWB5\LinkButton('job.php?id='.$jobID, _('Cancel'), 'secondary w-100 btn-lg'));
     $form->addItem($buttonRow);
 
     $panel->addItem($form);
 
     $quickButtons = new \Ease\TWB5\Row();
-    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when=now', '⚡ '._('Schedule Immediately'), 'success btn-block'));
-    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when='.date('Y-m-d H:i:s', strtotime('+1 hour')), '🕐 '._('Schedule in 1 Hour'), 'info btn-block'));
-    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when='.date('Y-m-d H:i:s', strtotime('+1 day')), '📅 '._('Schedule Tomorrow'), 'info btn-block'));
+    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when=now', '⚡ '._('Schedule Immediately'), 'success w-100'));
+    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when='.date('Y-m-d H:i:s', strtotime('+1 hour')), '🕐 '._('Schedule in 1 Hour'), 'info w-100'));
+    $quickButtons->addColumn(4, new \Ease\TWB5\LinkButton('reschedule.php?job_id='.$jobID.'&when='.date('Y-m-d H:i:s', strtotime('+1 day')), '📅 '._('Schedule Tomorrow'), 'info w-100'));
 
     WebPage::singleton()->container->addItem(new CompanyPanel(
         new \MultiFlexi\Company($appInfo['company_id']),

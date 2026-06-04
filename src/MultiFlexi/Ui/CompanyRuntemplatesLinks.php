@@ -66,11 +66,11 @@ CSS);
                     '⚗️ #'.$runtemplateData['id'],
                     [
                         'class' => 'btn runtemplate-compact-id',
-                        'data-toggle' => 'popover',
-                        'data-trigger' => 'manual',
-                        'data-html' => 'true',
-                        'data-placement' => 'top',
-                        'data-content' => $runtemplateData['name'],
+                        'data-bs-toggle' => 'popover',
+                        'data-bs-trigger' => 'hover focus',
+                        'data-bs-html' => 'true',
+                        'data-bs-placement' => 'top',
+                        'data-bs-content' => $runtemplateData['name'],
                     ],
                 ));
 
@@ -78,24 +78,24 @@ CSS);
                 if ($lastFinishedJob) {
                     $group->addItem(new \Ease\Html\ATag(
                         'job.php?id='.$lastFinishedJob['id'],
-                        new ExitCode($lastFinishedJob['exitcode'], ['class' => 'badge-pill']),
+                        new ExitCode($lastFinishedJob['exitcode'], ['class' => 'rounded-pill']),
                         [
                             'class' => 'btn btn-outline-secondary runtemplate-compact-status',
-                            'data-toggle' => 'popover',
-                            'data-trigger' => 'manual',
-                            'data-html' => 'true',
-                            'data-placement' => 'top',
-                            'data-content' => _('Last finished job exit code').': '.$lastFinishedJob['exitcode'],
+                            'data-bs-toggle' => 'popover',
+                            'data-bs-trigger' => 'hover focus',
+                            'data-bs-html' => 'true',
+                            'data-bs-placement' => 'top',
+                            'data-bs-content' => _('Last finished job exit code').': '.$lastFinishedJob['exitcode'],
                         ],
                     ));
                 } else {
                     $group->addItem(new \Ease\Html\SpanTag('🪤', [
                         'class' => 'btn btn-outline-light disabled runtemplate-compact-status',
-                        'data-toggle' => 'popover',
-                        'data-trigger' => 'manual',
-                        'data-html' => 'true',
-                        'data-placement' => 'top',
-                        'data-content' => _('No jobs yet'),
+                        'data-bs-toggle' => 'popover',
+                        'data-bs-trigger' => 'hover focus',
+                        'data-bs-html' => 'true',
+                        'data-bs-placement' => 'top',
+                        'data-bs-content' => _('No jobs yet'),
                     ]));
                 }
 
@@ -110,11 +110,11 @@ CSS);
                         '⌛',
                         [
                             'class' => 'btn btn-info runtemplate-compact-queued',
-                            'data-toggle' => 'popover',
-                            'data-trigger' => 'manual',
-                            'data-html' => 'true',
-                            'data-placement' => 'top',
-                            'data-content' => sprintf(_('%s: %s (in %s)'), _('Job is scheduled in queue'), $queuedJob['schedule'], self::secondsToHuman((int) abs($scheduledAt->getTimestamp() - $now->getTimestamp()))),
+                            'data-bs-toggle' => 'popover',
+                            'data-bs-trigger' => 'hover focus',
+                            'data-bs-html' => 'true',
+                            'data-bs-placement' => 'top',
+                            'data-bs-content' => sprintf(_('%s: %s (in %s)'), _('Job is scheduled in queue'), $queuedJob['schedule'], self::secondsToHuman((int) abs($scheduledAt->getTimestamp() - $now->getTimestamp()))),
                         ],
                     ));
                 }
@@ -123,22 +123,10 @@ CSS);
             }
 
             WebPage::singleton()->addJavaScript(<<<'JS'
-                $('.runtemplate-compact-group [data-toggle="popover"]').popover({
-                    trigger: 'manual',
-                    delay: { show: 100, hide: 300 }
-                }).on('mouseenter', function() {
-                    var _this = this;
-                    $(this).popover('show');
-                    $('.popover').on('mouseleave', function() {
-                        $(_this).popover('hide');
-                    });
-                }).on('mouseleave', function() {
-                    var _this = this;
-                    setTimeout(function() {
-                        if (!$('.popover:hover').length) {
-                            $(_this).popover('hide');
-                        }
-                    }, 300);
+                document.querySelectorAll('.runtemplate-compact-group [data-bs-toggle="popover"]').forEach(function (el) {
+                    if (!bootstrap.Popover.getInstance(el)) {
+                        new bootstrap.Popover(el, { container: 'body' });
+                    }
                 });
 JS);
         } else {

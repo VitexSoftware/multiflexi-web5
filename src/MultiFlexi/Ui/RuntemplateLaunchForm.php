@@ -80,7 +80,7 @@ class RuntemplateLaunchForm extends SecureForm
         }
 
         $this->addItem(new AppExecutorSelect($app));
-        $this->addItem(new \Ease\TWB5\SubmitButton([_('Launch now').'&nbsp;&nbsp;', new \Ease\Html\ImgTag('images/rocket.svg', _('Launch'), ['height' => '30px'])], 'success btn-lg btn-block '));
+        $this->addItem(new \Ease\TWB5\SubmitButton([_('Launch now').'&nbsp;&nbsp;', new \Ease\Html\ImgTag('images/rocket.svg', _('Launch'), ['height' => '30px'])], 'success btn-lg w-100 '));
         $this->addItem(new \Ease\TWB5\LinkButton('schedule.php?app_id='.$appId.'&company_id='.$companyId, [_('Schedule').'&nbsp;&nbsp;', new \Ease\Html\ImgTag('images/launchinbackground.svg', _('Launch'), ['height' => '30px'])], 'primary btn-lg'));
     }
 }

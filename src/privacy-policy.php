@@ -216,21 +216,21 @@ EOD._('Quick Actions').<<<'EOD'
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <a href="consent-preferences.php" class="btn btn-primary btn-block">
+                <a href="consent-preferences.php" class="btn btn-primary w-100">
                     <i class="fas fa-cog"></i>
 EOD._('Privacy Preferences').<<<'EOD'
 
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="cookie-policy.php" class="btn btn-info btn-block" id="viewcookiepolicybutton">
+                <a href="cookie-policy.php" class="btn btn-info w-100" id="viewcookiepolicybutton">
                     <i class="fas fa-cookie-bite"></i>
 EOD._('Cookie Policy').<<<'EOD'
 
                 </a>
             </div>
             <div class="col-md-4">
-                <button type="button" class="btn btn-secondary btn-block" onclick="if(window.multiFxiConsent) window.multiFxiConsent.showConsentBanner();">
+                <button type="button" class="btn btn-secondary w-100" onclick="if(window.multiFxiConsent) window.multiFxiConsent.showConsentBanner();">
                     <i class="fas fa-shield-alt"></i>
 EOD._('Show Consent Banner').<<<'EOD'
 

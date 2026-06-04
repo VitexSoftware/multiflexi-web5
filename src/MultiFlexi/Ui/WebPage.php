@@ -27,9 +27,13 @@ class WebPage extends \Ease\TWB5\WebPage
     /**
      * Where to look for bootstrap style sheet.
      *
+     * Bootstrap 5 (matches the 5.3.3 JS bundle). The old local
+     * css/bootstrap.min.css was Bootstrap 4 (Bootswatch) and caused a
+     * BS4-CSS / BS5-JS mismatch.
+     *
      * @var string path or url
      */
-    public string $bootstrapCSS = 'css/bootstrap.min.css';
+    public string $bootstrapCSS = 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css';
 
     /**
      * Override the default jQuery URL so jQueryze() deduplication prevents a second load.
@@ -79,7 +83,6 @@ class WebPage extends \Ease\TWB5\WebPage
             .nav-tabs { border-bottom: 2px solid #dee2e6; margin-bottom: 20px; }
             .nav-link { font-weight: 500; color: #6c757d; border: none !important; padding: 12px 20px; }
             .nav-link.active { color: #007bff !important; border-bottom: 3px solid #007bff !important; background: transparent !important; }
-            .badge-primary { background-color: #007bff; }
             .btn { border-radius: 6px; font-weight: 500; transition: all 0.2s; }
             .btn-outline-danger:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
             .application-metadata h3 { color: #343a40; font-weight: 700; }

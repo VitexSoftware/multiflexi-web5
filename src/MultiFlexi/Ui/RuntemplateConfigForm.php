@@ -144,8 +144,8 @@ CSS);
         $this->addItem(new \Ease\Html\InputHiddenTag('company_id', $engine->getDataValue('company_id')));
 
         $saveRow = new \Ease\TWB5\Row();
-        $saveColumn = $saveRow->addColumn(8, new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg btn-block'));
-        $saveRow->addColumn(4, new \Ease\TWB5\LinkButton('actions.php?id='.$engine->getMyKey(), '🛠️&nbsp;'._('Actions'), 'secondary btn-lg btn-block'));
+        $saveColumn = $saveRow->addColumn(8, new \Ease\TWB5\SubmitButton(_('Save'), 'success btn-lg w-100'));
+        $saveRow->addColumn(4, new \Ease\TWB5\LinkButton('actions.php?id='.$engine->getMyKey(), '🛠️&nbsp;'._('Actions'), 'secondary btn-lg w-100'));
 
         $appSetupCommand = $engine->getApplication()->getDataValue('setup');
 

@@ -301,21 +301,21 @@ EOD._('Manage Your Cookie Preferences').<<<'EOD'
     <div class="card-body">
         <div class="row">
             <div class="col-md-4">
-                <a href="consent-preferences.php" class="btn btn-primary btn-block">
+                <a href="consent-preferences.php" class="btn btn-primary w-100">
                     <i class="fas fa-cog"></i>
 EOD._('Cookie Preferences').<<<'EOD'
 
                 </a>
             </div>
             <div class="col-md-4">
-                <a href="privacy-policy.php" class="btn btn-info btn-block">
+                <a href="privacy-policy.php" class="btn btn-info w-100">
                     <i class="fas fa-shield-alt"></i>
 EOD._('Privacy Policy').<<<'EOD'
 
                 </a>
             </div>
             <div class="col-md-4">
-                <button type="button" class="btn btn-secondary btn-block" onclick="if(window.multiFxiConsent) window.multiFxiConsent.showConsentBanner();">
+                <button type="button" class="btn btn-secondary w-100" onclick="if(window.multiFxiConsent) window.multiFxiConsent.showConsentBanner();">
                     <i class="fas fa-cookie-bite"></i>
 EOD._('Show Consent Banner').<<<'EOD'
 
@@ -394,7 +394,7 @@ EOD._('Personalization').<<<'EOD'
             var statusCell = row.insertCell();
             if (window.consentStatus[type]) {
                 var status = window.consentStatus[type].status;
-                var badgeClass = status ? "badge badge-success" : "badge badge-danger";
+                var badgeClass = status ? "badge text-bg-success" : "badge text-bg-danger";
                 var badgeText = status ? "
 EOD._('Enabled').'" : "'._('Disabled').<<<'EOD'
 ";
@@ -405,7 +405,7 @@ EOD._('Enabled').'" : "'._('Disabled').<<<'EOD'
                     dateCell.textContent = new Date(window.consentStatus[type].granted_at).toLocaleDateString();
                 }
             } else {
-                statusCell.innerHTML = "<span class=\"badge badge-secondary\">
+                statusCell.innerHTML = "<span class=\"badge text-bg-secondary\">
 EOD._('Not Set').<<<'EOD'
 </span>";
                 row.insertCell().textContent = "-";

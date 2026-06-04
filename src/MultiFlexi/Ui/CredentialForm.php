@@ -106,7 +106,7 @@ class CredentialForm extends SecureForm
         $formContents[] = new InputHiddenTag('id', (string) ($kredenc->getMyKey() ?? ''));
 
         $submitRow = new Row();
-        $submitRow->addColumn(6, new SubmitButton('🍏 '._('Apply'), 'primary btn-lg btn-block', ['title' => _('Apply changes'), 'id' => 'credentialapplybutton']));
+        $submitRow->addColumn(6, new SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100', ['title' => _('Apply changes'), 'id' => 'credentialapplybutton']));
 
         if (null !== $kredenc->getMyKey()) {
             $rtplcr = new RunTplCreds();
@@ -143,12 +143,12 @@ class CredentialForm extends SecureForm
         }
 
         if (null === $kredenc->getMyKey()) {
-            $submitRow->addColumn(2, new SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg btn-block', ['disabled' => 'true']));
+            $submitRow->addColumn(2, new SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg w-100', ['disabled' => 'true']));
         } else {
             if (WebPage::getRequestValue('remove') === 'true') {
-                $submitRow->addColumn(2, new LinkButton('credential.php?delete='.$kredenc->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg btn-block'));
+                $submitRow->addColumn(2, new LinkButton('credential.php?delete='.$kredenc->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg w-100'));
             } else {
-                $submitRow->addColumn(2, new LinkButton('credential.php?id='.$kredenc->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg btn-block'));
+                $submitRow->addColumn(2, new LinkButton('credential.php?id='.$kredenc->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg w-100'));
             }
         }
 

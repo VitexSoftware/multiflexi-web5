@@ -102,9 +102,9 @@ class ConfFieldsForm extends SecureForm
 
         if (\array_key_exists('id', $conffields)) {
             $this->addItem(new InputHiddenTag('id', $conffields['id']));
-            $this->addItem(new SubmitButton(_('Update'), 'success btn-block'));
+            $this->addItem(new SubmitButton(_('Update'), 'success w-100'));
         } else {
-            $this->addItem(new SubmitButton(_('Add'), 'success btn-block'));
+            $this->addItem(new SubmitButton(_('Add'), 'success w-100'));
         }
     }
 }

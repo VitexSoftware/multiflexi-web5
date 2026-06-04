@@ -212,7 +212,7 @@ EOD);
             $actualId = $runTemplate->getMyKey();
 
             if ($actualId) {
-                $steps[3] .= ' <span class="badge badge-success ml-2">⚗️ #'.$actualId.'</span>';
+                $steps[3] .= ' <span class="badge text-bg-success ml-2">⚗️ #'.$actualId.'</span>';
             }
         }
 
@@ -230,7 +230,7 @@ EOD);
                 $linkClass[] = 'disabled';
             }
 
-            $stepNumber = new \Ease\Html\SpanTag($num, ['class' => 'badge badge-pill badge-light mr-2']);
+            $stepNumber = new \Ease\Html\SpanTag($num, ['class' => 'badge rounded-pill text-bg-light mr-2']);
             $link = new \Ease\Html\ATag('#', [$stepNumber, $label], ['class' => implode(' ', $linkClass)]);
 
             $stepList->addItem(new \Ease\Html\LiTag($link, ['class' => implode(' ', $itemClass)]));
@@ -759,16 +759,16 @@ $(document).ready(function() {
             tagBadges.forEach(function(badge) {
                 var tagText = badge.textContent.trim();
 
-                badge.classList.remove('badge-primary', 'badge-warning', 'badge-success', 'badge-info');
-                badge.classList.add('badge-secondary');
+                badge.classList.remove('text-bg-primary', 'text-bg-warning', 'text-bg-success', 'text-bg-info');
+                badge.classList.add('text-bg-secondary');
                 badge.style.fontWeight = 'normal';
                 badge.style.boxShadow = 'none';
                 badge.style.transform = 'scale(1)';
                 badge.style.border = 'none';
 
                 if (selectedTags.includes(tagText)) {
-                    badge.classList.remove('badge-secondary');
-                    badge.classList.add('badge-primary');
+                    badge.classList.remove('text-bg-secondary');
+                    badge.classList.add('text-bg-primary');
                     badge.style.fontWeight = 'bold';
                     badge.style.boxShadow = '0 2px 6px rgba(0,123,255,0.4)';
                     badge.style.transform = 'scale(1.1)';
@@ -888,7 +888,7 @@ EOD,
         $headingText = _('Assign Credentials');
 
         if ($runTemplate->getMyKey()) {
-            $headingText .= ' <span class="badge badge-success">#'.$runTemplate->getMyKey().'</span>';
+            $headingText .= ' <span class="badge text-bg-success">#'.$runTemplate->getMyKey().'</span>';
         }
 
         $container->addItem(new \Ease\Html\H3Tag($headingText));
@@ -986,7 +986,7 @@ EOD,
         $configTitle = _('Configure').' '.$runTemplate->getRecordName();
 
         if (!empty($actualId)) {
-            $configTitle .= ' <span class="badge badge-success ml-2">#'.$actualId.'</span>';
+            $configTitle .= ' <span class="badge text-bg-success ml-2">#'.$actualId.'</span>';
         }
 
         $container->addItem(new \Ease\Html\H3Tag($configTitle, ['class' => 'd-flex align-items-center']));
@@ -1243,7 +1243,7 @@ EOD,
             new \Ease\TWB5\LinkButton(
                 'runtemplate.php?id='.$runtemplateId,
                 '⚗️ '._('View RunTemplate'),
-                'primary btn-lg btn-block',
+                'primary btn-lg w-100',
             ),
         );
         $buttonRow->addColumn(
@@ -1251,7 +1251,7 @@ EOD,
             new \Ease\TWB5\LinkButton(
                 'schedule.php?id='.$runtemplateId,
                 '📅 '._('Schedule'),
-                'info btn-lg btn-block',
+                'info btn-lg w-100',
             ),
         );
         $buttonRow->addColumn(
@@ -1259,7 +1259,7 @@ EOD,
             new \Ease\TWB5\LinkButton(
                 'runtemplates.php',
                 '📋 '._('All RunTemplates'),
-                'secondary btn-lg btn-block',
+                'secondary btn-lg w-100',
             ),
         );
         $buttonRow->addColumn(
@@ -1267,7 +1267,7 @@ EOD,
             new \Ease\TWB5\LinkButton(
                 'activation-wizard.php?reset=1',
                 '🌟 '._('New Activation'),
-                'success btn-lg btn-block',
+                'success btn-lg w-100',
             ),
         );
 
@@ -1312,7 +1312,7 @@ EOD,
         $actionsTitle = _('Configure Actions').' '.$runTemplate->getRecordName();
 
         if (!empty($actualId)) {
-            $actionsTitle .= ' <span class="badge badge-success ml-2">#'.$actualId.'</span>';
+            $actionsTitle .= ' <span class="badge text-bg-success ml-2">#'.$actualId.'</span>';
         }
 
         $container->addItem(new \Ease\Html\H3Tag($actionsTitle, ['class' => 'd-flex align-items-center']));

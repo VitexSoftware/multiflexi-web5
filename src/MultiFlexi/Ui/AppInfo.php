@@ -50,7 +50,7 @@ class AppInfo extends \Ease\Html\DivTag
         $mainRow->addColumn(4, new RuntemplateLaunchForm($app, $companyId));
         $mainRow->addColumn(4, new AppJobsTable($app->getMyKey(), $companyId));
 
-        $mainRow->addColumn(2, [new LinkButton('conffield.php?app_id='.$app->getMyKey().'&company_id='.$companyId, [new \Ease\Html\ImgTag('images/set.svg', _('Set'), ['height' => '30px']), _('Config fields')], 'warning btn-sm  btn-block'),
+        $mainRow->addColumn(2, [new LinkButton('conffield.php?app_id='.$app->getMyKey().'&company_id='.$companyId, [new \Ease\Html\ImgTag('images/set.svg', _('Set'), ['height' => '30px']), _('Config fields')], 'warning btn-sm  w-100'),
             new \MultiFlexi\Ui\ConfigFieldsBadges(Conffield::getAppConfigs($app)),
         ]);
 
