@@ -317,6 +317,15 @@ class WebPage extends \Ease\TWB5\WebPage
             table.dataTable tbody tr:hover > td { background-color: #e1eaff !important; box-shadow: none !important; }
             table.dataTable { border-radius: 8px; overflow: hidden; }
 
+            /* Exit code indicator — dark, high-contrast semantic text colours
+               that stay readable on the tinted job rows */
+            .mf-exit { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+            .mf-exit-success   { color: #146c43; }  /* dark green  */
+            .mf-exit-secondary { color: #0a4275; }  /* dark blue   */
+            .mf-exit-danger    { color: #b02a37; }  /* dark red    */
+            .mf-exit-warning   { color: #985700; }  /* dark orange */
+            .mf-exit-info      { color: #087990; }  /* dark cyan   */
+
             /* DataTable toolbar buttons */
             .dt-buttons { margin-bottom: 0.6rem; display: flex; flex-wrap: wrap; gap: 4px; }
             .dt-buttons .btn {

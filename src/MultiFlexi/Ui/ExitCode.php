@@ -16,52 +16,60 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 /**
- * Description of ExitCode.
+ * Job exit code indicator.
+ *
+ * Renders the exit code value using a dark, high-contrast semantic colour
+ * (dark green for success, dark blue for secondary, dark red for danger,
+ * dark orange for warning, …) so it stays readable on the tinted job rows.
  *
  * @author vitex
  *
  * @no-named-arguments
  */
-class ExitCode extends \Ease\TWB5\Badge
+class ExitCode extends \Ease\Html\SpanTag
 {
     public function __construct($exitcode, $properties = [])
     {
-        parent::__construct(self::status($exitcode), '&nbsp'.(null === $exitcode ? '⏳' : $exitcode).'&nbsp', $properties);
+        $status = self::status($exitcode);
+        $label = null === $exitcode ? '⏳' : (string) $exitcode;
+
+        $properties['class'] = trim('mf-exit mf-exit-'.$status.' '.($properties['class'] ?? ''));
+
+        if (!isset($properties['title'])) {
+            $properties['title'] = $status;
+        }
+
+        parent::__construct('&nbsp;'.$label.'&nbsp;', $properties);
     }
 
     /**
-     * Exit Code.
+     * Map an exit code to a Bootstrap semantic state name.
      *
      * @param int $exitcode
      *
-     * @return string bootstrap color
+     * @return string bootstrap state name
      */
     public static function status($exitcode)
     {
-        switch ($exitcode) {
-            case -1:
-                $type = 'secondary';
-
-                break;
-            case 0:
-                if (null === $exitcode) {
-                    $type = 'info';
-                } else {
-                    $type = 'success';
-                }
-
-                break;
-            case 127:
-                $type = 'warning';
-
-                break;
-
-            default:
-                $type = 'danger';
-
-                break;
+        // Strict checks — a switch() would use loose comparison where 0 == null.
+        if (null === $exitcode || '' === $exitcode) {
+            return 'info'; // not finished yet
         }
 
-        return $type;
+        $code = (int) $exitcode;
+
+        if ($code === 0) {
+            return 'success';
+        }
+
+        if ($code === -1) {
+            return 'secondary';
+        }
+
+        if ($code === 127) {
+            return 'warning';
+        }
+
+        return 'danger';
     }
 }
