@@ -59,6 +59,10 @@ class ActivationWizard extends \Ease\Html\DivTag
         // Include selectize assets for step 2 (application selection with tag filtering)
         if ($this->currentStep === 2) {
             WebPage::singleton()->includeJavaScript('js/selectize.min.js');
+            // selectize.bootstrap5.css is a complete, self-contained theme.
+            // Do NOT also load the base selectize.css: its remove_button rule
+            // uses position:absolute, which the BS5 theme doesn't reset, leaving
+            // the × overlapping the tag label.
             WebPage::singleton()->includeCss('css/selectize.bootstrap5.css');
 
             // Add custom CSS for tag highlighting
@@ -424,10 +428,12 @@ EOD,
         ksort($allTags);
         $allTags = array_values($allTags);
 
-        // Add name search bar
+        // Add name search bar. NOTE: the input is wrapped in a FormGroup, which
+        // calls setTagID() and overwrites any explicit id with a random one, so
+        // the JavaScript hooks below target the stable "app-name-search" CSS
+        // class instead of an id.
         $searchInput = new \Ease\Html\InputTextTag('app_name_search', '', [
-            'class' => 'form-control',
-            'id' => 'app-name-search',
+            'class' => 'form-control app-name-search',
             'placeholder' => _('Search by name...'),
             'autocomplete' => 'off',
         ]);
@@ -458,15 +464,19 @@ EOD,
             $container->addItem(new \Ease\Html\DivTag('', ['class' => 'mb-4'])); // Add spacing
         }
 
-        // Build app_id => [slug, ...] map across all companies
+        // Build app_id => [slug, ...] map across all companies.
+        // Company↔App associations live in the runtemplate table (one row per
+        // activated app per company), so derive the map from there.
         $appCompanies = [];
 
         foreach ($app->getFluentPDO()
-            ->from('company_app')
-            ->join('company ON company.id = company_app.company_id')
-            ->select('company_app.app_id, company.slug')
+            ->from('runtemplate')
+            ->join('company ON company.id = runtemplate.company_id')
+            ->select(null)
+            ->select('runtemplate.app_id, company.slug')
             ->fetchAll() as $row) {
-            if (!empty($row['slug'])) {
+            if (!empty($row['slug'])
+                && !\in_array($row['slug'], $appCompanies[$row['app_id']] ?? [], true)) {
                 $appCompanies[$row['app_id']][] = $row['slug'];
             }
         }
@@ -574,12 +584,6 @@ document.querySelectorAll('.wizard-content .app-card').forEach(function(card) {
 
 // Tag filtering functionality with localStorage support
 $(document).ready(function() {
-    // Check if selectize is available
-    if (typeof $.fn.selectize === 'undefined') {
-        console.error('Selectize library is not loaded!');
-        return;
-    }
-
     // Constants for localStorage
     const STORAGE_KEY = 'multiflexi_tag_filter';
     const DEFAULT_ALL_SELECTED = 'all_tags_selected';
@@ -624,6 +628,10 @@ $(document).ready(function() {
         }
     }
 
+    // Tag filter relies on the selectize library and the PillBox, which are
+    // only present when applications expose tags. Set it up only when both the
+    // library and the widget exist; the name search below works regardless.
+    if (typeof $.fn.selectize !== 'undefined' && $('#tag_filterpillBox').length > 0) {
     // Wait for selectize to be initialized
     setTimeout(function() {
         var element = $('#tag_filterpillBox');
@@ -669,9 +677,10 @@ $(document).ready(function() {
             });
         }
     }, 1000);
+    }
 
-    // Name search input - filter in real time
-    $('#app-name-search').on('input', function() {
+    // Name search input - filter in real time (independent of the tag filter)
+    $('.app-name-search').on('input', function() {
         filterApplicationsByTags(currentSelectedTags);
     });
 
@@ -686,7 +695,7 @@ $(document).ready(function() {
 
         var appCards = document.querySelectorAll('.app-card');
         var visibleCount = 0;
-        var searchTerm = ($('#app-name-search').val() || '').toLowerCase().trim();
+        var searchTerm = ($('.app-name-search').val() || '').toLowerCase().trim();
 
         appCards.forEach(function(card) {
             var cardTags = card.getAttribute('data-tags') || '';
@@ -1062,13 +1071,15 @@ EOD,
         switch ($type) {
             case 'bool':
             case 'boolean':
+                // Return the bare checkbox Input; the caller wraps it in a
+                // FormGroup, which requires an Ease\Html\Input (not a DivTag).
                 $input = new \Ease\Html\InputTag($fieldName, '1', ['type' => 'checkbox', 'class' => 'form-check-input']);
 
                 if ($value) {
                     $input->setTagProperty('checked', 'checked');
                 }
 
-                return new \Ease\Html\DivTag($input, ['class' => 'form-check']);
+                return $input;
             case 'password':
                 return new \Ease\Html\InputTag($fieldName, $value, ['type' => 'password', 'class' => 'form-control']);
             case 'int':

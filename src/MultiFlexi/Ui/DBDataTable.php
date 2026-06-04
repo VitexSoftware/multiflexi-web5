@@ -92,7 +92,9 @@ class DBDataTable extends \Ease\Html\TableTag
         //        $this->includeJavaScript('assets/Responsive-2.2.2/js/dataTables.responsive.min.js');
         //        $this->includeJavaScript('assets/Responsive-2.2.2/js/responsive.bootstrap.min.js');
         $this->includeJavaScript('js/selectize.min.js');
-        $this->includeCss('css/selectize.css');
+        // selectize.bootstrap5.css is a complete, self-contained theme; loading
+        // the base selectize.css alongside it makes the remove_button (×) overlap
+        // the label because the base position:absolute rule is not reset.
         $this->includeCss('css/selectize.bootstrap5.css');
         $this->setTagClass('table table-bordered');
         // Buttons 3.x (matches DataTables 2.x core) — copied from vendor by
