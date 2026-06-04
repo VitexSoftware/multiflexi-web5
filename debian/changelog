@@ -1,3 +1,27 @@
+multiflexi-web (2.4.0) unstable; urgency=medium
+
+  * Migrate the whole web interface from Bootstrap 4 to Bootstrap 5
+    (Bootstrap 5 CSS; convert popovers, modals, badges, button groups,
+    btn-block and directional utilities to their BS5 equivalents).
+  * Upgrade DataTables to 2.2.2 with Buttons 3.2.2 (was an incompatible
+    3.0 beta with mismatched Buttons 1.5.6); add ext.features.register
+    polyfill and graceful JSON error handling in ajax2db.php.
+  * Modernise the UI: dark navy navbar, card headers, high-contrast tables,
+    redesigned login/logout/password-recovery splash pages with a large
+    background logo, and mobile responsiveness.
+  * Make the main navbar compact and right-align the language switcher;
+    render the navbar login form inline.
+  * Exit code indicator now uses dark, high-contrast semantic colours and
+    correctly classifies exit code 0 as success.
+  * Fix the cookie consent banner (Bootstrap 5 form-switch) and verify
+    consent saving end to end.
+  * Migrate FaIcon usages to BsIcon (Bootstrap Icons) and load jQuery once.
+  * Hide the first-administrator setup button once any user exists.
+  * debian: multiflexi-web5 now Conflicts/Replaces/Provides multiflexi-web
+    so only one web interface can be installed at a time.
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 04 Jun 2026 09:35:41 +0200
+
 multiflexi-web (2.3.1) UNRELEASED; urgency=medium
 
   * separated to its own project

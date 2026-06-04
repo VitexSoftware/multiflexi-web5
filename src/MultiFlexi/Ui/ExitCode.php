@@ -28,7 +28,7 @@ namespace MultiFlexi\Ui;
  */
 class ExitCode extends \Ease\Html\SpanTag
 {
-    public function __construct($exitcode, $properties = [])
+    public function __construct($exitcode = null, $properties = [])
     {
         $status = self::status($exitcode);
         $label = null === $exitcode ? '⏳' : (string) $exitcode;
