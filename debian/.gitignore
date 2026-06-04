@@ -1,0 +1,16 @@
+# debhelper / dpkg-buildpackage generated artifacts
+/.debhelper/
+/tmp/
+/files
+/debhelper-build-stamp
+
+# Per-package staging directories and generated maintainer-script fragments
+/multiflexi-web5/
+/multiflexi-web/
+*.substvars
+*.debhelper
+*.debhelper.log
+*.postinst.debhelper
+*.postrm.debhelper
+*.preinst.debhelper
+*.prerm.debhelper
