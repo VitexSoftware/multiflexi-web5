@@ -10,6 +10,8 @@ Package: multiflexi-web5
 Multi-Arch: foreign
 Architecture: all
 Conflicts: multiflexi-web
+Replaces: multiflexi-web
+Provides: multiflexi-web
 Depends: ${misc:Depends},
  multiflexi-common,
  php-vitexsoftware-multiflexi-core,
