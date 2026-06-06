@@ -25,7 +25,7 @@ class FilteredCompanyJobLister extends CompanyJobLister
      *
      * @return \FluentPDO\Query
      */
-    public function listingQuery()
+    public function listingQuery(): \Envms\FluentPDO\Queries\Select
     {
         $query = parent::listingQuery();
 
@@ -37,7 +37,7 @@ class FilteredCompanyJobLister extends CompanyJobLister
             return $query->where('1=0');
         }
 
-        // Filter jobs by accessible companies
-        return $query->where('company_id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')');
+        // Filter jobs by accessible companies (qualified column avoids SQL ambiguity)
+        return $query->where('job.company_id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')');
     }
 }

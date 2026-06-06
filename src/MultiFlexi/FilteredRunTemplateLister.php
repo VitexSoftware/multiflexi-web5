@@ -16,24 +16,12 @@ declare(strict_types=1);
 namespace MultiFlexi;
 
 /**
- * Credential lister filtered by user's accessible companies (RBAC).
+ * RunTemplate lister filtered by user's accessible companies (RBAC).
  */
-class FilteredCredentialLister extends CredentialLister
+class FilteredRunTemplateLister extends RunTemplateLister
 {
     /**
-     * @param array $columns
-     *
-     * @return array
-     */
-    public function columns($columns = [])
-    {
-        return parent::columns($columns);
-    }
-
-    /**
      * Override listingQuery to filter by accessible companies.
-     *
-     * @return \FluentPDO\Query
      */
     public function listingQuery(): \Envms\FluentPDO\Queries\Select
     {
@@ -47,7 +35,7 @@ class FilteredCredentialLister extends CredentialLister
             return $query->where('1=0');
         }
 
-        // Filter credentials by accessible companies
+        // Filter runtemplates by accessible companies
         return $query->where('company_id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')');
     }
 }

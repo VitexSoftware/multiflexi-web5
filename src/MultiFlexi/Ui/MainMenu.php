@@ -86,7 +86,11 @@ class MainMenu extends \Ease\Html\DivTag
             }
 
             $this->eventsMenuEnabled($nav);
-            $this->adminMenuEnabled($nav);
+
+            // Show Admin menu only to privileged users.
+            if (!\MultiFlexi\Security\RbacHelpers::isAvailable() || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()) {
+                $this->adminMenuEnabled($nav);
+            }
             // $nav->addMenuItem(new \Ease\Html\ATag('logs.php', '<img height=30 src=images/log.svg> ' . _('Logs')), 'right');
 
             $nav->addDropDownMenu('<img height=30 src=images/log.svg> '._('Logs'), [
@@ -319,6 +323,13 @@ EOD);
         $namecolumn = $source->getNameColumn();
         $columns = [$source->getkeyColumn(), $namecolumn];
 
+        $accessibleCompanyIds = null;
+
+        if ($source instanceof \MultiFlexi\Company) {
+            $accessibleCompanyIds = array_map('intval', \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies());
+            $accessibleCompanyIds = array_values(array_unique($accessibleCompanyIds));
+        }
+
         if ($icon) {
             $columns[] = $icon;
         }
@@ -328,6 +339,10 @@ EOD);
 
         if ($lister) {
             foreach ($lister as $uID => $uInfo) {
+                if ($accessibleCompanyIds !== null && !\in_array((int) $uID, $accessibleCompanyIds, true)) {
+                    continue;
+                }
+
                 if (null !== $nest && ($nest->getMyKey() === $uID)) {
                     $uInfo[$namecolumn] .= ' ✓';
                 }

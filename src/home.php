@@ -180,5 +180,72 @@ $accountCard->addItem(new \Ease\Html\DivTag(
 
 $container->addItem($accountCard);
 
+// RBAC privileges section
+$rbacCard = new \Ease\TWB5\Card(_('RBAC Privileges & Access'));
+
+try {
+    $accessControl = new \MultiFlexi\Security\CompanyAccessControl();
+    $accessibleCompanyIds = $accessControl->getCurrentUserAccessibleCompanies();
+
+    // RBAC Status
+    $rbacInfo = new \Ease\Html\DlTag(null, ['class' => 'row']);
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Access Control Status'), ['class' => 'col-sm-3']));
+    $statusBadge = count($accessibleCompanyIds) > 0
+        ? new \Ease\TWB5\Badge('✅ '._('Active'), 'success')
+        : new \Ease\TWB5\Badge('⚠️ '._('No Access'), 'warning');
+    $rbacInfo->addItem(new \Ease\Html\DdTag($statusBadge, ['class' => 'col-sm-9']));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Companies Assigned'), ['class' => 'col-sm-3']));
+    $rbacInfo->addItem(new \Ease\Html\DdTag(
+        (string) count($accessibleCompanyIds),
+        ['class' => 'col-sm-9'],
+    ));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Current Role'), ['class' => 'col-sm-3']));
+    $rbacInfo->addItem(new \Ease\Html\DdTag(_('Viewer (Full Access to Assigned Companies)'), ['class' => 'col-sm-9']));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Data Filtering'), ['class' => 'col-sm-3']));
+    $filteringStatus = new \Ease\TWB5\Badge('🔒 '._('Enabled'), 'info');
+    $rbacInfo->addItem(new \Ease\Html\DdTag($filteringStatus, ['class' => 'col-sm-9']));
+
+    $rbacCard->addItem($rbacInfo);
+
+    // Assigned companies list
+    if (count($accessibleCompanyIds) > 0) {
+        $rbacCard->addItem('<hr>');
+        $rbacCard->addItem(new \Ease\Html\H5Tag(_('Your Assigned Companies')));
+
+        $companyList = new \Ease\Html\UlTag(null, ['class' => 'list-group list-group-flush']);
+
+        foreach ($accessibleCompanyIds as $companyId) {
+            // Load company by passing ID to constructor
+            $company = new \MultiFlexi\Company(intval($companyId));
+            if ($company && $company->getMyKey()) {
+                $listItem = new \Ease\Html\LiTag(null, ['class' => 'list-group-item']);
+                $listItem->addItem(new \Ease\Html\ATag(
+                    'company.php?id=' . $company->getMyKey(),
+                    '🏢 ' . $company->getRecordName(),
+                ));
+                $companyList->addItem($listItem);
+            }
+        }
+
+        $rbacCard->addItem($companyList);
+    } else {
+        $rbacCard->addItem(new \Ease\TWB5\Alert(
+            _('You have not been assigned to any companies. Contact your administrator to request access.'),
+            'warning',
+        ));
+    }
+} catch (Exception $e) {
+    $rbacCard->addItem(new \Ease\TWB5\Alert(
+        _('Error loading RBAC information') . ': ' . $e->getMessage(),
+        'danger',
+    ));
+}
+
+$container->addItem($rbacCard);
+
 WebPage::singleton()->addItem(new PageBottom());
 WebPage::singleton()->draw();

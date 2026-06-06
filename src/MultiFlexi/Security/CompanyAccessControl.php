@@ -84,17 +84,25 @@ class CompanyAccessControl
      *
      * @param int $userId User ID
      *
-     * @return array Array of company IDs
+     * @return array Array of company IDs (filtered to exclude empty/null values)
      */
     public static function getUserAccessibleCompanies(int $userId): array
     {
         $companyUser = new CompanyUser();
         $result = $companyUser->listingQuery()
+            ->leftJoin('company ON company.id = company_user.company_id')
             ->where('user_id', $userId)
-            ->select(['company_id'])
+            ->where('company.id IS NOT NULL')
+            ->select(['company_user.company_id'])
             ->fetchAll();
 
-        return array_column($result, 'company_id');
+        // Normalize, de-duplicate and filter out invalid IDs
+        $companies = array_map('intval', array_column($result, 'company_id'));
+        $companies = array_values(array_unique($companies));
+
+        return array_values(array_filter($companies, static function ($id) {
+            return $id > 0;
+        }));
     }
 
     /**

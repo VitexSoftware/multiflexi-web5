@@ -24,12 +24,21 @@ $userId = \Ease\TWB5\WebPage::getRequestValue('user_id', 'int');
 $state = \Ease\TWB5\WebPage::getRequestValue('state') === 'true';
 
 $result = 400;
+$canManageAssignments = !\MultiFlexi\Security\RbacHelpers::isAvailable()
+    || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin();
 
 if ($companyId && $userId) {
     // Enforce access control - user must have access to the company
     if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
         http_response_code(403);
         echo json_encode(['result' => 'error', 'message' => _('You do not have access to this company')]);
+
+        exit;
+    }
+
+    if (!$canManageAssignments) {
+        http_response_code(403);
+        echo json_encode(['result' => 'error', 'message' => _('Only administrators can modify company assignments')]);
 
         exit;
     }

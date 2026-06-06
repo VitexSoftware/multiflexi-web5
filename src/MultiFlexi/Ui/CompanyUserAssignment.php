@@ -30,7 +30,7 @@ use MultiFlexi\User;
  */
 class CompanyUserAssignment extends DivTag
 {
-    public function __construct(Company $company, $properties = [])
+    public function __construct(Company $company, bool $canManageAssignments = true, $properties = [])
     {
         $userer = new User();
         $allUsers = $userer->listingQuery()->select(['id', 'login', 'firstname', 'lastname', 'email'], true)->orderBy('login')->fetchAll();
@@ -55,7 +55,12 @@ class CompanyUserAssignment extends DivTag
                 'assign['.$userId.']',
                 \array_key_exists($userId, $assignedTo),
                 (string) $userId,
-                ['class' => 'company-user-assign-toggle', 'data-company-id' => $company->getMyKey(), 'data-user-id' => $userId],
+                [
+                    'class' => 'company-user-assign-toggle',
+                    'data-company-id' => $company->getMyKey(),
+                    'data-user-id' => $userId,
+                    'disabled' => $canManageAssignments ? null : 'disabled',
+                ],
             );
 
             $assignmentsTable->addRowColumns([
@@ -94,31 +99,33 @@ class CompanyUserAssignment extends DivTag
             });
 JS);
 
-        WebPage::singleton()->addJavaScript(<<<JS
-            $('.company-user-assign-toggle').change(function() {
-                var toggle = $(this);
-                var companyId = toggle.data('company-id');
-                var userId = toggle.data('user-id');
-                var state = toggle.prop('checked');
+        if ($canManageAssignments) {
+            WebPage::singleton()->addJavaScript(<<<JS
+                $('.company-user-assign-toggle').change(function() {
+                    var toggle = $(this);
+                    var companyId = toggle.data('company-id');
+                    var userId = toggle.data('user-id');
+                    var state = toggle.prop('checked');
 
-                $.post('togglecompanyuser.php', {
-                    company_id: companyId,
-                    user_id: userId,
-                    state: state,
-                    csrf_token: '{$csrfToken}'
-                }, function(data) {
-                    if (data.result === 'success') {
-                        // Success
-                    } else {
-                        alert('Error updating assignment');
+                    $.post('togglecompanyuser.php', {
+                        company_id: companyId,
+                        user_id: userId,
+                        state: state,
+                        csrf_token: '{$csrfToken}'
+                    }, function(data) {
+                        if (data.result === 'success') {
+                            // Success
+                        } else {
+                            alert('Error updating assignment');
+                            toggle.bootstrapToggle(state ? 'off' : 'on', true);
+                        }
+                    }, 'json').fail(function() {
+                        alert('Request failed');
                         toggle.bootstrapToggle(state ? 'off' : 'on', true);
-                    }
-                }, 'json').fail(function() {
-                    alert('Request failed');
-                    toggle.bootstrapToggle(state ? 'off' : 'on', true);
+                    });
                 });
-            });
 JS);
+        }
 
         parent::__construct($card, $properties);
     }

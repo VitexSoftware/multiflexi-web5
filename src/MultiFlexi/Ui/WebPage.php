@@ -84,6 +84,41 @@ class WebPage extends \Ease\TWB5\WebPage
             .nav-link { font-weight: 500; color: #6c757d; border: none !important; padding: 12px 20px; }
             .nav-link.active { color: #007bff !important; border-bottom: 3px solid #007bff !important; background: transparent !important; }
             .btn { border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+            .btn.mf-entity-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.55rem;
+                min-height: 2.5rem;
+                padding: 0.35rem 0.65rem;
+                border-radius: 0.7rem;
+                border: 1px solid #cbd5e1;
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                color: #0f172a !important;
+                text-decoration: none;
+                font-weight: 600;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+                transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+            }
+            .btn.mf-entity-link:hover {
+                background: #f1f5f9;
+                border-color: #94a3b8;
+                color: #0f172a !important;
+                text-decoration: none;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.10);
+            }
+            .btn.mf-entity-link:focus-visible {
+                outline: 2px solid #0284c7;
+                outline-offset: 2px;
+            }
+            .btn.mf-entity-link img {
+                width: 2rem;
+                height: 2rem !important;
+                max-width: 2rem;
+                max-height: 2rem !important;
+                object-fit: cover;
+                border-radius: 0.4rem;
+                flex: 0 0 2rem;
+            }
             .btn-outline-danger:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
             .application-metadata h3 { color: #343a40; font-weight: 700; }
             .table thead th { border-top: none; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; color: #8898aa; border-bottom: 1px solid #e9ecef; }

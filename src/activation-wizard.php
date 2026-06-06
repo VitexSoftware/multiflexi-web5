@@ -36,6 +36,24 @@ if ($step === 1 && !WebPage::singleton()->isPosted()) {
     }
 }
 
+// Deep-link support: ?company=ID (or ?company_id=ID) preselects company and opens step 2
+if (!WebPage::singleton()->isPosted()) {
+    $preselectedCompanyId = WebPage::getRequestValue('company', 'int')
+        ?: WebPage::getRequestValue('company_id', 'int');
+
+    if ($preselectedCompanyId) {
+        if (\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $preselectedCompanyId)) {
+            ActivationWizard::clearWizardData();
+            ActivationWizard::updateWizardData(['company_id' => (int) $preselectedCompanyId]);
+            WebPage::singleton()->redirect('activation-wizard.php?step=2');
+
+            exit;
+        }
+
+        \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
+    }
+}
+
 // Handle form submission and process wizard data
 if (WebPage::singleton()->isPosted()) {
     $postData = $_POST;
@@ -44,7 +62,14 @@ if (WebPage::singleton()->isPosted()) {
         case 2:
             // Step 1 -> Step 2: Save company selection
             if (isset($postData['company_id'])) {
-                ActivationWizard::updateWizardData(['company_id' => (int) $postData['company_id']]);
+                $companyId = (int) $postData['company_id'];
+
+                if (\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
+                    ActivationWizard::updateWizardData(['company_id' => $companyId]);
+                } else {
+                    \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
+                    $step = 1;
+                }
             }
 
             break;
@@ -53,6 +78,13 @@ if (WebPage::singleton()->isPosted()) {
             if (isset($postData['app_id'], $postData['company_id'])) {
                 $appId = (int) $postData['app_id'];
                 $companyId = (int) $postData['company_id'];
+
+                if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
+                    \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
+                    $step = 1;
+                    break;
+                }
+
                 ActivationWizard::updateWizardData([
                     'company_id' => $companyId,
                     'app_id' => $appId,
@@ -72,6 +104,12 @@ if (WebPage::singleton()->isPosted()) {
         case 4:
             // Step 3 -> Step 4: Create RunTemplate
             if (isset($postData['company_id'], $postData['app_id'], $postData['runtemplate_name'])) {
+                if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $postData['company_id'])) {
+                    \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
+                    $step = 1;
+                    break;
+                }
+
                 $runTemplate = new \MultiFlexi\RunTemplate();
                 $runTemplate->setDataValue('app_id', (int) $postData['app_id']);
                 $runTemplate->setDataValue('company_id', (int) $postData['company_id']);

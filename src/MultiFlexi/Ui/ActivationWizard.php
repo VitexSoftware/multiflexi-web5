@@ -297,7 +297,18 @@ EOD);
         $container->addItem(new \Ease\Html\PTag(_('Choose the company where you want to activate the application.')));
 
         $company = new \MultiFlexi\Company();
-        $companies = $company->listingQuery()->orderBy('name')->fetchAll();
+        $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
+
+        if (empty($accessibleCompanyIds)) {
+            $container->addItem(new \Ease\TWB5\Alert('warning', _('You do not have access to any companies. Please contact an administrator.')));
+
+            return $container;
+        }
+
+        $companies = $company->listingQuery()
+            ->where('id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')')
+            ->orderBy('name')
+            ->fetchAll();
 
         if (empty($companies)) {
             $container->addItem(new \Ease\TWB5\Alert('warning', _('No companies found. Please create a company first.')));
@@ -376,6 +387,12 @@ EOD,
 
         if (empty($this->wizardData['company_id'])) {
             $container->addItem(new \Ease\TWB5\Alert('danger', _('No company selected. Please go back to step 1.')));
+
+            return $container;
+        }
+
+        if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $this->wizardData['company_id'])) {
+            $container->addItem(new \Ease\TWB5\Alert('danger', _('You do not have access to the selected company. Please return to step 1 and choose an allowed company.')));
 
             return $container;
         }
@@ -1343,6 +1360,32 @@ EOD,
 
         $form->addItem($actionsRow);
         $container->addItem($form);
+
+        // Ensure tab switches inside wizard step 6 do not submit the form.
+        WebPage::singleton()->addJavaScript(
+            <<<'EOD'
+$(document).ready(function() {
+    var $wizardForm = $('#wizardForm');
+
+    // If tab triggers are rendered as <button>, force non-submit behavior.
+    $wizardForm.find('.nav-tabs button').attr('type', 'button');
+
+    // Handle both <a> and <button> tab triggers defensively.
+    $wizardForm.on('click', '.nav-tabs [data-bs-toggle="tab"], .nav-tabs a, .nav-tabs button', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (typeof bootstrap !== 'undefined' && bootstrap.Tab) {
+            bootstrap.Tab.getOrCreateInstance(this).show();
+        }
+
+        return false;
+    });
+});
+EOD,
+            null,
+            true,
+        );
 
         return $container;
     }

@@ -16,6 +16,7 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 use Ease\Html\InputHiddenTag;
+use Ease\Html\InputPasswordTag;
 use Ease\Html\InputTag;
 use Ease\TWB5\SubmitButton;
 use MultiFlexi\User;
@@ -55,6 +56,13 @@ class UserForm extends SecureForm
             'login',
             $user->getDataValue('login'),
         ), _('Username'));
+
+        $this->addInput(new InputPasswordTag(
+            'new_password',
+        ), _('New Password'));
+        $this->addInput(new InputPasswordTag(
+            'new_password_confirm',
+        ), _('Confirm New Password'));
 
         $this->addItem(new InputHiddenTag('class', $user::class));
         //        $this->addItem(new \Ease\Html\InputHiddenTag('enquiry_id', $user->getDataValue('enquiry_id')));

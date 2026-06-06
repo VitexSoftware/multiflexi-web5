@@ -43,9 +43,10 @@ class ActionsChooser extends \Ease\Html\DivTag
                 $moduleRow->addColumn(1, new ActionImage($action, ['height' => '50px']));
                 $moduleRow->addColumn(1, new \Ease\TWB5\Widgets\Toggle($prefix.'actionSwitch['.$action.']', \array_key_exists($action, $toggles) && $toggles[$action], '', ['data-size' => 'lg']));
                 $moduleRow->addColumn(4, [new \Ease\Html\StrongTag($actionClass::name()), new \Ease\Html\PTag(new \Ease\Html\SmallTag($actionClass::description()))]);
-                $moduleRow->addColumn(4, self::getActionInputs($action, $prefix));
-                $moduleRow->setTagClass('form-row');
-                $this->addItem(new \Ease\Html\PTag($moduleRow));
+                $moduleRow->addColumn(6, self::getActionInputs($action, $prefix));
+                $moduleRow->setTagClass('row g-2 align-items-start');
+
+                $this->addItem(new \Ease\Html\DivTag($moduleRow, ['class' => 'mb-2 p-2 border rounded bg-light-subtle']));
             }
         }
     }

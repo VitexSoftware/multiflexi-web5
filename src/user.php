@@ -55,6 +55,35 @@ if (WebPage::singleton()->isPosted()) {
             $user->addStatusMessage(_('Roles updated'), 'success');
         }
     } else {
+        $newPassword = trim((string) WebPage::singleton()->getRequestValue('new_password'));
+        $passwordConfirm = trim((string) WebPage::singleton()->getRequestValue('new_password_confirm'));
+
+        if (!empty($newPassword)) {
+            if ($newPassword !== $passwordConfirm) {
+                $user->addStatusMessage(_('Password confirmation does not match'), 'warning');
+            } else {
+                $passwordValidator = new \MultiFlexi\Security\PasswordValidator(
+                    \Ease\Shared::cfg('PASSWORD_MIN_LENGTH', 8),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_UPPERCASE', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_LOWERCASE', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_NUMBERS', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_SPECIAL_CHARS', true),
+                );
+                $passwordValidation = $passwordValidator->validate($newPassword);
+
+                if (!$passwordValidation['valid']) {
+                    foreach ($passwordValidation['errors'] as $passwordError) {
+                        $user->addStatusMessage($passwordError, 'warning');
+                    }
+                } elseif ($user->passwordChange($newPassword)) {
+                    $user->addStatusMessage(_('Password changed successfully'), 'success');
+                } else {
+                    $user->addStatusMessage(_('Password change failed'), 'error');
+                }
+            }
+        }
+
+        unset($_REQUEST['new_password'], $_REQUEST['new_password_confirm']);
         unset($_REQUEST['class']);
         $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
     }
@@ -98,6 +127,13 @@ switch (WebPage::singleton()->getRequestValue('action')) {
             '<i class="fas fa-shield-alt"></i> '._('Access Control (RBAC)'),
             'warning',
             new \MultiFlexi\Ui\UserRbacForm($user),
+        ));
+
+        // Company assignment panel - show which companies this user is assigned to
+        WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(
+            '<i class="fas fa-building"></i> '._('Company Assignments'),
+            'info',
+            new \MultiFlexi\Ui\UserCompanyAssignment($user),
         ));
 
         break;

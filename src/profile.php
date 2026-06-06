@@ -25,8 +25,41 @@ $currentUser->loadFromSQL(\Ease\Shared::user()->getUserID());
 
 // Handle profile update form submission
 if (WebPage::singleton()->isPosted()) {
-    $correctionForm = new UserDataCorrectionForm($currentUser);
-    $correctionForm->processSubmission($_POST);
+    if (WebPage::singleton()->getRequestValue('action') === 'change_password') {
+        $currentPassword = trim((string) WebPage::singleton()->getRequestValue('current_password'));
+        $newPassword = trim((string) WebPage::singleton()->getRequestValue('new_password'));
+        $passwordConfirm = trim((string) WebPage::singleton()->getRequestValue('new_password_confirm'));
+
+        if (empty($currentPassword) || empty($newPassword) || empty($passwordConfirm)) {
+            \Ease\Shared::user()->addStatusMessage(_('All password fields are required'), 'warning');
+        } elseif ($newPassword !== $passwordConfirm) {
+            \Ease\Shared::user()->addStatusMessage(_('Password confirmation does not match'), 'warning');
+        } elseif (!\MultiFlexi\User::passwordValidation($currentPassword, (string) $currentUser->getDataValue($currentUser->passwordColumn))) {
+            \Ease\Shared::user()->addStatusMessage(_('Current password is not valid'), 'warning');
+        } else {
+            $passwordValidator = new \MultiFlexi\Security\PasswordValidator(
+                \Ease\Shared::cfg('PASSWORD_MIN_LENGTH', 8),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_UPPERCASE', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_LOWERCASE', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_NUMBERS', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_SPECIAL_CHARS', true),
+            );
+            $passwordValidation = $passwordValidator->validate($newPassword);
+
+            if (!$passwordValidation['valid']) {
+                foreach ($passwordValidation['errors'] as $passwordError) {
+                    \Ease\Shared::user()->addStatusMessage($passwordError, 'warning');
+                }
+            } elseif ($currentUser->passwordChange($newPassword)) {
+                \Ease\Shared::user()->addStatusMessage(_('Password changed successfully'), 'success');
+            } else {
+                \Ease\Shared::user()->addStatusMessage(_('Password change failed'), 'error');
+            }
+        }
+    } else {
+        $correctionForm = new UserDataCorrectionForm($currentUser);
+        $correctionForm->processSubmission($_POST);
+    }
 }
 
 WebPage::singleton()->addItem(new PageTop(_('My Profile')));
@@ -60,6 +93,34 @@ $correctionForm = new UserDataCorrectionForm($currentUser);
 $correctionFormCard->addItem($correctionForm);
 
 $container->addItem($correctionFormCard);
+
+// Password change section
+$passwordCard = new \Ease\TWB5\Card(_('Change Password'));
+$passwordForm = new \MultiFlexi\Ui\SecureForm([
+    'method' => 'POST',
+    'action' => 'profile.php',
+]);
+
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('Current Password'),
+    new \Ease\Html\InputPasswordTag('current_password', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('New Password'),
+    new \Ease\Html\InputPasswordTag('new_password', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('Confirm New Password'),
+    new \Ease\Html\InputPasswordTag('new_password_confirm', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\Html\InputHiddenTag('action', 'change_password'));
+$passwordForm->addItem(new \Ease\Html\DivTag(
+    new \Ease\TWB5\SubmitButton(_('Change Password'), 'warning', ['id' => 'changePasswordButton']),
+    ['class' => 'text-end'],
+));
+
+$passwordCard->addItem($passwordForm);
+$container->addItem($passwordCard);
 
 // GDPR Information section
 $gdprInfo = new \Ease\TWB5\Card(_('Your Rights Under GDPR'));

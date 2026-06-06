@@ -84,10 +84,14 @@ if ($class === null || $class === '') {
 // Whitelist: only allow DataTable engine classes that have getAllForDataTable
 $allowedClasses = [
     \MultiFlexi\CompanyJobLister::class,
+    \MultiFlexi\FilteredCompanyJobLister::class,
     \MultiFlexi\CompanyAppRunTemplateLister::class,
     \MultiFlexi\RunTemplateLister::class,
+    \MultiFlexi\FilteredRunTemplateLister::class,
     \MultiFlexi\CredentialTypeLister::class,
+    \MultiFlexi\FilteredCredentialTypeLister::class,
     \MultiFlexi\CredentialLister::class,
+    \MultiFlexi\FilteredCredentialLister::class,
     \MultiFlexi\ApplicationLister::class,
     \MultiFlexi\ScheduleLister::class,
     \MultiFlexi\Logger::class,
@@ -137,6 +141,20 @@ if ($engine instanceof \MultiFlexi\CompanyAppRunTemplateLister) {
 // Remove CSRF token from request data before passing to database engine
 $requestData = $_REQUEST;
 unset($requestData['csrf_token']);
+
+// Some callers can hit this endpoint without DataTables paging payload,
+// which would force loading all rows into memory.
+if (!isset($requestData['start']) || !is_numeric($requestData['start']) || (int) $requestData['start'] < 0) {
+    $requestData['start'] = 0;
+}
+
+if (!isset($requestData['length']) || !is_numeric($requestData['length']) || (int) $requestData['length'] <= 0) {
+    $requestData['length'] = 50;
+}
+
+if ((int) $requestData['length'] > 500) {
+    $requestData['length'] = 500;
+}
 
 try {
     $result = $engine->getAllForDataTable($requestData);

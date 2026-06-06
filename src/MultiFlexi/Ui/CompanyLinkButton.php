@@ -26,6 +26,19 @@ class CompanyLinkButton extends \Ease\TWB5\LinkButton
 {
     public function __construct(\MultiFlexi\Company $company, $properties = [])
     {
-        parent::__construct('company.php?id='.$company->getMyKey(), [new CompanyLogo($company, $properties), '&nbsp;', $company->getDataValue('code') ?: $company->getRecordName()], 'inverse', $properties);
+        $classes = trim((string) ($properties['class'] ?? '').' mf-entity-link mf-company-link');
+        $properties['class'] = $classes;
+
+        $logoProperties = $properties;
+        if (!isset($logoProperties['style'])) {
+            $logoProperties['style'] = 'height: 40px';
+        }
+
+        parent::__construct(
+            'company.php?id='.$company->getMyKey(),
+            [new CompanyLogo($company, $logoProperties), '&nbsp;', $company->getDataValue('code') ?: $company->getRecordName()],
+            'light',
+            $properties,
+        );
     }
 }

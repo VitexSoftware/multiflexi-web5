@@ -21,6 +21,9 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+$canManageAssignments = !\MultiFlexi\Security\RbacHelpers::isAvailable()
+    || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin();
+
 $company = new Company(WebPage::getRequestValue('company_id', 'int'));
 
 if (null === $company->getMyKey()) {
@@ -35,10 +38,26 @@ if (null === $company->getMyKey()) {
 
 WebPage::singleton()->addItem(new PageTop(_('Access Rights for Company').': '.$company->getRecordName()));
 
+if (!$canManageAssignments) {
+    WebPage::singleton()->addStatusMessage(
+        _('You can view company assignments, but only administrators can change them.'),
+        'warning',
+    );
+
+    WebPage::singleton()->container->addItem(
+        new \Ease\TWB5\Alert(
+            'warning',
+            '<strong>'._('Read-only mode').'</strong><br>'
+            ._('You can view company assignments, but only administrators can change them.'),
+            ['class' => 'mb-3'],
+        ),
+    );
+}
+
 WebPage::singleton()->container->addItem(
     new CompanyPanel(
         $company,
-        new CompanyUserAssignment($company),
+        new CompanyUserAssignment($company, $canManageAssignments),
     ),
 );
 
