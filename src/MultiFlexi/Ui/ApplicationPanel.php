@@ -56,11 +56,20 @@ class ApplicationPanel extends Panel
         $usedIncompanies = $ca->listingQuery()->select(['companyapp.company_id', 'company.name', 'company.slug', 'company.logo'], true)->leftJoin('company ON company.id = companyapp.company_id')->where('app_id', $this->application->getMyKey())->fetchAll('company_id');
 
         if ($usedIncompanies) {
-            $usedByDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 rounded shadow-sm border', 'style' => 'background: rgba(255,255,255,0.95);']);
+            $usedByDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 rounded shadow-sm border mf-usedby-box']);
             $usedByDiv->addItem(new \Ease\Html\SmallTag(_('Used by').': ', ['class' => 'fw-bold mb-1 d-block text-uppercase small text-secondary']));
 
+            WebPage::singleton()->addCSS(<<<'CSS'
+                .mf-usedby-box { background: #fff !important; }
+                .mf-usedby-box, .mf-usedby-box * { color: #212529 !important; }
+                .mf-usedby-box a { color: #0d6efd !important; }
+                .mf-usedby-box a:hover { color: #0a58ca !important; }
+                .mf-usedby-box .table td, .mf-usedby-box .table th { background: transparent !important; color: #212529 !important; }
+                .mf-usedby-box .text-muted { color: #6c757d !important; }
+CSS);
+
             // Create compact table instead of cards
-            $usedByTable = new \Ease\TWB5\Table(null, ['class' => 'table table-sm table-hover mb-0', 'style' => 'font-size: 0.85rem; color: #212529;']);
+            $usedByTable = new \Ease\TWB5\Table(null, ['class' => 'table table-sm table-hover mb-0', 'style' => 'font-size: 0.85rem;']);
             // $usedByTable->addRowHeaderColumns([_('Company'), _('RunTemplates')]);
 
             foreach ($usedIncompanies as $companyInfo) {
