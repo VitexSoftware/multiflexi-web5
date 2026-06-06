@@ -26,6 +26,14 @@ $state = \Ease\TWB5\WebPage::getRequestValue('state') === 'true';
 $result = 400;
 
 if ($companyId && $userId) {
+    // Enforce access control - user must have access to the company
+    if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
+        http_response_code(403);
+        echo json_encode(['result' => 'error', 'message' => _('You do not have access to this company')]);
+
+        exit;
+    }
+
     $company = new \MultiFlexi\Company($companyId);
     $user = new \MultiFlexi\User($userId);
 

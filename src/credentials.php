@@ -20,7 +20,20 @@ WebPage::singleton()->onlyForLogged();
 
 WebPage::singleton()->addItem(new PageTop(_('Credentials')));
 
-WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\CredentialLister()));
+// Get companies accessible to current user via RBAC
+$accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
+
+if (empty($accessibleCompanyIds)) {
+    WebPage::singleton()->container->addItem(
+        new \Ease\TWB5\Alert(
+            _('You do not have access to any companies. Please contact an administrator.'),
+            'warning'
+        )
+    );
+} else {
+    // Use filtered credential lister that respects user access
+    WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\FilteredCredentialLister()));
+}
 
 WebPage::singleton()->addItem(new PageBottom('credentials'));
 WebPage::singleton()->draw();

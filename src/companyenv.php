@@ -25,6 +25,14 @@ if ($action === 'delete') {
     $keyword = \Ease\TWB5\WebPage::getRequestValue('keyword');
     $companyId = $_SESSION['company'] ?? null;
 
+    // Enforce access control
+    if (null !== $companyId) {
+        \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+            (int) $companyId,
+            _("You do not have access to this company's environment")
+        );
+    }
+
     if (!empty($keyword) && null !== $companyId) {
         $companyEnver = new \MultiFlexi\CompanyEnv(new \MultiFlexi\Company((int) $companyId));
 

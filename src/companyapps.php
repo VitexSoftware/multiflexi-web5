@@ -36,6 +36,12 @@ if (null === $companer->getMyKey()) {
     WebPage::singleton()->redirect('companies.php');
 }
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companer->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companer->getRecordName())
+);
+
 $companyApp = new \MultiFlexi\CompanyApp($companer);
 
 // Handle form submission

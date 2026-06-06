@@ -31,6 +31,12 @@ WebPage::singleton()->onlyForLogged();
 $companer = new Company(WebPage::getRequestValue('company_id', 'int'));
 $application = new Application(WebPage::getRequestValue('app_id', 'int'));
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companer->getMyKey(),
+    sprintf(_("You do not have access to company \"%s\""), $companer->getRecordName())
+);
+
 WebPage::singleton()->addItem(new PageTop(_($application->getRecordName()).'@'.$companer->getRecordName()));
 
 // Create CompanyApp object for chart

@@ -24,6 +24,14 @@ $credTypeId = WebPage::getRequestValue('credential_type_id', 'int');
 
 $kredenc = new \MultiFlexi\Credential($credId);
 
+// Enforce access control if credential exists
+if ($kredenc->getMyKey()) {
+    \MultiFlexi\Security\CompanyAccessControl::enforceCredentialAccess(
+        (int) $kredenc->getMyKey(),
+        _('You do not have access to this credential')
+    );
+}
+
 if ($credTypeId && null === $kredenc->getCredentialType()) {
     $kredenc->setCredentialType(new \MultiFlexi\CredentialType($credTypeId));
 }

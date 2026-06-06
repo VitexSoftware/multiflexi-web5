@@ -27,6 +27,12 @@ if (null === $company->getMyKey()) {
     WebPage::singleton()->redirect('companies.php');
 }
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $company->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $company->getRecordName())
+);
+
 WebPage::singleton()->addItem(new PageTop(_('Access Rights for Company').': '.$company->getRecordName()));
 
 WebPage::singleton()->container->addItem(
