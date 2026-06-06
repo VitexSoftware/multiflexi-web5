@@ -1,3 +1,13 @@
+multiflexi-web (2.4.1) unstable; urgency=medium
+
+  * Add company-level RBAC access filtering across dashboard lists/charts
+  * Hide Admin menu for unprivileged users and filter company dropdown
+  * Add read-only notice and server-side protection for company-user assignment
+  * Add activation wizard deep-link support (?company=... -> step 2)
+  * Improve DataTables paging defaults and backend length limits for stability
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 06 Jun 2026 12:20:00 +0200
+
 multiflexi-web (2.4.0) unstable; urgency=medium
 
   * Migrate the whole web interface from Bootstrap 4 to Bootstrap 5
