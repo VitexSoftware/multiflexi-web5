@@ -25,12 +25,10 @@ $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUse
 
 if (empty($accessibleCompanyIds)) {
     WebPage::singleton()->addItem(new PageTop(_('Company list')));
-    WebPage::singleton()->container->addItem(
-        new \Ease\TWB5\Alert(
-            _('You do not have access to any companies. Please contact an administrator.'),
-            'warning'
-        )
-    );
+    WebPage::singleton()->container->addItem(new \Ease\TWB5\Alert(
+        _('You do not have access to any companies. Please contact an administrator.'),
+        'warning',
+    ));
 } else {
     $companies = new Company();
     WebPage::singleton()->addItem(new PageTop(_('Company list')));

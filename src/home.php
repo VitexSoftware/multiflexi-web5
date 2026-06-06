@@ -34,11 +34,12 @@ $welcomeCard->addItem(new \Ease\Html\PTag(_('This is your personal dashboard wit
 // Quick actions — col-12 col-sm-6 col-md-3: full-width on phones, 2×2 on sm, 4 across on md+
 $actionRow = new \Ease\TWB5\Row(null, 0, ['class' => 'g-2']);
 $actions = [
-    ['profile.php',            new \Ease\TWB5\Widgets\BsIcon('person'),      _('Edit Profile'),     'primary',   'editProfileButton'],
-    ['data-export-page.php',   new \Ease\TWB5\Widgets\BsIcon('download'),    _('Export My Data'),   'info',      'exportDataButton'],
-    ['consent-preferences.php',new \Ease\TWB5\Widgets\BsIcon('person-lock'),_('Privacy Settings'), 'secondary', 'privacySettingsButton'],
-    ['joblist.php',            new \Ease\TWB5\Widgets\BsIcon('list'),        _('All Jobs'),         'success',   'allJobsButton'],
+    ['profile.php', new \Ease\TWB5\Widgets\BsIcon('person'), _('Edit Profile'), 'primary', 'editProfileButton'],
+    ['data-export-page.php', new \Ease\TWB5\Widgets\BsIcon('download'), _('Export My Data'), 'info', 'exportDataButton'],
+    ['consent-preferences.php', new \Ease\TWB5\Widgets\BsIcon('person-lock'), _('Privacy Settings'), 'secondary', 'privacySettingsButton'],
+    ['joblist.php', new \Ease\TWB5\Widgets\BsIcon('list'), _('All Jobs'), 'success', 'allJobsButton'],
 ];
+
 foreach ($actions as [$url, $icon, $label, $style, $id]) {
     $actionRow->addItem(new \Ease\Html\DivTag(
         new \Ease\TWB5\LinkButton($url, $icon.' '.$label, $style.' w-100', ['id' => $id]),
@@ -74,17 +75,19 @@ $totalLogsCount = $logEngine->listingQuery()->count();
 
 // Display statistics cards — col-6 col-md-3 = 2×2 on mobile, 4 across on desktop
 $statDefs = [
-    [$totalJobsCount,      _('Total Jobs in System'), 'text-center',         ''],
-    [$successfulJobsCount, _('Successful Jobs'),       'text-center text-success', ''],
-    [$failedJobsCount,     _('Failed Jobs'),           'text-center text-danger',  ''],
-    [$totalLogsCount,      _('Log Entries'),           'text-center',         ''],
+    [$totalJobsCount, _('Total Jobs in System'), 'text-center', ''],
+    [$successfulJobsCount, _('Successful Jobs'), 'text-center text-success', ''],
+    [$failedJobsCount, _('Failed Jobs'), 'text-center text-danger', ''],
+    [$totalLogsCount, _('Log Entries'), 'text-center', ''],
 ];
+
 foreach ($statDefs as [$count, $label, $numClass, $extra]) {
     $card = new \Ease\TWB5\Card();
     $card->addItem(new \Ease\Html\H3Tag($count, ['class' => $numClass]));
     $card->addItem(new \Ease\Html\PTag($label, ['class' => 'text-center text-muted mb-0']));
     $statsRow->addItem(new \Ease\Html\DivTag($card, ['class' => 'col-6 col-md-3 mb-3']));
 }
+
 $container->addItem($statsRow);
 
 // Recent jobs section
@@ -191,14 +194,14 @@ try {
     $rbacInfo = new \Ease\Html\DlTag(null, ['class' => 'row']);
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Access Control Status'), ['class' => 'col-sm-3']));
-    $statusBadge = count($accessibleCompanyIds) > 0
+    $statusBadge = \count($accessibleCompanyIds) > 0
         ? new \Ease\TWB5\Badge('✅ '._('Active'), 'success')
         : new \Ease\TWB5\Badge('⚠️ '._('No Access'), 'warning');
     $rbacInfo->addItem(new \Ease\Html\DdTag($statusBadge, ['class' => 'col-sm-9']));
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Companies Assigned'), ['class' => 'col-sm-3']));
     $rbacInfo->addItem(new \Ease\Html\DdTag(
-        (string) count($accessibleCompanyIds),
+        (string) \count($accessibleCompanyIds),
         ['class' => 'col-sm-9'],
     ));
 
@@ -212,7 +215,7 @@ try {
     $rbacCard->addItem($rbacInfo);
 
     // Assigned companies list
-    if (count($accessibleCompanyIds) > 0) {
+    if (\count($accessibleCompanyIds) > 0) {
         $rbacCard->addItem('<hr>');
         $rbacCard->addItem(new \Ease\Html\H5Tag(_('Your Assigned Companies')));
 
@@ -220,12 +223,13 @@ try {
 
         foreach ($accessibleCompanyIds as $companyId) {
             // Load company by passing ID to constructor
-            $company = new \MultiFlexi\Company(intval($companyId));
+            $company = new \MultiFlexi\Company((int) $companyId);
+
             if ($company && $company->getMyKey()) {
                 $listItem = new \Ease\Html\LiTag(null, ['class' => 'list-group-item']);
                 $listItem->addItem(new \Ease\Html\ATag(
-                    'company.php?id=' . $company->getMyKey(),
-                    '🏢 ' . $company->getRecordName(),
+                    'company.php?id='.$company->getMyKey(),
+                    '🏢 '.$company->getRecordName(),
                 ));
                 $companyList->addItem($listItem);
             }
@@ -240,7 +244,7 @@ try {
     }
 } catch (Exception $e) {
     $rbacCard->addItem(new \Ease\TWB5\Alert(
-        _('Error loading RBAC information') . ': ' . $e->getMessage(),
+        _('Error loading RBAC information').': '.$e->getMessage(),
         'danger',
     ));
 }

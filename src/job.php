@@ -31,7 +31,7 @@ if (!$jobber->getMyKey()) {
 // Enforce access control for job
 \MultiFlexi\Security\CompanyAccessControl::enforceJobAccess(
     (int) $jobber->getMyKey(),
-    _('You do not have access to this job')
+    _('You do not have access to this job'),
 );
 
 $runTemplate = new \MultiFlexi\RunTemplate($jobber->getDataValue('runtemplate_id'));

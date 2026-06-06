@@ -28,7 +28,7 @@ $kredenc = new \MultiFlexi\Credential($credId);
 if ($kredenc->getMyKey()) {
     \MultiFlexi\Security\CompanyAccessControl::enforceCredentialAccess(
         (int) $kredenc->getMyKey(),
-        _('You do not have access to this credential')
+        _('You do not have access to this credential'),
     );
 }
 

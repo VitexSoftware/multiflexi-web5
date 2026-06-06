@@ -82,6 +82,7 @@ if (WebPage::singleton()->isPosted()) {
                 if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
                     \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
                     $step = 1;
+
                     break;
                 }
 
@@ -107,6 +108,7 @@ if (WebPage::singleton()->isPosted()) {
                 if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $postData['company_id'])) {
                     \Ease\Shared::user()->addStatusMessage(_('You are not allowed to use this company in Activation Wizard'), 'warning');
                     $step = 1;
+
                     break;
                 }
 

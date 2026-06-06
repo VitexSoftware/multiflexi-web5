@@ -57,12 +57,8 @@ class UserForm extends SecureForm
             $user->getDataValue('login'),
         ), _('Username'));
 
-        $this->addInput(new InputPasswordTag(
-            'new_password',
-        ), _('New Password'));
-        $this->addInput(new InputPasswordTag(
-            'new_password_confirm',
-        ), _('Confirm New Password'));
+        $this->addInput(new InputPasswordTag('new_password'), _('New Password'));
+        $this->addInput(new InputPasswordTag('new_password_confirm'), _('Confirm New Password'));
 
         $this->addItem(new InputHiddenTag('class', $user::class));
         //        $this->addItem(new \Ease\Html\InputHiddenTag('enquiry_id', $user->getDataValue('enquiry_id')));

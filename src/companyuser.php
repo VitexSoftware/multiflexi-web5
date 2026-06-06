@@ -33,7 +33,7 @@ if (null === $company->getMyKey()) {
 // Enforce access control
 \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
     (int) $company->getMyKey(),
-    sprintf(_('You do not have access to company "%s"'), $company->getRecordName())
+    sprintf(_('You do not have access to company "%s"'), $company->getRecordName()),
 );
 
 WebPage::singleton()->addItem(new PageTop(_('Access Rights for Company').': '.$company->getRecordName()));
@@ -44,22 +44,18 @@ if (!$canManageAssignments) {
         'warning',
     );
 
-    WebPage::singleton()->container->addItem(
-        new \Ease\TWB5\Alert(
-            'warning',
-            '<strong>'._('Read-only mode').'</strong><br>'
+    WebPage::singleton()->container->addItem(new \Ease\TWB5\Alert(
+        'warning',
+        '<strong>'._('Read-only mode').'</strong><br>'
             ._('You can view company assignments, but only administrators can change them.'),
-            ['class' => 'mb-3'],
-        ),
-    );
+        ['class' => 'mb-3'],
+    ),);
 }
 
-WebPage::singleton()->container->addItem(
-    new CompanyPanel(
-        $company,
-        new CompanyUserAssignment($company, $canManageAssignments),
-    ),
-);
+WebPage::singleton()->container->addItem(new CompanyPanel(
+    $company,
+    new CompanyUserAssignment($company, $canManageAssignments),
+),);
 
 WebPage::singleton()->addItem(new PageBottom('company/'.$company->getMyKey()));
 WebPage::singleton()->draw();

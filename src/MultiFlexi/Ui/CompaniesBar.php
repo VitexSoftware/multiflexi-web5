@@ -28,20 +28,22 @@ class CompaniesBar extends \Ease\Html\DivTag
     {
         parent::__construct('', []);
         $companer = new Company();
-        
+
         // Apply RBAC filtering - only show companies user has access to
         $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
-        
+
         // Build query with RBAC filter
         $query = $companer->listingQuery();
+
         if (!empty($accessibleCompanyIds)) {
             $query->where('id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')');
         } else {
             // User has no access to any companies - return empty card group
             $this->addItem(new \Ease\Html\DivTag(null, ['class' => 'card-group']));
+
             return;
         }
-        
+
         $companies = $query->fetchAll();
 
         $cardGroup = new \Ease\Html\DivTag(null, ['class' => 'card-group']);

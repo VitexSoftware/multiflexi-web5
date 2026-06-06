@@ -50,13 +50,14 @@ class CompanyPanel extends \Ease\TWB5\Panel
         ], ['class' => 'col']));
 
         $actionsRow = new \Ease\TWB5\Row(null, 0, ['class' => 'g-1']);
+
         foreach ([
-            ['companysetup.php?id='.$cid,          '🛠️ '._('Setup'),        'outline-secondary'],
-            ['companyapps.php?company_id='.$cid,    '📌 '._('Applications'), 'outline-secondary'],
-            ['activation-wizard.php?company='.$cid, '🧙 '._('Wizard'),       'outline-primary'],
-            ['companycreds.php?company_id='.$cid,   '🔐 '._('Credentials'),  'outline-secondary'],
-            ['joblist.php?company_id='.$cid,        '🏁 '._('Jobs'),         'outline-info'],
-            ['companyuser.php?company_id='.$cid,    '📌 '._('Access Rights'),'outline-warning'],
+            ['companysetup.php?id='.$cid, '🛠️ '._('Setup'), 'outline-secondary'],
+            ['companyapps.php?company_id='.$cid, '📌 '._('Applications'), 'outline-secondary'],
+            ['activation-wizard.php?company='.$cid, '🧙 '._('Wizard'), 'outline-primary'],
+            ['companycreds.php?company_id='.$cid, '🔐 '._('Credentials'), 'outline-secondary'],
+            ['joblist.php?company_id='.$cid, '🏁 '._('Jobs'), 'outline-info'],
+            ['companyuser.php?company_id='.$cid, '📌 '._('Access Rights'), 'outline-warning'],
         ] as [$url, $label, $style]) {
             $actionsRow->addItem(new \Ease\Html\DivTag(
                 new \Ease\TWB5\LinkButton($url, $label, $style.' btn-sm w-100 shadow-sm'),

@@ -29,7 +29,7 @@ if ($action === 'delete') {
     if (null !== $companyId) {
         \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
             (int) $companyId,
-            _("You do not have access to this company's environment")
+            _("You do not have access to this company's environment"),
         );
     }
 

@@ -30,6 +30,7 @@ class CompanyLinkButton extends \Ease\TWB5\LinkButton
         $properties['class'] = $classes;
 
         $logoProperties = $properties;
+
         if (!isset($logoProperties['style'])) {
             $logoProperties['style'] = 'height: 40px';
         }

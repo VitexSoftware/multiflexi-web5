@@ -83,8 +83,8 @@ if (WebPage::singleton()->isPosted()) {
             }
         }
 
-        unset($_REQUEST['new_password'], $_REQUEST['new_password_confirm']);
-        unset($_REQUEST['class']);
+        unset($_REQUEST['new_password'], $_REQUEST['new_password_confirm'], $_REQUEST['class']);
+
         $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
     }
 }

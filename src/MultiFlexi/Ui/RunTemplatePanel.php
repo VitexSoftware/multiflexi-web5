@@ -113,7 +113,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statusCol = $headerRow->addColumn(3, [
             new \Ease\Html\DivTag([
-            new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small text-secondary']),
+                new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small text-secondary']),
                 new \Ease\TWB5\Widgets\Toggle('active', $runtemplate->getDataValue('active') ? true : false, $runtemplate->getDataValue('active') ? 'false' : 'true', [
                     'title' => $runtemplate->getDataValue('active') ? _('Enabled') : _('Disabled'),
                     'data-runtemplate' => $runtemplateId,

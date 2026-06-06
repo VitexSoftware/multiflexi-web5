@@ -91,6 +91,7 @@ class MainMenu extends \Ease\Html\DivTag
             if (!\MultiFlexi\Security\RbacHelpers::isAvailable() || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()) {
                 $this->adminMenuEnabled($nav);
             }
+
             // $nav->addMenuItem(new \Ease\Html\ATag('logs.php', '<img height=30 src=images/log.svg> ' . _('Logs')), 'right');
 
             $nav->addDropDownMenu('<img height=30 src=images/log.svg> '._('Logs'), [

@@ -146,12 +146,59 @@ class CompanyAccessControl
     }
 
     /**
+     * Enforce access check and redirect/exit if denied.
+     *
+     * @param int         $companyId Company ID
+     * @param null|string $message   Custom denial message
+     */
+    public static function enforceCompanyAccess(int $companyId, ?string $message = null): void
+    {
+        if (!self::currentUserCanAccessCompany($companyId)) {
+            self::denyAccess(
+                $message ??
+                sprintf(
+                    _('You do not have access to company with ID %d'),
+                    $companyId,
+                ),
+            );
+        }
+    }
+
+    /**
+     * Enforce access check for credential and redirect/exit if denied.
+     *
+     * @param int         $credentialId Credential ID
+     * @param null|string $message      Custom denial message
+     */
+    public static function enforceCredentialAccess(int $credentialId, ?string $message = null): void
+    {
+        if (!self::currentUserCanAccessCredential($credentialId)) {
+            self::denyAccess($message ?? _('You do not have access to this credential'));
+        }
+    }
+
+    /**
+     * Enforce access check for job and redirect/exit if denied.
+     *
+     * @param int         $jobId   Job ID
+     * @param null|string $message Custom denial message
+     */
+    public static function enforceJobAccess(int $jobId, ?string $message = null): void
+    {
+        if (!self::currentUserCanAccessJob($jobId)) {
+            self::denyAccess($message ?? _('You do not have access to this job'));
+        }
+    }
+
+    /**
      * Get current user ID.
      *
-     * @return int|null User ID or null if not logged in
+     * @return null|int User ID or null if not logged in
      */
     private static function getCurrentUserId(): ?int
     {
+        // TODO: Use (Shared::user())->getMyKey()
+
         if (isset($_SESSION['user_id']) && is_numeric($_SESSION['user_id'])) {
             return (int) $_SESSION['user_id'];
         }
@@ -164,66 +211,9 @@ class CompanyAccessControl
     }
 
     /**
-     * Enforce access check and redirect/exit if denied.
-     *
-     * @param int         $companyId Company ID
-     * @param string|null $message   Custom denial message
-     *
-     * @return void Exits on denial
-     */
-    public static function enforceCompanyAccess(int $companyId, ?string $message = null): void
-    {
-        if (!self::currentUserCanAccessCompany($companyId)) {
-            self::denyAccess(
-                $message ??
-                sprintf(
-                    _('You do not have access to company with ID %d'),
-                    $companyId
-                )
-            );
-        }
-    }
-
-    /**
-     * Enforce access check for credential and redirect/exit if denied.
-     *
-     * @param int         $credentialId Credential ID
-     * @param string|null $message      Custom denial message
-     *
-     * @return void Exits on denial
-     */
-    public static function enforceCredentialAccess(int $credentialId, ?string $message = null): void
-    {
-        if (!self::currentUserCanAccessCredential($credentialId)) {
-            self::denyAccess(
-                $message ?? _('You do not have access to this credential')
-            );
-        }
-    }
-
-    /**
-     * Enforce access check for job and redirect/exit if denied.
-     *
-     * @param int         $jobId   Job ID
-     * @param string|null $message Custom denial message
-     *
-     * @return void Exits on denial
-     */
-    public static function enforceJobAccess(int $jobId, ?string $message = null): void
-    {
-        if (!self::currentUserCanAccessJob($jobId)) {
-            self::denyAccess(
-                $message ?? _('You do not have access to this job')
-            );
-        }
-    }
-
-    /**
      * Display access denied message and exit.
      *
      * @param string $message Error message
-     *
-     * @return void
      */
     private static function denyAccess(string $message): void
     {
