@@ -79,8 +79,8 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
             $timingCard->addItem(self::infoLine(_('Last Run'), _('Never')));
         }
 
-        // Calculate next scheduled run from interval/cron
-        $nextRunLabel = self::calculateNextRun($interval, (string) $this->runtemplate->getDataValue('cron'));
+        // Calculate next scheduled run from interval/cron + delay
+        $nextRunLabel = self::calculateNextRun($interval, (string) $this->runtemplate->getDataValue('cron'), (int) ($this->runtemplate->getDataValue('delay') ?? 0));
 
         if ($nextRunLabel) {
             $timingCard->addItem(self::infoLine(_('Next Run'), $nextRunLabel));
@@ -228,10 +228,11 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
 
     /**
      * Calculate the next scheduled run time from interval code or cron expression.
+     * Mirrors the scheduler logic: cron next run + delay seconds offset.
      */
-    private static function calculateNextRun(string $interval, string $cron): ?string
+    private static function calculateNextRun(string $interval, string $cron, int $delay = 0): ?string
     {
-        // Map interval codes to cron expressions
+        // Map interval codes to cron expressions (same as Scheduler::$intervCron)
         $intervalCronMap = [
             'i' => '* * * * *',
             'h' => '0 * * * *',
@@ -256,6 +257,11 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
         try {
             $expression = new \Cron\CronExpression($cronExpr);
             $nextRun = $expression->getNextRunDate();
+
+            // Apply startup delay (same as CronScheduler: modify('+N seconds'))
+            if ($delay > 0) {
+                $nextRun->modify('+'.$delay.' seconds');
+            }
 
             return $nextRun->format('Y-m-d H:i');
         } catch (\Exception $e) {
