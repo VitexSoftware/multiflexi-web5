@@ -101,10 +101,10 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         // Actions Header
         $headerRow = new \Ease\TWB5\Row();
 
-        $logoCol = $headerRow->addColumn(2, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), [new AppLogo($this->runtemplate->getApplication(), ['style' => 'height: 60px', 'class' => 'img-thumbnail shadow-sm'])]));
+        $logoCol = $headerRow->addColumn(1, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), '⚗️', ['style' => 'font-size: 3rem; text-decoration: none;', 'title' => $this->runtemplate->getApplication()->getRecordName()]));
         $logoCol->addTagClass('text-center my-auto');
 
-        $titleCol = $headerRow->addColumn(4, [
+        $titleCol = $headerRow->addColumn(5, [
             new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'd-block fw-bold text-uppercase small', 'style' => 'color: rgba(255,255,255,0.6);']),
             $nameInput,
             $noteInput,
