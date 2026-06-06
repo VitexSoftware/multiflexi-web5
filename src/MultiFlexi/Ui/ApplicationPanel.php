@@ -47,8 +47,8 @@ class ApplicationPanel extends Panel
         $logoCol->addTagClass('text-center my-auto');
 
         $titleCol = $this->headRow->addColumn(4, [
-            new \Ease\Html\H2Tag($application->getRecordName(), ['class' => 'mb-0']),
-            new \Ease\Html\SmallTag($application->getDataValue('uuid'), ['class' => 'text-muted d-block small']),
+            new \Ease\Html\H2Tag($application->getRecordName(), ['class' => 'mb-0 text-white']),
+            new \Ease\Html\SmallTag($application->getDataValue('uuid'), ['class' => 'd-block small', 'style' => 'color: rgba(255,255,255,0.6);']),
         ]);
         $titleCol->addTagClass('my-auto');
 
@@ -56,8 +56,8 @@ class ApplicationPanel extends Panel
         $usedIncompanies = $ca->listingQuery()->select(['companyapp.company_id', 'company.name', 'company.slug', 'company.logo'], true)->leftJoin('company ON company.id = companyapp.company_id')->where('app_id', $this->application->getMyKey())->fetchAll('company_id');
 
         if ($usedIncompanies) {
-            $usedByDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 bg-light rounded shadow-sm border']);
-            $usedByDiv->addItem(new \Ease\Html\SmallTag(_('Used by').': ', ['class' => 'font-weight-bold mb-1 d-block text-uppercase small text-secondary']));
+            $usedByDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 rounded shadow-sm border', 'style' => 'background: rgba(255,255,255,0.95);']);
+            $usedByDiv->addItem(new \Ease\Html\SmallTag(_('Used by').': ', ['class' => 'fw-bold mb-1 d-block text-uppercase small text-secondary']));
 
             // Create compact table instead of cards
             $usedByTable = new \Ease\TWB5\Table(null, ['class' => 'table table-sm table-hover mb-0', 'style' => 'font-size: 0.85rem;']);

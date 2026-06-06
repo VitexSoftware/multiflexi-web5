@@ -165,12 +165,14 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $this->addCSS(<<<'CSS'
-            .runtemplate-header { background: #fff; padding: 1rem; border-bottom: 1px solid #dee2e6; margin-bottom: 1rem; }
+            .runtemplate-tabs .card-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+            .runtemplate-tabs .card-header, .runtemplate-tabs .card-header * { color: #212529 !important; }
+            .runtemplate-tabs .card-header .text-muted { color: #6c757d !important; }
+            .runtemplate-tabs .card-header .editable { color: #0d6efd !important; }
+            .runtemplate-tabs .card-header .bg-light { background-color: #fff !important; }
             .runtemplate-tabs .nav-tabs { border-bottom: 2px solid #007bff; margin-bottom: 1rem; }
             .runtemplate-tabs .nav-link { font-weight: 500; color: #495057; border: none; padding: 0.75rem 1.25rem; }
             .runtemplate-tabs .nav-link.active { color: #007bff; border-bottom: 3px solid #007bff; background: transparent; }
-            .dashboard-card { transition: transform 0.2s, box-shadow 0.2s; border: none; border-radius: 8px; }
-            .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
             .btn-group-vertical > .btn { border-radius: 4px !important; margin-bottom: 2px; }
 CSS);
         $this->addTagClass('runtemplate-tabs');
