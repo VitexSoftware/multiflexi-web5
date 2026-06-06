@@ -22,139 +22,142 @@ namespace MultiFlexi\Ui;
  *
  * @author vitex
  */
-class RunTemplateStatsCards extends \Ease\TWB5\Row
+class RunTemplateStatsCards extends \Ease\Html\DivTag
 {
     private \MultiFlexi\RunTemplate $runtemplate;
     private array $stats;
 
-    /**
-     * Constructor.
-     *
-     * @param \MultiFlexi\RunTemplate $runtemplate RunTemplate instance
-     */
     public function __construct(\MultiFlexi\RunTemplate $runtemplate)
     {
         $this->runtemplate = $runtemplate;
         $this->stats = $this->calculateStats();
+        parent::__construct(null);
 
-        parent::__construct();
+        // ── Metric Cards Row ──
+        $metricsRow = new \Ease\TWB5\Row();
+        $metricsRow->addTagClass('g-3 mb-4');
 
-        // Create a single row to container everything
-        $mainRow = new \Ease\TWB5\Row();
+        $successColor = $this->stats['success_rate'] >= 80 ? 'success' : ($this->stats['success_rate'] >= 50 ? 'warning' : 'danger');
 
-        // 1) Statistics Cards - Left Column (1/12) - Extremely Vertical compact
-        $cardsCol = $mainRow->addColumn(1, new \Ease\Html\DivTag(null, ['class' => 'd-flex flex-column', 'style' => 'gap: 2px;']));
+        $metricsRow->addColumn(3, self::metricCard(_('Total Jobs'), number_format($this->stats['total_jobs']), 'primary', '📊'));
+        $metricsRow->addColumn(3, self::metricCard(_('Success Rate'), $this->stats['success_rate'].'%', $successColor, '✅'));
+        $metricsRow->addColumn(3, self::metricCard(_('Failed'), number_format($this->stats['failed_jobs']), 'danger', '❌'));
+        $metricsRow->addColumn(3, self::metricCard(_('Running'), number_format($this->stats['running_jobs']), 'info', '🔄'));
 
-        $statCardStyle = ['style' => 'width: 100%; margin: 0; min-width: 60px;'];
-        $cardsCol->addItem(new \Ease\Html\DivTag(self::createCompactStatCard('📊', (string) $this->stats['total_jobs'], _('Total'), 'primary'), $statCardStyle));
-        $cardsCol->addItem(new \Ease\Html\DivTag(self::createCompactStatCard('✅', $this->stats['success_rate'].'%', _('Success'), $this->stats['success_rate'] >= 80 ? 'success' : ($this->stats['success_rate'] >= 50 ? 'warning' : 'danger')), $statCardStyle));
-        $cardsCol->addItem(new \Ease\Html\DivTag(self::createCompactStatCard('❌', (string) $this->stats['failed_jobs'], _('Failed'), 'danger'), $statCardStyle));
-        $cardsCol->addItem(new \Ease\Html\DivTag(self::createCompactStatCard('🔄', (string) $this->stats['running_jobs'], _('Running'), 'info'), $statCardStyle));
+        $this->addItem($metricsRow);
 
-        // 2) Metadata Column (Timings & Lifecycle) - Middle Column (5/12)
-        $metaCol = $mainRow->addColumn(5, new \Ease\Html\DivTag(null, ['class' => 'ps-2']));
+        // ── Info Cards Row ──
+        $infoRow = new \Ease\TWB5\Row();
+        $infoRow->addTagClass('g-3 mb-4');
 
-        // Timings Group
-        $metaCol->addItem(new \Ease\Html\SmallTag(new \Ease\Html\StrongTag('TIMINGS:'), ['class' => 'text-muted d-block mb-1 font-weight-bold small']));
-        $timingsWrap = new \Ease\Html\DivTag(null, ['class' => 'd-flex flex-wrap']);
+        // Schedule card
+        $scheduleCard = self::infoCard(_('Schedule'));
+        $interval = (string) $this->runtemplate->getDataValue('interv');
+        $scheduleCard->addItem(self::infoLine(_('Interval'), self::formatInterval($interval)));
+
+        if ($cron = (string) $this->runtemplate->getDataValue('cron')) {
+            $scheduleCard->addItem(self::infoLine(_('Cron'), new \Ease\Html\PairTag('code', [], $cron)));
+        }
+
+        $delay = (int) ($this->runtemplate->getDataValue('delay') ?? 0);
+
+        if ($delay > 0) {
+            $scheduleCard->addItem(self::infoLine(_('Delay'), self::formatDuration($delay)));
+        }
+
+        $executor = (string) $this->runtemplate->getDataValue('executor');
+        $scheduleCard->addItem(self::infoLine(_('Executor'), $executor ?: 'Native'));
+        $infoRow->addColumn(4, $scheduleCard);
+
+        // Timing card
+        $timingCard = self::infoCard(_('Timing'));
 
         if ($this->stats['last_run']) {
             $lastRunDate = new \DateTime($this->stats['last_run']);
-            $timingsWrap->addItem(self::createInfoChip('⏱️', _('Last Run'), $lastRunDate->format('H:i'), 'info'));
+            $timingCard->addItem(self::infoLine(_('Last Run'), $lastRunDate->format('Y-m-d H:i').' ('.self::formatAge($lastRunDate).')'));
+        } else {
+            $timingCard->addItem(self::infoLine(_('Last Run'), _('Never')));
         }
 
-        if ($this->runtemplate->getDataValue('last_schedule')) {
-            $lastScheduleDate = new \DateTime((string) $this->runtemplate->getDataValue('last_schedule'));
-            $timingsWrap->addItem(self::createInfoChip('📅', _('Last'), $lastScheduleDate->format('H:i'), 'primary'));
+        // Calculate next scheduled run from interval/cron
+        $nextRunLabel = self::calculateNextRun($interval, (string) $this->runtemplate->getDataValue('cron'));
+
+        if ($nextRunLabel) {
+            $timingCard->addItem(self::infoLine(_('Next Run'), $nextRunLabel));
+        } elseif ($interval === 'n') {
+            $timingCard->addItem(self::infoLine(_('Next Run'), _('Manual only')));
         }
 
-        if ($this->runtemplate->getDataValue('next_schedule')) {
-            $nextScheduleDate = new \DateTime((string) $this->runtemplate->getDataValue('next_schedule'));
-            $timingsWrap->addItem(self::createInfoChip('⏰', _('Next'), $nextScheduleDate->format('Y-m-d H:i'), 'primary'));
-        }
+        $infoRow->addColumn(4, $timingCard);
 
-        $metaCol->addItem($timingsWrap);
-
-        $metaCol->addItem(new \Ease\Html\DivTag(null, ['class' => 'mt-2']));
-
-        // Lifecycle Group
-        $metaCol->addItem(new \Ease\Html\SmallTag(new \Ease\Html\StrongTag('LIFECYCLE:'), ['class' => 'text-muted d-block mb-1 font-weight-bold small']));
-        $lifecycleWrap = new \Ease\Html\DivTag(null, ['class' => 'd-flex flex-wrap']);
+        // Lifecycle card
+        $lifecycleCard = self::infoCard(_('Lifecycle'));
         $createdRaw = (string) $this->runtemplate->getDataValue($this->runtemplate->createColumn);
         $updatedRaw = (string) $this->runtemplate->getDataValue($this->runtemplate->lastModifiedColumn);
 
         if ($createdRaw) {
             $cd = new \DateTime($createdRaw);
-            $lifecycleWrap->addItem(self::createInfoChip('🌱', _('Created'), $cd->format('Y-m-d').' ('.self::formatAge($cd).')', 'danger'));
+            $lifecycleCard->addItem(self::infoLine(_('Created'), $cd->format('Y-m-d').' ('.self::formatAge($cd).')'));
         }
 
         if ($updatedRaw) {
             $ud = new \DateTime($updatedRaw);
-            $lifecycleWrap->addItem(self::createInfoChip('💾', _('Updated'), $ud->format('Y-m-d').' ('.self::formatAge($ud).')', 'danger'));
+            $lifecycleCard->addItem(self::infoLine(_('Updated'), $ud->format('Y-m-d').' ('.self::formatAge($ud).')'));
         }
 
-        $metaCol->addItem($lifecycleWrap);
+        $lifecycleCard->addItem(self::infoLine(_('Successful'), number_format($this->stats['successful_jobs'])));
+        $lifecycleCard->addItem(self::infoLine(_('Failed'), number_format($this->stats['failed_jobs'])));
+        $infoRow->addColumn(4, $lifecycleCard);
 
-        // 3) Execution Details Block - Right Column (6/12)
-        $execCol = $mainRow->addColumn(6, new \Ease\Html\DivTag(null, ['class' => 'p-2 bg-light rounded border shadow-sm']));
-        $execCol->addItem(new \Ease\Html\SmallTag(new \Ease\Html\StrongTag('EXECUTION:'), ['class' => 'text-muted d-block mb-2 font-weight-bold small']));
+        $this->addItem($infoRow);
 
-        $execChips = new \Ease\Html\DivTag(null, ['class' => 'd-flex flex-wrap']);
-        $active = (bool) $this->runtemplate->getDataValue('active');
-        $execChips->addItem(self::createInfoChip($active ? '🟢' : '🔴', _('Status'), $active ? _('Enabled') : _('Disabled'), $active ? 'success' : 'danger'));
-
-        if ($interval = (string) $this->runtemplate->getDataValue('interv')) {
-            $execChips->addItem(self::createInfoChip('⏳', _('Interval'), self::formatInterval($interval), 'info'));
-        }
-
-        if ($cron = (string) $this->runtemplate->getDataValue('cron')) {
-            $execChips->addItem(self::createInfoChip('🧭', 'Cron', $cron, 'dark'));
-        }
-
-        $delay = (int) ($this->runtemplate->getDataValue('delay') ?? 0);
-        $execChips->addItem(self::createInfoChip('⏱', _('Delay'), self::formatDuration($delay), 'danger'));
-
-        if ($executor = (string) $this->runtemplate->getDataValue('executor')) {
-            $execChips->addItem(self::createInfoChip('⚙️', _('Executor'), $executor, 'dark'));
-        }
-
-        $execCol->addItem($execChips);
-
-        // Visualization Row: Job Graph Widget
+        // ── Job Visualization ──
         $vizRow = new \Ease\TWB5\Row();
-        $vizRow->addTagClass('mt-3');
-        $jobGraphWidget = new \Ease\Html\DivTag([
-            new \Ease\Html\H5Tag(_('Recent Jobs Visualization'), ['class' => 'mb-2 font-weight-bold text-muted text-uppercase small']),
-            new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate, 20, 10),
-        ], ['class' => 'col-12 p-2 border-top']);
-        $vizRow->addItem($jobGraphWidget);
-
-        // Chart Row: Full-width Job Chart
-        $chartRow = new \Ease\TWB5\Row();
-        $chartRow->addTagClass('mt-2');
-        $chartCol = $chartRow->addColumn(12, new \MultiFlexi\Ui\RunTemplateJobsLastMonthChart($this->runtemplate, ['style' => 'width: 100%;']));
-
-        $this->addItem($mainRow);
+        $vizRow->addTagClass('mb-3');
+        $vizRow->addColumn(12, new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate, 20, 10));
         $this->addItem($vizRow);
+
+        // ── Chart ──
+        $chartRow = new \Ease\TWB5\Row();
+        $chartRow->addColumn(12, new \MultiFlexi\Ui\RunTemplateJobsLastMonthChart($this->runtemplate, ['style' => 'width: 100%;']));
         $this->addItem($chartRow);
     }
 
-    /**
-     * Create a small styled chip for metadata display.
-     */
-    private static function createInfoChip(string $icon, string $label, string $value, string $context): \Ease\Html\SpanTag
+    private static function metricCard(string $label, string $value, string $context, string $icon): \Ease\Html\DivTag
     {
-        $chip = new \Ease\Html\SpanTag(null, ['class' => 'badge badge-'.$context.' me-2 mb-1 p-1 px-2 border', 'style' => 'font-weight: 500; font-size: 0.75rem; vertical-align: middle;']);
-        $chip->addItem(new \Ease\Html\SpanTag($icon, ['class' => 'me-1']));
-        $chip->addItem(new \Ease\Html\SmallTag($label.': ', ['style' => 'opacity: 0.8; font-weight: normal;']));
-        $chip->addItem($value);
+        $card = new \Ease\Html\DivTag(null, ['class' => 'card border-0 shadow-sm h-100']);
+        $body = new \Ease\Html\DivTag(null, ['class' => 'card-body py-3']);
+        $body->addItem(new \Ease\Html\DivTag(
+            [$icon, ' ', new \Ease\Html\SpanTag($label, ['class' => 'text-muted'])],
+            ['class' => 'small mb-1'],
+        ));
+        $body->addItem(new \Ease\Html\DivTag($value, [
+            'class' => 'text-'.$context,
+            'style' => 'font-size: 1.75rem; font-weight: 700; line-height: 1.2;',
+        ]));
+        $card->addItem($body);
 
-        return $chip;
+        return $card;
     }
 
-    /**
-     * Format interval code to human friendly text.
-     */
+    private static function infoCard(string $title): \Ease\Html\DivTag
+    {
+        $body = new \Ease\Html\DivTag(null, ['class' => 'card border-0 shadow-sm h-100']);
+        $inner = $body->addItem(new \Ease\Html\DivTag(null, ['class' => 'card-body py-3']));
+        $inner->addItem(new \Ease\Html\H6Tag($title, ['class' => 'card-title text-muted text-uppercase small fw-bold mb-3']));
+
+        return $inner;
+    }
+
+    private static function infoLine(string $label, $value): \Ease\Html\DivTag
+    {
+        $line = new \Ease\Html\DivTag(null, ['class' => 'd-flex justify-content-between align-items-center mb-2']);
+        $line->addItem(new \Ease\Html\SpanTag($label, ['class' => 'text-muted small']));
+        $line->addItem(new \Ease\Html\SpanTag($value, ['class' => 'fw-semibold small']));
+
+        return $line;
+    }
+
     private static function formatInterval(string $code): string
     {
         $map = [
@@ -169,91 +172,108 @@ class RunTemplateStatsCards extends \Ease\TWB5\Row
         return $map[$code] ?? $code;
     }
 
-    /**
-     * Format seconds to HH:MM:SS.
-     */
     private static function formatDuration(int $seconds): string
     {
-        if ($seconds < 0) {
-            $seconds = 0;
+        if ($seconds <= 0) {
+            return '0s';
         }
 
-        return gmdate('H:i:s', $seconds);
+        $h = intdiv($seconds, 3600);
+        $m = intdiv($seconds % 3600, 60);
+        $s = $seconds % 60;
+        $parts = [];
+
+        if ($h) {
+            $parts[] = $h.'h';
+        }
+
+        if ($m) {
+            $parts[] = $m.'m';
+        }
+
+        if ($s) {
+            $parts[] = $s.'s';
+        }
+
+        return implode(' ', $parts);
     }
 
-    /**
-     * Format relative age like "7d 3h 2m 1s".
-     */
     private static function formatAge(\DateTime $date): string
     {
-        $now = new \DateTime('now');
-        $diff = $now->diff($date);
+        $diff = (new \DateTime('now'))->diff($date);
         $parts = [];
+
+        if ($diff->y) {
+            $parts[] = $diff->y.'y';
+        }
+
+        if ($diff->m) {
+            $parts[] = $diff->m.'mo';
+        }
 
         if ($diff->d) {
             $parts[] = $diff->d.'d';
         }
 
-        if ($diff->h) {
+        if (!$parts && $diff->h) {
             $parts[] = $diff->h.'h';
         }
 
-        if ($diff->i) {
+        if (!$parts && $diff->i) {
             $parts[] = $diff->i.'m';
         }
 
-        if ($diff->s) {
-            $parts[] = $diff->s.'s';
-        }
-
-        return $parts ? implode(' ', $parts) : '0s';
+        return $parts ? implode(' ', $parts) : _('just now');
     }
 
     /**
-     * Calculate statistics for the RunTemplate.
-     *
-     * @return array Statistics data
+     * Calculate the next scheduled run time from interval code or cron expression.
      */
+    private static function calculateNextRun(string $interval, string $cron): ?string
+    {
+        // Map interval codes to cron expressions
+        $intervalCronMap = [
+            'i' => '* * * * *',
+            'h' => '0 * * * *',
+            'd' => '0 0 * * *',
+            'w' => '0 0 * * 1',
+            'm' => '0 0 1 * *',
+            'y' => '0 0 1 1 *',
+        ];
+
+        $cronExpr = '';
+
+        if ($interval === 'c' && !empty($cron)) {
+            $cronExpr = $cron;
+        } elseif (isset($intervalCronMap[$interval])) {
+            $cronExpr = $intervalCronMap[$interval];
+        }
+
+        if (empty($cronExpr)) {
+            return null;
+        }
+
+        try {
+            $expression = new \Cron\CronExpression($cronExpr);
+            $nextRun = $expression->getNextRunDate();
+
+            return $nextRun->format('Y-m-d H:i');
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
+
     private function calculateStats(): array
     {
         $jobber = new \MultiFlexi\Job();
+        $rtId = $this->runtemplate->getMyKey();
 
-        // Total jobs
-        $totalJobs = (int) $jobber->listingQuery()
-            ->where('runtemplate_id', $this->runtemplate->getMyKey())
-            ->count();
-
-        // Successful jobs
-        $successfulJobs = (int) $jobber->listingQuery()
-            ->where('runtemplate_id', $this->runtemplate->getMyKey())
-            ->where('exitcode', 0)
-            ->count();
-
-        // Failed jobs
-        $failedJobs = (int) $jobber->listingQuery()
-            ->where('runtemplate_id', $this->runtemplate->getMyKey())
-            ->where('exitcode IS NOT NULL')
-            ->where('exitcode <> 0')
-            ->count();
-
-        // Running jobs
-        $runningJobs = (int) $jobber->listingQuery()
-            ->where('runtemplate_id', $this->runtemplate->getMyKey())
-            ->where('begin IS NOT NULL')
-            ->where('end IS NULL')
-            ->count();
-
-        // Calculate success rate
+        $totalJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->count();
+        $successfulJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('exitcode', 0)->count();
+        $failedJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('exitcode IS NOT NULL')->where('exitcode <> 0')->count();
+        $runningJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('begin IS NOT NULL')->where('end IS NULL')->count();
         $successRate = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
-
-        // Last run
-        $lastRun = $jobber->listingQuery()
-            ->where('runtemplate_id', $this->runtemplate->getMyKey())
-            ->where('begin IS NOT NULL')
-            ->orderBy('begin DESC')
-            ->select('begin', true)
-            ->limit(1)
-            ->fetchColumn();
+        $lastRun = $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('begin IS NOT NULL')->orderBy('begin DESC')->select('begin', true)->limit(1)->fetchColumn();
 
         return [
             'total_jobs' => $totalJobs,
@@ -263,37 +283,5 @@ class RunTemplateStatsCards extends \Ease\TWB5\Row
             'success_rate' => $successRate,
             'last_run' => $lastRun ?: null,
         ];
-    }
-
-    /**
-     * Create a compact statistics card with minimal padding.
-     *
-     * @param string $icon    Icon emoji or HTML
-     * @param string $value   Main value to display
-     * @param string $label   Card label
-     * @param string $context Bootstrap context (primary, success, danger, etc.)
-     */
-    private static function createCompactStatCard(string $icon, string $value, string $label, string $context): \Ease\TWB5\Card
-    {
-        $card = new \Ease\TWB5\Card();
-        $card->addTagClass('border-'.$context);
-        $card->addTagClass('shadow-sm');
-
-        // Compact card body with reduced padding
-        $cardBody = new \Ease\Html\DivTag(null, ['class' => 'card-body text-center p-1']);
-
-        // Icon - smaller size
-        $cardBody->addItem(new \Ease\Html\SpanTag($icon, ['style' => 'font-size: 1.1rem;']));
-
-        // Value - prominent but not huge
-        $valueDiv = new \Ease\Html\DivTag($value, ['class' => 'mb-0 text-'.$context, 'style' => 'font-weight: 600; font-size: 0.85rem;']);
-        $cardBody->addItem($valueDiv);
-
-        // Label - very small text
-        $cardBody->addItem(new \Ease\Html\DivTag($label, ['class' => 'text-muted', 'style' => 'font-size: 0.6rem;']));
-
-        $card->addItem($cardBody);
-
-        return $card;
     }
 }
