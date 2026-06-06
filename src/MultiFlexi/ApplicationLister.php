@@ -53,7 +53,7 @@ class ApplicationLister extends Application
 
         if (empty($dataRow['tags']) === false) {
             foreach (explode(',', $dataRow['tags']) as $topic) {
-                $topics->addItem(new \Ease\TWB5\Badge('secondary', $topic));
+                $topics->addItem(new \Ease\TWB5\Badge($topic, 'secondary'));
             }
 
             $dataRow['tags'] = (string) $topics;

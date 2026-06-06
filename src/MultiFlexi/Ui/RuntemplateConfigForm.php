@@ -82,10 +82,14 @@ CSS);
             if ($runTemplateField) { // Filed by Credential
                 $runTemplateFieldSource = $runTemplateField->getSource();
 
-                if (\Ease\Euri::isValid($runTemplateFieldSource)) {
-                    $credential = \Ease\Euri::toObject($runTemplateFieldSource);
+                if (!empty($runTemplateFieldSource) && \Ease\Euri::isValid($runTemplateFieldSource)) {
+                    try {
+                        $credential = \Ease\Euri::toObject($runTemplateFieldSource);
+                    } catch (\InvalidArgumentException $e) {
+                        $credential = null;
+                    }
 
-                    if ($credential && ($credential::class === 'MultiFlexi\\Credential')) {
+                    if ($credential && ($credential::class === 'MultiFlexi\\Credential') && $credential->getMyKey()) {
                         $credentialType = $credential->getCredentialType();
 
                         $credentialLink = new \Ease\Html\ATag('credential.php?id='.$credential->getMyKey(), new \Ease\Html\SmallTag($credential->getRecordName()));

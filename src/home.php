@@ -69,10 +69,8 @@ $failedJobsCount = $jobEngine->getFluentPDO()->from($jobEngine->getMyTable())
     ->count();
 
 // Count user's log entries
-$logEngine = new \MultiFlexi\Logger();
-$totalLogsCount = $logEngine->getFluentPDO()->from('log')
-    ->where('log.user_id', $currentUserId)
-    ->count();
+$logEngine = new \MultiFlexi\UserLogger();
+$totalLogsCount = $logEngine->listingQuery()->count();
 
 // Display statistics cards — col-6 col-md-3 = 2×2 on mobile, 4 across on desktop
 $statDefs = [
@@ -150,13 +148,10 @@ $container->addItem($recentJobsCard);
 // Recent logs section
 $recentLogsCard = new \Ease\TWB5\Card(_('My Recent Activity Log'));
 
-// Create custom logger instance filtered by user_id
-$userLogEngine = new \MultiFlexi\Logger();
-$userLogEngine->filter = ['user_id' => $currentUserId];
-
-// Add DataTable with user's logs
+// Use UserLogger — the user_id filter is enforced server-side in
+// listingQuery(), so it cannot be bypassed via URL tampering.
 WebPage::singleton()->includeJavascript('js/dismisLog.js');
-$recentLogsCard->addItem(new DBDataTable($userLogEngine, ['buttons' => false]));
+$recentLogsCard->addItem(new DBDataTable($logEngine, ['buttons' => false]));
 
 $container->addItem($recentLogsCard);
 

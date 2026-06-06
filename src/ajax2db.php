@@ -91,6 +91,7 @@ $allowedClasses = [
     \MultiFlexi\ApplicationLister::class,
     \MultiFlexi\ScheduleLister::class,
     \MultiFlexi\Logger::class,
+    \MultiFlexi\UserLogger::class,
     \MultiFlexi\Customer::class,
     \MultiFlexi\EventSourceLister::class,
 ];
