@@ -83,7 +83,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $runtemplateJobs = new \MultiFlexi\Ui\RuntemplateJobsListing($runtemplate);
-        $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
+        $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold; color: #fff;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
 
         // Add note field as WYSIWYG editable textarea
         $noteValue = $runtemplate->getDataValue('note') ?: _('Click to add notes...');
@@ -95,7 +95,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             'data-type' => 'textarea',
             'data-title' => _('Update RunTemplate notes'),
             'data-wysiwyg' => 'summernote',
-            'style' => 'display: block; margin-top: 5px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; min-height: 40px; background: #fff;',
+            'style' => 'display: block; margin-top: 5px; padding: 5px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-height: 40px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);',
         ]);
 
         // Actions Header
@@ -105,7 +105,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         $logoCol->addTagClass('text-center my-auto');
 
         $titleCol = $headerRow->addColumn(4, [
-            new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'text-muted d-block font-weight-bold text-uppercase small']),
+            new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'd-block fw-bold text-uppercase small', 'style' => 'color: rgba(255,255,255,0.6);']),
             $nameInput,
             $noteInput,
         ]);
@@ -113,7 +113,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statusCol = $headerRow->addColumn(3, [
             new \Ease\Html\DivTag([
-                new \Ease\Html\SmallTag(_('Status'), ['class' => 'font-weight-bold text-muted text-uppercase d-block mb-1 small']),
+            new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small', 'style' => 'color: rgba(255,255,255,0.6);']),
                 new \Ease\TWB5\Widgets\Toggle('active', $runtemplate->getDataValue('active') ? true : false, $runtemplate->getDataValue('active') ? 'false' : 'true', [
                     'title' => $runtemplate->getDataValue('active') ? _('Enabled') : _('Disabled'),
                     'data-runtemplate' => $runtemplateId,
@@ -123,7 +123,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
                     'data-size' => 'small',
                 ]),
                 new \Ease\Html\SpanTag('', ['id' => 'deactivated']),
-            ], ['class' => 'p-2 bg-light rounded border text-center shadow-sm']),
+            ], ['class' => 'p-2 rounded border text-center shadow-sm', 'style' => 'background: rgba(255,255,255,0.95);']),
         ]);
         $statusCol->addTagClass('my-auto');
 
