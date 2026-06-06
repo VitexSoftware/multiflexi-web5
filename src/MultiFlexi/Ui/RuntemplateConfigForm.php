@@ -67,9 +67,10 @@ CSS);
 
         foreach ($appFields as $fieldName => $field) {
             $inputCaption = new \Ease\Html\StrongTag($fieldName);
+            $isBool = $field->getType() === 'bool';
 
-            if ($field->getType() === 'bool') {
-                $input = new \Ease\Html\DivTag(new \Ease\TWB5\Widgets\Toggle($fieldName, $field->getValue() === 'true' ? true : false, 'true', ['data-size' => 'small']));
+            if ($isBool) {
+                $input = new \Ease\TWB5\Widgets\Toggle($fieldName, $field->getValue() === 'true', 'true', ['data-size' => 'small']);
             } elseif ($field->isMultiLine()) {
                 $input = new \Ease\Html\TextareaTag($fieldName, $field->getValue(), ['class' => 'form-control form-control-sm', 'rows' => 4]);
             } else {
@@ -94,32 +95,50 @@ CSS);
                         $credentialTypeLink = new \Ease\Html\ATag('credentialtype.php?id='.$credentialType->getMyKey(), $formIcon);
 
                         $inputCaption = new \Ease\Html\SpanTag([$credentialTypeLink, new \Ease\Html\StrongTag($fieldName), '&nbsp;', $credentialLink]);
-                        $input->setTagProperty('disabled', '1');
 
-                        $input->setValue($credential->getDataValue($fieldName));
+                        if (!$isBool) {
+                            $input->setTagProperty('disabled', '1');
+                            $input->setValue($credential->getDataValue($fieldName));
+                        }
+
                         $field->setDescription($credentialType->getFields()->getField($fieldName)->getDescription());
                     }
                 }
 
-                $formGroup = $this->addInput($input, $inputCaption, $runTemplateField->getValue(), $field->getDescription());
+                if ($isBool) {
+                    $formGroup = $this->addItem(new \Ease\Html\DivTag(
+                        [new \Ease\Html\LabelTag($fieldName, $inputCaption, ['class' => 'form-label']), $input],
+                        ['class' => 'mb-3'],
+                    ));
+                } else {
+                    $formGroup = $this->addInput($input, $inputCaption, $runTemplateField->getValue(), $field->getDescription());
+                }
             } else { // Simple Fields
-                $formGroup = $this->addInput($input, $fieldName, $field->getDefaultValue(), $field->getDescription());
+                if ($isBool) {
+                    $formGroup = $this->addItem(new \Ease\Html\DivTag(
+                        [new \Ease\Html\LabelTag($fieldName, $fieldName, ['class' => 'form-label']), $input],
+                        ['class' => 'mb-3'],
+                    ));
+                } else {
+                    $formGroup = $this->addInput($input, $fieldName, $field->getDefaultValue(), $field->getDescription());
+                }
             }
 
             $flags = new \Ease\Html\SpanTag(null, ['class' => 'field-flags']);
+            $styleTarget = ($formGroup instanceof \Ease\TWB5\InputGroup) ? $formGroup->inputGroup : $formGroup;
 
             if ($field->isRequired()) {
-                $formGroup->inputGroup->addTagClass('required-field');
+                $styleTarget->addTagClass('required-field');
                 $flags->addItem(new \Ease\TWB5\Badge('danger', _('required')));
             }
 
             if ($field->isSecret()) {
-                $formGroup->inputGroup->addTagClass('secret-field');
+                $styleTarget->addTagClass('secret-field');
                 $flags->addItem(new \Ease\TWB5\Badge('dark', '🔒 '._('secret')));
             }
 
             if ($field->isExpiring()) {
-                $formGroup->inputGroup->addTagClass('expiring-field');
+                $styleTarget->addTagClass('expiring-field');
                 $flags->addItem(new \Ease\TWB5\Badge('warning', '⏳ '._('expiring')));
             }
 
