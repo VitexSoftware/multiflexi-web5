@@ -231,7 +231,7 @@ class MainMenu extends \Ease\Html\DivTag
     {
         $nav->addDropDownMenu(
             '<img width=30 src=images/system-users.svg> '._('Admin'),
-            array_merge([
+            [
                 'profile.php' => new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('My Profile'),
                 'createaccount.php' => '🤬&nbsp;'._('New Admin'),
                 'createuser.php' => '👤&nbsp;'._('New User Account'),
@@ -244,7 +244,7 @@ class MainMenu extends \Ease\Html\DivTag
                 'admin-data-corrections.php' => '✏️&nbsp;'._('Data Corrections'),
                 '' => '',
                 'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
-            ], $this->getMenuList(\Ease\Shared::user())),
+            ],
         );
     }
 

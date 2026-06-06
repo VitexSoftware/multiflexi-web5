@@ -94,6 +94,7 @@ $allowedClasses = [
     \MultiFlexi\UserLogger::class,
     \MultiFlexi\Customer::class,
     \MultiFlexi\EventSourceLister::class,
+    \MultiFlexi\UserLister::class,
 ];
 
 if (!\in_array($class, $allowedClasses, true)) {

@@ -26,8 +26,38 @@ $user_id = WebPage::singleton()->getRequestValue('id', 'int');
 $user = new \MultiFlexi\User($user_id);
 
 if (WebPage::singleton()->isPosted()) {
-    unset($_REQUEST['class']);
-    $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
+    if (WebPage::singleton()->getRequestValue('action') === 'rbac_update') {
+        // Handle RBAC role assignment
+        if (\MultiFlexi\Security\RbacHelpers::isAvailable()) {
+            $allRoles = \MultiFlexi\Security\RbacHelpers::getAllRoles();
+            $selectedRoles = $_POST['roles'] ?? [];
+            $currentRoles = $GLOBALS['rbac']->getUserRoles((int) $user_id);
+            $currentRoleIds = array_map(static fn ($r) => (string) $r['id'], $currentRoles);
+
+            // Remove roles that were unchecked
+            foreach ($currentRoleIds as $roleId) {
+                if (!\in_array($roleId, $selectedRoles, true)) {
+                    $GLOBALS['rbac']->removeRoleFromUser((int) $user_id, (int) $roleId);
+                }
+            }
+
+            // Add newly checked roles
+            foreach ($selectedRoles as $roleId) {
+                if (!\in_array($roleId, $currentRoleIds, true)) {
+                    $GLOBALS['rbac']->assignRoleToUser(
+                        (int) $user_id,
+                        (int) $roleId,
+                        (int) \Ease\Shared::user()->getUserID(),
+                    );
+                }
+            }
+
+            $user->addStatusMessage(_('Roles updated'), 'success');
+        }
+    } else {
+        unset($_REQUEST['class']);
+        $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
+    }
 }
 
 // }
@@ -62,6 +92,13 @@ switch (WebPage::singleton()->getRequestValue('action')) {
         //        $operationsMenu->dropdown->addTagClass('pull-right');
 
         WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(['<strong>'.$user->getUserName().'</strong>'/* $operationsMenu */], 'info', new UserForm($user)));
+
+        // RBAC role management panel
+        WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(
+            '<i class="fas fa-shield-alt"></i> '._('Access Control (RBAC)'),
+            'warning',
+            new \MultiFlexi\Ui\UserRbacForm($user),
+        ));
 
         break;
 }

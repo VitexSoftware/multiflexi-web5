@@ -19,11 +19,17 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
-// Engine::doThings($oPage);
-
 WebPage::singleton()->addItem(new PageTop(_('Users')));
 
-// WebPage::singleton()->addItem(new \Ease\TWB5\Container(new DBDataTable(new \MultiFlexi\User()))); TODO
+$container = WebPage::singleton()->container;
+
+$container->addItem(new \Ease\Html\DivTag([
+    new \Ease\TWB5\LinkButton('createuser.php', '👤 '._('New User'), 'primary btn-sm'),
+    ' ',
+    new \Ease\TWB5\LinkButton('createaccount.php', '🤬 '._('New Admin'), 'warning btn-sm'),
+], ['class' => 'mb-3 d-flex gap-2']));
+
+$container->addItem(new DBDataTable(new \MultiFlexi\UserLister()));
 
 WebPage::singleton()->addItem(new PageBottom());
 
