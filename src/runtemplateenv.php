@@ -21,6 +21,10 @@ $runtempateID = WebPage::singleton()->getRequestValue('id', 'int');
 
 if ($runtempateID) {
     $runTemplater = new \MultiFlexi\RunTemplate($runtempateID);
+
+    // Enforce access control - user must have access to the run template's company
+    \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess((int) $runTemplater->getDataValue('company_id'));
+
     header('Content-Type: text/x-env');
     header('Content-Disposition: attachment; filename="multiflexi_runtemplate_'.$runtempateID.'.env"');
     echo $runTemplater->envFile();

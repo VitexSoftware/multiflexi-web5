@@ -217,6 +217,17 @@ class CompanyAccessControl
      */
     private static function denyAccess(string $message): void
     {
+        // Record the denial in the security audit log
+        if (isset($GLOBALS['securityAuditLogger'])) {
+            $GLOBALS['securityAuditLogger']->logEvent(
+                'access_denied',
+                $message,
+                'medium',
+                self::getCurrentUserId(),
+                ['request_uri' => $_SERVER['REQUEST_URI'] ?? null],
+            );
+        }
+
         // Try to use WebPage if available
         if (class_exists('MultiFlexi\Ui\WebPage')) {
             $page = \MultiFlexi\Ui\WebPage::singleton();

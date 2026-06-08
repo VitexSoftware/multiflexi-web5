@@ -27,6 +27,13 @@ $state = $interval !== 'n';
 $result = false;
 
 if (null !== $app_id && null !== $company_id) {
+    // Enforce access control - user must have access to the company
+    if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $company_id)) {
+        http_response_code(403);
+
+        exit;
+    }
+
     $switcher = new \MultiFlexi\RunTemplate();
     $switcher->setData(['app_id' => (int) $app_id, 'company_id' => (int) $company_id, 'interv' => $interval]);
 

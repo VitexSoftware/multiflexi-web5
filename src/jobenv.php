@@ -20,6 +20,9 @@ WebPage::singleton()->onlyForLogged();
 $jobID = WebPage::singleton()->getRequestValue('id', 'int');
 
 if ($jobID) {
+    // Enforce access control - user must have access to the job's company
+    \MultiFlexi\Security\CompanyAccessControl::enforceJobAccess($jobID);
+
     $jobber = new \MultiFlexi\Job($jobID);
     header('Content-Type: text/x-env');
     header('Content-Disposition: attachment; filename="multiflexi_job_'.$jobID.'.env"');

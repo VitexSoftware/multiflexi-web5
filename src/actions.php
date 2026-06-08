@@ -24,6 +24,10 @@ require_once './init.php';
 WebPage::singleton()->onlyForLogged();
 
 $runTemplater = new RunTemplate(WebPage::getRequestValue('id', 'int'));
+
+// Enforce access control - user must have access to the run template's company
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess((int) $runTemplater->getDataValue('company_id'));
+
 $_SESSION['company'] = $runTemplater->getDataValue('company_id');
 $actions = new \MultiFlexi\ActionConfig();
 

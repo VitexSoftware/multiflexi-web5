@@ -27,8 +27,20 @@ $user = new \MultiFlexi\User($user_id);
 
 if (WebPage::singleton()->isPosted()) {
     if (WebPage::singleton()->getRequestValue('action') === 'rbac_update') {
-        // Handle RBAC role assignment
-        if (\MultiFlexi\Security\RbacHelpers::isAvailable()) {
+        // Handle RBAC role assignment - only administrators may change roles
+        if (\MultiFlexi\Security\RbacHelpers::isAvailable() && !\MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()) {
+            $user->addStatusMessage(_('Only administrators can modify user roles'), 'danger');
+
+            if (isset($GLOBALS['securityAuditLogger'])) {
+                $GLOBALS['securityAuditLogger']->logEvent(
+                    'access_denied',
+                    "Non-administrator attempted to modify roles for user {$user_id}",
+                    'medium',
+                    (int) \Ease\Shared::user()->getUserID(),
+                    ['target_user_id' => $user_id, 'action' => 'rbac_update'],
+                );
+            }
+        } elseif (\MultiFlexi\Security\RbacHelpers::isAvailable()) {
             $allRoles = \MultiFlexi\Security\RbacHelpers::getAllRoles();
             $selectedRoles = $_POST['roles'] ?? [];
             $currentRoles = $GLOBALS['rbac']->getUserRoles((int) $user_id);
