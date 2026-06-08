@@ -26,6 +26,9 @@ if (!$jobber->getMyKey()) {
     WebPage::singleton()->redirect('main.php');
 }
 
+// Enforce access control - user must have access to the job's company
+\MultiFlexi\Security\CompanyAccessControl::enforceJobAccess($jobID);
+
 $runTemplate = new \MultiFlexi\RunTemplate($jobber->getDataValue('runtemplate_id'));
 $appInfo = $runTemplate->getAppInfo();
 

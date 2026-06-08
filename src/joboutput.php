@@ -20,6 +20,10 @@ WebPage::singleton()->onlyForLogged();
 
 $jobID = WebPage::singleton()->getRequestValue('id', 'int');
 $mode = WebPage::singleton()->getRequestValue('mode');
+
+// Enforce access control - user must have access to the job's company
+\MultiFlexi\Security\CompanyAccessControl::enforceJobAccess((int) $jobID);
+
 $jobber = new \MultiFlexi\Job($jobID);
 
 $output = $jobber->getDataValue($mode === 'err' ? 'stderr' : 'stdout');
