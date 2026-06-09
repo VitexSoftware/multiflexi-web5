@@ -69,6 +69,7 @@ if (WebPage::singleton()->isPosted()) {
                     $credentialType = new \MultiFlexi\CredentialType();
                     $credentialType->setDataValue('company_id', $companyId);
                     $credentialType->setDataValue('name', $postData['new_credential_type_name'] ?? 'New Credential Type');
+                    $credentialType->setDataValue('version', 0);
 
                     // Get prototype to copy fields
                     $prototype = new \MultiFlexi\CredentialProtoType($prototypeId);
@@ -91,6 +92,8 @@ if (WebPage::singleton()->isPosted()) {
                                 'keyname' => $protoField['keyword'],
                                 'type' => $protoField['type'],
                                 'description' => $protoField['description'] ?? '',
+                                'hint' => $protoField['hint'] ?? '',
+                                'defval' => $protoField['default_value'] ?? '',
                                 'required' => $protoField['required'] ?? 0,
                             ]);
                             $typeFielder->insertToSQL();
@@ -122,30 +125,11 @@ if (WebPage::singleton()->isPosted()) {
             // Step 4 -> Complete: Create credential
             if (isset($postData['company_id'], $postData['credential_type_id'], $postData['name'])) {
                 $credential = new \MultiFlexi\Credential();
-                $credential->setDataValue('company_id', (int) $postData['company_id']);
-                $credential->setDataValue('credential_type_id', (int) $postData['credential_type_id']);
-                $credential->setDataValue('name', $postData['name']);
 
-                // Get credential type fields
-                $credentialType = new \MultiFlexi\CredentialType((int) $postData['credential_type_id']);
-                $fields = $credentialType->getFields();
-
-                // Save credential
-                if ($credential->dbsync()) {
+                // Credential::takeData()/dbsync() persist the credential together with
+                // its credential-type field values (split out via divDataArray).
+                if ($credential->takeData($postData) && null !== $credential->dbsync()) {
                     $credentialId = $credential->getMyKey();
-
-                    // Save field values
-                    $vault = new \MultiFlexi\CredentialConfigFields($credential);
-
-                    foreach ($fields->getFields() as $field) {
-                        $fieldName = $field->getCode();
-
-                        if (isset($postData[$fieldName])) {
-                            $vault->setDataValue($fieldName, $postData[$fieldName]);
-                        }
-                    }
-
-                    $vault->saveToSQL();
 
                     CredentialWizard::updateWizardData(['credential_id' => $credentialId]);
                     $credential->addStatusMessage(_('Credential created successfully'), 'success');
