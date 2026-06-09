@@ -64,7 +64,37 @@ class PageBottom extends \Ease\Html\FooterTag
         }
 
         $this->addItem(new \Ease\TWB5\Container($footrow));
+
+        $this->addItem($this->helpDrawer());
+
         parent::finalize();
+    }
+
+    /**
+     * Site-wide contextual help slide-in drawer with a floating trigger button.
+     *
+     * @return array<\Ease\Html\ButtonTag|\Ease\TWB5\OffCanvas>
+     */
+    public function helpDrawer(): array
+    {
+        $body = [
+            new \Ease\Html\PTag(_('MultiFlexi runs and schedules your applications for each company. Use the top menu to manage companies, applications, credentials and run templates.')),
+            new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('book').'&nbsp;', new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Documentation'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
+            new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('info-circle').'&nbsp;', new \Ease\Html\ATag('about.php', _('About MultiFlexi'))]),
+            new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('github').'&nbsp;', new \Ease\Html\ATag('https://github.com/VitexSoftware/MultiFlexi/', _('Source code'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
+        ];
+
+        $drawer = new \Ease\TWB5\OffCanvas('helpOffCanvas', new \Ease\TWB5\Widgets\BsIcon('question-circle').'&nbsp;'._('Help & Information'), $body, 'end');
+
+        $button = $drawer->triggerButton(new \Ease\TWB5\Widgets\BsIcon('question-circle'), 'info');
+        $button->setTagProperties([
+            'class' => 'btn btn-info rounded-circle shadow',
+            'style' => 'position: fixed; right: 1.25rem; bottom: 1.25rem; z-index: 1040; width: 3rem; height: 3rem; padding: 0;',
+            'title' => _('Help'),
+            'aria-label' => _('Help'),
+        ]);
+
+        return [$button, $drawer];
     }
 
     public function apiLinks()

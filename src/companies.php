@@ -33,6 +33,21 @@ if (empty($accessibleCompanyIds)) {
     $companies = new Company();
     WebPage::singleton()->addItem(new PageTop(_('Company list')));
 
+    // Slide-in filter drawer (GET form). Filters are applied server-side below.
+    $filterName = (string) \Ease\WebPage::getRequestValue('fname');
+    $filterIc = (string) \Ease\WebPage::getRequestValue('fic');
+
+    $filterDrawer = new FilterOffCanvas('companiesFilter', [
+        FilterOffCanvas::textField('fname', _('Name contains'), $filterName),
+        FilterOffCanvas::textField('fic', _('Registration No. contains'), $filterIc),
+    ], 'companies.php');
+
+    WebPage::singleton()->container->addItem(new \Ease\Html\DivTag(
+        $filterDrawer->triggerButton(new \Ease\TWB5\Widgets\BsIcon('funnel').'&nbsp;'._('Filters'), 'outline-secondary'),
+        ['class' => 'mb-3 text-end'],
+    ));
+    WebPage::singleton()->container->addItem($filterDrawer);
+
     $companyTable = new \Ease\TWB5\Table();
 
     foreach ($companies->listingQuery() as $companyInfo) {
@@ -40,6 +55,15 @@ if (empty($accessibleCompanyIds)) {
 
         // Only show companies user has access to
         if (!\in_array($companyId, $accessibleCompanyIds, true)) {
+            continue;
+        }
+
+        // Apply slide-in drawer filters
+        if ($filterName !== '' && stripos((string) $companyInfo['name'], $filterName) === false) {
+            continue;
+        }
+
+        if ($filterIc !== '' && stripos((string) $companyInfo['ic'], $filterIc) === false) {
             continue;
         }
 
