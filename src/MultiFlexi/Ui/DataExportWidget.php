@@ -22,7 +22,7 @@ use Ease\TWB5\Badge;
 use Ease\TWB5\Card;
 use Ease\TWB5\Col;
 use Ease\TWB5\Row;
-use Ease\TWB5\Widgets\FaIcon;
+use Ease\TWB5\Widgets\BsIcon;
 
 /**
  * GDPR Data Export Widget.
@@ -47,7 +47,7 @@ class DataExportWidget extends Card
 
         // Card header
         $header = new DivTag(null, ['class' => 'card-header']);
-        $header->addItem(new FaIcon('download', ['class' => 'me-2']));
+        $header->addItem(new BsIcon('download', ['class' => 'me-2']));
         $header->addItem(_('Personal Data Export'));
         $header->addItem(new Badge('secondary', 'GDPR', ['class' => 'ms-2']));
         $this->addItem($header);
@@ -68,7 +68,7 @@ class DataExportWidget extends Card
         // GDPR Info
         $gdprInfo = new DivTag();
         $gdprInfo->addTagClass('alert alert-info');
-        $gdprIcon = new FaIcon('info-circle', ['class' => 'me-2']);
+        $gdprIcon = new BsIcon('info-circle', ['class' => 'me-2']);
         $gdprInfo->addItem($gdprIcon);
         $gdprInfo->addItem(_('This feature complies with GDPR Article 15 - Right of Access. Your data will be provided in a structured, machine-readable format.'));
         $body->addItem($gdprInfo);
@@ -84,7 +84,7 @@ class DataExportWidget extends Card
         $jsonBody = new DivTag();
         $jsonBody->addTagClass('card-body d-flex flex-column');
 
-        $jsonIcon = new FaIcon('code', ['class' => 'fa-2x text-primary mb-3']);
+        $jsonIcon = new BsIcon('code-slash', ['class' => 'fs-1 text-primary mb-3']);
         $jsonBody->addItem($jsonIcon);
 
         $jsonTitle = new DivTag(_('JSON Format'));
@@ -96,7 +96,7 @@ class DataExportWidget extends Card
         $jsonBody->addItem($jsonDesc);
 
         $jsonButton = new ButtonTag(
-            [new FaIcon('download', ['class' => 'me-2']), _('Export as JSON')],
+            [new BsIcon('download', ['class' => 'me-2']), _('Export as JSON')],
             ['id' => 'export-json-btn', 'class' => 'btn btn-primary export-btn', 'data-format' => 'json', 'type' => 'button'],
         );
         $jsonBody->addItem($jsonButton);
@@ -113,7 +113,7 @@ class DataExportWidget extends Card
         $pdfBody = new DivTag();
         $pdfBody->addTagClass('card-body d-flex flex-column');
 
-        $pdfIcon = new FaIcon('file-alt', ['class' => 'fa-2x text-success mb-3']);
+        $pdfIcon = new BsIcon('file-earmark-text', ['class' => 'fs-1 text-success mb-3']);
         $pdfBody->addItem($pdfIcon);
 
         $pdfTitle = new DivTag(_('Text Format'));
@@ -125,7 +125,7 @@ class DataExportWidget extends Card
         $pdfBody->addItem($pdfDesc);
 
         $pdfButton = new ButtonTag(
-            [new FaIcon('download', ['class' => 'me-2']), _('Export as Text')],
+            [new BsIcon('download', ['class' => 'me-2']), _('Export as Text')],
             ['id' => 'export-pdf-btn', 'class' => 'btn btn-success export-btn', 'data-format' => 'pdf', 'type' => 'button'],
         );
         $pdfBody->addItem($pdfButton);

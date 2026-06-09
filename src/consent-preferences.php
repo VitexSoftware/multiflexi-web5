@@ -66,13 +66,13 @@ $consentTypes = [
         'name' => _('Essential Cookies'),
         'description' => _('These cookies are necessary for the website to function and cannot be switched off. They are usually only set in response to actions made by you which amount to a request for services.'),
         'required' => true,
-        'icon' => 'fas fa-shield-alt',
+        'icon' => 'shield-shaded',
     ],
     ConsentManager::CONSENT_FUNCTIONAL => [
         'name' => _('Functional Cookies'),
         'description' => _('These cookies enable the website to provide enhanced functionality and personalisation. They may be set by us or by third party providers.'),
         'required' => false,
-        'icon' => 'fas fa-cogs',
+        'icon' => 'gear-wide-connected',
     ],
     ConsentManager::CONSENT_ANALYTICS => [
         'name' => _('Analytics Cookies'),
@@ -80,19 +80,19 @@ $consentTypes = [
             ? _('These cookies allow us to count visits and traffic sources so we can measure and improve the performance of our site. They help us know which pages are most and least popular.')
             : _('These cookies allow us to count visits and traffic sources using self-hosted analytics solutions (like Matomo or AWStats) to measure and improve the performance of our site. No data is shared with third parties.'),
         'required' => false,
-        'icon' => 'fas fa-chart-bar',
+        'icon' => 'bar-chart',
     ],
     ConsentManager::CONSENT_MARKETING => [
         'name' => _('Marketing Cookies'),
         'description' => _('These cookies may be set through our site by our advertising partners. They may be used to build a profile of your interests and show you relevant adverts.'),
         'required' => false,
-        'icon' => 'fas fa-bullhorn',
+        'icon' => 'megaphone',
     ],
     ConsentManager::CONSENT_PERSONALIZATION => [
         'name' => _('Personalization Cookies'),
         'description' => _('These cookies allow us to remember choices you make and provide enhanced, more personal features based on your preferences.'),
         'required' => false,
-        'icon' => 'fas fa-user-cog',
+        'icon' => 'person-gear',
     ],
 ];
 
@@ -102,7 +102,7 @@ foreach ($consentTypes as $type => $config) {
 
     // Create panel with header
     $headerContent = new \Ease\Html\H5Tag([
-        new \Ease\TWB5\Widgets\FaIcon($config['icon'], ['class' => 'me-2']),
+        new \Ease\TWB5\Widgets\BsIcon($config['icon'], ['class' => 'me-2']),
         $config['name'],
     ], ['class' => 'mb-0']);
 
@@ -160,7 +160,7 @@ WebPage::singleton()->container->addItem($form);
 
 // Add consent history section
 $historyHeaderContent = new \Ease\Html\H5Tag([
-    new \Ease\TWB5\Widgets\FaIcon('history', ['class' => 'me-2']),
+    new \Ease\TWB5\Widgets\BsIcon('clock-history', ['class' => 'me-2']),
     _('Consent History'),
 ], ['class' => 'mb-0']);
 
@@ -189,7 +189,7 @@ if (!empty($currentConsent)) {
         $withdrawButton = '';
         if ($consent['status'] && $type !== ConsentManager::CONSENT_ESSENTIAL) {
             $withdrawButton = new \Ease\TWB5\Button(
-                [new \Ease\TWB5\Widgets\FaIcon('times'), ' ', _('Withdraw')],
+                [new \Ease\TWB5\Widgets\BsIcon('x'), ' ', _('Withdraw')],
                 'outline-danger',
                 ['size' => 'sm', 'onclick' => "withdrawConsent('{$type}')"]
             );
@@ -257,7 +257,7 @@ EOD);
 
 // Add information section
 $infoHeaderContent = new \Ease\Html\H5Tag([
-    new \Ease\TWB5\Widgets\FaIcon('info-circle', ['class' => 'me-2']),
+    new \Ease\TWB5\Widgets\BsIcon('info-circle', ['class' => 'me-2']),
     _('Important Information'),
 ], ['class' => 'mb-0']);
 
