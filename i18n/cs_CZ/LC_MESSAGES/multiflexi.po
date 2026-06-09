@@ -1,8 +1,9 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: MultiFlexi\n"
 "POT-Creation-Date: 2025-10-30 11:51+0100\n"
-"PO-Revision-Date: 2025-10-30 11:51+0100\n"
+"PO-Revision-Date: 2026-06-09 07:55\n"
 "Last-Translator: Vítězslav Dvořák <vitex@vitexsoftware.cz>\n"
 "Language-Team: \n"
 "Language: cs_CZ\n"
@@ -11,10 +12,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Poedit 3.6\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Basepath: ../../..\n"
 "X-Poedit-SearchPath-0: src\n"
 "X-Poedit-SearchPath-1: vendor/vitexsoftware/multiflexi-core/src\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 
 #: src/MultiFlexi/Api/Server/DefaultApi.php:59
 msgid "Token generated"
@@ -87,7 +88,8 @@ msgstr ""
 #: src/MultiFlexi/CredentialTypeLister.php:33
 #: src/MultiFlexi/RunTemplateLister.php:28
 #: src/MultiFlexi/Ui/ActivationWizard.php:231
-#: src/admin-deletion-requests.php:227 src/dashboard.php:378 src/servers.php:29
+#: src/admin-deletion-requests.php:227 src/dashboard.php:378
+#: src/servers.php:29
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/Customer.php:72
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/Logger.php:113
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/ScheduleLister.php:52
@@ -155,15 +157,17 @@ msgstr ""
 msgid "Application"
 msgstr "Aplikace"
 
-#: src/MultiFlexi/CompanyJobLister.php:90 src/MultiFlexi/Ui/AppJobsTable.php:36
-#: src/MultiFlexi/Ui/AppRow.php:84 src/MultiFlexi/Ui/JobHistoryTable.php:49
-#: src/app.php:147 src/companyapp.php:97
+#: src/MultiFlexi/CompanyJobLister.php:90
+#: src/MultiFlexi/Ui/AppJobsTable.php:36 src/MultiFlexi/Ui/AppRow.php:84
+#: src/MultiFlexi/Ui/JobHistoryTable.php:49 src/app.php:147
+#: src/companyapp.php:97
 msgid "Exit Code"
 msgstr "Kód ukončení"
 
-#: src/MultiFlexi/CompanyJobLister.php:90 src/MultiFlexi/Ui/AppJobsTable.php:36
-#: src/MultiFlexi/Ui/AppRow.php:84 src/MultiFlexi/Ui/JobHistoryTable.php:49
-#: src/app.php:147 src/company.php:58 src/companyapp.php:97
+#: src/MultiFlexi/CompanyJobLister.php:90
+#: src/MultiFlexi/Ui/AppJobsTable.php:36 src/MultiFlexi/Ui/AppRow.php:84
+#: src/MultiFlexi/Ui/JobHistoryTable.php:49 src/app.php:147 src/company.php:58
+#: src/companyapp.php:97
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/Job.php:147
 msgid "Job ID"
 msgstr "ID úlohy"
@@ -173,9 +177,10 @@ msgstr "ID úlohy"
 msgid "Runtemplate"
 msgstr "Runtemplate"
 
-#: src/MultiFlexi/CompanyJobLister.php:98 src/MultiFlexi/Ui/AppJobsTable.php:36
-#: src/MultiFlexi/Ui/AppRow.php:84 src/MultiFlexi/Ui/JobHistoryTable.php:50
-#: src/app.php:147 src/company.php:58 src/companyapp.php:97
+#: src/MultiFlexi/CompanyJobLister.php:98
+#: src/MultiFlexi/Ui/AppJobsTable.php:36 src/MultiFlexi/Ui/AppRow.php:84
+#: src/MultiFlexi/Ui/JobHistoryTable.php:50 src/app.php:147 src/company.php:58
+#: src/companyapp.php:97
 msgid "Launch time"
 msgstr "Čas spuštění"
 
@@ -556,7 +561,8 @@ msgid "Policy name too long (max 100 characters)"
 msgstr ""
 
 #: src/MultiFlexi/DataRetention/RetentionPolicyManager.php:473
-msgid "Policy name can only contain letters, numbers, underscores, and hyphens"
+msgid ""
+"Policy name can only contain letters, numbers, underscores, and hyphens"
 msgstr ""
 
 #: src/MultiFlexi/DataRetention/RetentionPolicyManager.php:492
@@ -831,8 +837,7 @@ msgstr ""
 msgid ""
 "Dear %s,\n"
 "\n"
-"Your request to change your %s has been successfully submitted for "
-"administrator review.\n"
+"Your request to change your %s has been successfully submitted for administrator review.\n"
 "\n"
 "Request Details:\n"
 "- Field: %s\n"
@@ -842,8 +847,7 @@ msgid ""
 "- Request ID: #%d\n"
 "- Submitted: %s\n"
 "\n"
-"You will receive another notification once your request has been reviewed by "
-"an administrator.\n"
+"You will receive another notification once your request has been reviewed by an administrator.\n"
 "\n"
 "Thank you for keeping your personal data accurate.\n"
 "\n"
@@ -890,8 +894,7 @@ msgstr ""
 msgid ""
 "Dear %s,\n"
 "\n"
-"Great news! Your data correction request has been approved and your personal "
-"information has been updated.\n"
+"Great news! Your data correction request has been approved and your personal information has been updated.\n"
 "\n"
 "Request Details:\n"
 "- Field: %s\n"
@@ -903,8 +906,7 @@ msgid ""
 "\n"
 "Administrator Notes: %s\n"
 "\n"
-"Your personal data has been updated in our system. You can view your updated "
-"profile at any time.\n"
+"Your personal data has been updated in our system. You can view your updated profile at any time.\n"
 "\n"
 "Thank you for helping us keep your information accurate.\n"
 "\n"
@@ -925,8 +927,7 @@ msgstr ""
 msgid ""
 "Dear %s,\n"
 "\n"
-"We have reviewed your data correction request and require additional "
-"information before we can proceed.\n"
+"We have reviewed your data correction request and require additional information before we can proceed.\n"
 "\n"
 "Request Details:\n"
 "- Field: %s\n"
@@ -938,9 +939,7 @@ msgid ""
 "\n"
 "Administrator Feedback: %s\n"
 "\n"
-"If you believe this decision is incorrect or if you have additional "
-"supporting information, please contact us directly or submit a new request "
-"with more details.\n"
+"If you believe this decision is incorrect or if you have additional supporting information, please contact us directly or submit a new request with more details.\n"
 "\n"
 "You can view and manage your data correction requests in your profile.\n"
 "\n"
@@ -1113,7 +1112,8 @@ msgid "Action not availble"
 msgstr "Akce není k dispozici"
 
 #: src/MultiFlexi/Ui/ActionsAdministration.php:49
-#: src/MultiFlexi/Ui/AppEditorForm.php:52 src/MultiFlexi/Ui/ColumnsForm.php:124
+#: src/MultiFlexi/Ui/AppEditorForm.php:52
+#: src/MultiFlexi/Ui/ColumnsForm.php:124
 #: src/MultiFlexi/Ui/CompanyEditorForm.php:47
 #: src/MultiFlexi/Ui/CustomAppConfigForm.php:52
 #: src/MultiFlexi/Ui/RegisterCustomerForm.php:53
@@ -1165,7 +1165,8 @@ msgid "Assign Credentials"
 msgstr "Přihlašovací údaje"
 
 #: src/MultiFlexi/Ui/ActivationWizard.php:93
-#: src/MultiFlexi/Ui/ActivationWizard.php:504 src/MultiFlexi/Ui/AppsMenu.php:70
+#: src/MultiFlexi/Ui/ActivationWizard.php:504
+#: src/MultiFlexi/Ui/AppsMenu.php:70
 #: src/MultiFlexi/Ui/ConfiguredFieldBadges.php:43
 msgid "Configure"
 msgstr "Konfigurovat"
@@ -1213,7 +1214,8 @@ msgstr "Smazat společnost"
 #, fuzzy
 #| msgid "No company registered yet. Please register one."
 msgid "No company selected. Please go back to step 1."
-msgstr "Zatím není registrována žádná společnost. Prosím, zaregistrujte jednu."
+msgstr ""
+"Zatím není registrována žádná společnost. Prosím, zaregistrujte jednu."
 
 #: src/MultiFlexi/Ui/ActivationWizard.php:286
 #, fuzzy
@@ -1342,7 +1344,8 @@ msgid "Previous"
 msgstr "Předchozí"
 
 #: src/MultiFlexi/Ui/ActivationWizard.php:614
-#: src/MultiFlexi/Ui/ConfigurationWizard.php:92 src/job.php:106 src/job.php:108
+#: src/MultiFlexi/Ui/ConfigurationWizard.php:92 src/job.php:106
+#: src/job.php:108
 msgid "Next"
 msgstr "Další"
 
@@ -2064,8 +2067,8 @@ msgstr ""
 
 #: src/MultiFlexi/Ui/DataExportWidget.php:73
 msgid ""
-"This feature complies with GDPR Article 15 - Right of Access. Your data will "
-"be provided in a structured, machine-readable format."
+"This feature complies with GDPR Article 15 - Right of Access. Your data will"
+" be provided in a structured, machine-readable format."
 msgstr ""
 
 #: src/MultiFlexi/Ui/DataExportWidget.php:90
@@ -2211,7 +2214,8 @@ msgstr "Neznámý"
 msgid "From"
 msgstr "Od"
 
-#: src/MultiFlexi/Ui/FilterDialog.php:82 src/MultiFlexi/Ui/FilterDialog.php:108
+#: src/MultiFlexi/Ui/FilterDialog.php:82
+#: src/MultiFlexi/Ui/FilterDialog.php:108
 msgid "To"
 msgstr "Do"
 
@@ -2366,7 +2370,8 @@ msgstr "Žádný spustitelný soubor"
 
 #: src/MultiFlexi/Ui/MainMenu.php:50 src/MultiFlexi/Ui/MainMenu.php:63
 msgid "No company registered yet. Please register one."
-msgstr "Zatím není registrována žádná společnost. Prosím, zaregistrujte jednu."
+msgstr ""
+"Zatím není registrována žádná společnost. Prosím, zaregistrujte jednu."
 
 #: src/MultiFlexi/Ui/MainMenu.php:60
 msgid "No customer registered yet. Please register one."
@@ -2395,7 +2400,7 @@ msgstr "Hlavní panel"
 #: src/MultiFlexi/Ui/MainMenu.php:92 src/cookie-policy.php:228
 #: src/privacy-policy.php:171 src/privacy-policy.php:221
 msgid "Privacy Preferences"
-msgstr ""
+msgstr "Předvolby soukromí"
 
 #: src/MultiFlexi/Ui/MainMenu.php:93
 #, fuzzy
@@ -2411,12 +2416,12 @@ msgstr ""
 #: src/cookie-policy.php:313 src/privacy-policy.php:24
 #: src/privacy-policy.php:29
 msgid "Privacy Policy"
-msgstr ""
+msgstr "Zásady ochrany soukromí"
 
 #: src/MultiFlexi/Ui/MainMenu.php:97 src/cookie-policy.php:24
 #: src/cookie-policy.php:29 src/privacy-policy.php:228
 msgid "Cookie Policy"
-msgstr ""
+msgstr "Zásady používání cookies"
 
 #: src/MultiFlexi/Ui/MainMenu.php:99
 msgid "Privacy"
@@ -2617,9 +2622,10 @@ msgstr "Žádný"
 msgid "Schedule Launch"
 msgstr "Naplánovat spuštění"
 
-#: src/MultiFlexi/Ui/RunTemplatePanel.php:62 src/admin-data-corrections.php:182
-#: src/admin-deletion-requests.php:230 src/cookie-policy.php:364
-#: src/dashboard.php:378 src/data-retention-admin.php:265
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:62
+#: src/admin-data-corrections.php:182 src/admin-deletion-requests.php:230
+#: src/cookie-policy.php:364 src/dashboard.php:378
+#: src/data-retention-admin.php:265
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/Customer.php:79
 #: vendor/vitexsoftware/multiflexi-core/src/MultiFlexi/Logger.php:114
 msgid "Status"
@@ -2905,8 +2911,8 @@ msgstr "Příjmení"
 
 #: src/MultiFlexi/Ui/UserDataCorrectionForm.php:426
 msgid ""
-"Invalid username: only letters, numbers, underscore, hyphen, and dot allowed "
-"(3-30 characters)"
+"Invalid username: only letters, numbers, underscore, hyphen, and dot allowed"
+" (3-30 characters)"
 msgstr ""
 
 #: src/MultiFlexi/Ui/UserDataCorrectionForm.php:435
@@ -2927,8 +2933,8 @@ msgstr ""
 
 #: src/MultiFlexi/Ui/UserDeletionRequestForm.php:116
 msgid ""
-"You are about to request deletion of your own account. This action cannot be "
-"undone and will result in the permanent loss of your data."
+"You are about to request deletion of your own account. This action cannot be"
+" undone and will result in the permanent loss of your data."
 msgstr ""
 
 #: src/MultiFlexi/Ui/UserDeletionRequestForm.php:117
@@ -3016,7 +3022,8 @@ msgstr ""
 
 #: src/MultiFlexi/Ui/UserDeletionRequestForm.php:203
 msgid ""
-"e.g., No longer using the service, privacy concerns, account consolidation..."
+"e.g., No longer using the service, privacy concerns, account "
+"consolidation..."
 msgstr ""
 
 #: src/MultiFlexi/Ui/UserDeletionRequestForm.php:217
@@ -3746,15 +3753,15 @@ msgstr ""
 
 #: src/consent-preferences.php:80
 msgid ""
-"These cookies allow us to count visits and traffic sources so we can measure "
-"and improve the performance of our site. They help us know which pages are "
+"These cookies allow us to count visits and traffic sources so we can measure"
+" and improve the performance of our site. They help us know which pages are "
 "most and least popular."
 msgstr ""
 
 #: src/consent-preferences.php:81
 msgid ""
-"These cookies allow us to count visits and traffic sources using self-hosted "
-"analytics solutions (like Matomo or AWStats) to measure and improve the "
+"These cookies allow us to count visits and traffic sources using self-hosted"
+" analytics solutions (like Matomo or AWStats) to measure and improve the "
 "performance of our site. No data is shared with third parties."
 msgstr ""
 
@@ -3782,7 +3789,7 @@ msgstr ""
 #: src/consent-preferences.php:131 src/cookie-policy.php:30
 #: src/privacy-policy.php:30
 msgid "Last updated: "
-msgstr ""
+msgstr "Naposledy aktualizováno: "
 
 #: src/consent-preferences.php:142
 msgid "Save Preferences"
@@ -3832,13 +3839,15 @@ msgstr ""
 
 #: src/cookie-policy.php:32
 msgid ""
-"This Cookie Policy explains how MultiFlexi uses cookies and similar tracking "
-"technologies when you visit our application."
+"This Cookie Policy explains how MultiFlexi uses cookies and similar tracking"
+" technologies when you visit our application."
 msgstr ""
+"Tyto zásady používání cookies vysvětlují, jak MultiFlexi používá cookies a "
+"podobné sledovací technologie, když navštívíte naši aplikaci."
 
 #: src/cookie-policy.php:40
 msgid "1. What Are Cookies?"
-msgstr ""
+msgstr "1. Co jsou cookies?"
 
 #: src/cookie-policy.php:45
 msgid ""
@@ -3847,21 +3856,28 @@ msgid ""
 "website and application owners to make their services work more efficiently "
 "and to provide reporting information."
 msgstr ""
+"Cookies jsou malé datové soubory, které se ukládají do vašeho počítače nebo "
+"mobilního zařízení při návštěvě webové stránky nebo aplikace. Cookies jsou "
+"hojně využívány vlastníky webů a aplikací k zajištění efektivnějšího "
+"fungování jejich služeb a k poskytování statistických informací."
 
 #: src/cookie-policy.php:48
 msgid ""
 "Cookies set by the website owner (in this case, MultiFlexi) are called "
-"\"first-party cookies.\" Cookies set by parties other than the website owner "
-"are called \"third-party cookies.\""
+"\"first-party cookies.\" Cookies set by parties other than the website owner"
+" are called \"third-party cookies.\""
 msgstr ""
+"Cookies nastavené vlastníkem webu (v tomto případě MultiFlexi) se nazývají "
+"„cookies první strany“. Cookies nastavené jinými subjekty než vlastníkem "
+"webu se nazývají „cookies třetích stran“."
 
 #: src/cookie-policy.php:61
 msgid "2. Types of Cookies We Use"
-msgstr ""
+msgstr "2. Typy cookies, které používáme"
 
 #: src/cookie-policy.php:66
 msgid "2.1 Essential Cookies"
-msgstr ""
+msgstr "2.1 Nezbytné cookies"
 
 #: src/cookie-policy.php:69
 msgid ""
@@ -3870,6 +3886,10 @@ msgid ""
 "cookies are essential for the application to function, you cannot refuse "
 "them without impacting how our services work."
 msgstr ""
+"Tyto cookies jsou nezbytně nutné k tomu, abychom vám mohli poskytovat služby"
+" dostupné prostřednictvím naší aplikace a abyste mohli využívat některé její"
+" funkce. Protože jsou tyto cookies pro fungování aplikace nezbytné, nelze je"
+" odmítnout, aniž by to ovlivnilo fungování našich služeb."
 
 #: src/cookie-policy.php:76 src/cookie-policy.php:140
 #, fuzzy
@@ -3879,7 +3899,7 @@ msgstr "Název tokenu Fio"
 
 #: src/cookie-policy.php:79 src/cookie-policy.php:143
 msgid "Purpose"
-msgstr ""
+msgstr "Účel"
 
 #: src/cookie-policy.php:82 src/cookie-policy.php:146
 #, fuzzy
@@ -3889,7 +3909,7 @@ msgstr "Konfigurace"
 
 #: src/cookie-policy.php:93
 msgid "Session management and user authentication"
-msgstr ""
+msgstr "Správa relace a ověřování uživatele"
 
 #: src/cookie-policy.php:96
 #, fuzzy
@@ -3897,7 +3917,8 @@ msgstr ""
 msgid "Session"
 msgstr "Verze"
 
-#: src/cookie-policy.php:99 src/cookie-policy.php:111 src/cookie-policy.php:123
+#: src/cookie-policy.php:99 src/cookie-policy.php:111
+#: src/cookie-policy.php:123
 #, fuzzy
 #| msgid "Firstname"
 msgid "First-party"
@@ -3905,19 +3926,19 @@ msgstr "Křestní jméno"
 
 #: src/cookie-policy.php:105
 msgid "Stores your consent preferences"
-msgstr ""
+msgstr "Ukládá vaše předvolby souhlasu"
 
 #: src/cookie-policy.php:108 src/cookie-policy.php:120
 msgid "1 year"
-msgstr ""
+msgstr "1 rok"
 
 #: src/cookie-policy.php:117
 msgid "Language preference"
-msgstr ""
+msgstr "Předvolba jazyka"
 
 #: src/cookie-policy.php:130
 msgid "2.2 Analytics Cookies"
-msgstr ""
+msgstr "2.2 Analytické cookies"
 
 #: src/cookie-policy.php:133
 msgid ""
@@ -3925,114 +3946,129 @@ msgid ""
 "by collecting and reporting information anonymously. They help us improve "
 "our application and your experience."
 msgstr ""
+"Tyto cookies nám pomáhají pochopit, jak návštěvníci pracují s naší aplikací,"
+" tím, že anonymně shromažďují a vykazují informace. Pomáhají nám zlepšovat "
+"naši aplikaci a váš zážitek."
 
 #: src/cookie-policy.php:160 src/cookie-policy.php:184
 msgid "Google Analytics - distinguishes unique users"
-msgstr ""
+msgstr "Google Analytics – rozlišuje jedinečné uživatele"
 
 #: src/cookie-policy.php:163 src/cookie-policy.php:175
 msgid "2 years"
-msgstr ""
+msgstr "2 roky"
 
 #: src/cookie-policy.php:166 src/cookie-policy.php:178
 #: src/cookie-policy.php:190
 msgid "Third-party"
-msgstr ""
+msgstr "Třetí strana"
 
 #: src/cookie-policy.php:172
 msgid "Google Analytics - maintains session state"
-msgstr ""
+msgstr "Google Analytics – udržuje stav relace"
 
 #: src/cookie-policy.php:187
 msgid "24 hours"
-msgstr ""
+msgstr "24 hodin"
 
 #: src/cookie-policy.php:198
 msgid ""
 "Google Analytics is disabled for this installation. Analytics cookies are "
 "not used."
 msgstr ""
+"Google Analytics je pro tuto instalaci vypnut. Analytické cookies se "
+"nepoužívají."
 
 #: src/cookie-policy.php:201
 msgid ""
 "This installation may use alternative analytics solutions like Matomo or "
 "AWStats for statistical analysis."
 msgstr ""
+"Tato instalace může pro statistickou analýzu používat alternativní "
+"analytická řešení jako Matomo nebo AWStats."
 
 #: src/cookie-policy.php:220
 msgid "3. How to Control Cookies"
-msgstr ""
+msgstr "3. Jak spravovat cookies"
 
 #: src/cookie-policy.php:225
 msgid "3.1 MultiFlexi Cookie Preferences"
-msgstr ""
+msgstr "3.1 Předvolby cookies v MultiFlexi"
 
 #: src/cookie-policy.php:228
 msgid "You can control most cookies through our "
-msgstr ""
+msgstr "Většinu cookies můžete spravovat prostřednictvím naší stránky "
 
 #: src/cookie-policy.php:228
 msgid ""
 " page. This allows you to accept or reject different categories of cookies."
-msgstr ""
+msgstr ". Ta vám umožňuje přijmout nebo odmítnout různé kategorie cookies."
 
 #: src/cookie-policy.php:232
 msgid "3.2 Browser Settings"
-msgstr ""
+msgstr "3.2 Nastavení prohlížeče"
 
 #: src/cookie-policy.php:235
 msgid ""
 "Most web browsers allow you to control cookies through their settings. You "
 "can:"
 msgstr ""
+"Většina webových prohlížečů vám umožňuje spravovat cookies ve svém "
+"nastavení. Můžete:"
 
 #: src/cookie-policy.php:239
 msgid "View what cookies are stored on your device"
-msgstr ""
+msgstr "Zobrazit, jaké cookies jsou ve vašem zařízení uloženy"
 
 #: src/cookie-policy.php:242
 msgid "Delete cookies individually or all at once"
-msgstr ""
+msgstr "Smazat cookies jednotlivě nebo všechny najednou"
 
 #: src/cookie-policy.php:245
 msgid "Block cookies from specific sites"
-msgstr ""
+msgstr "Blokovat cookies z konkrétních webů"
 
 #: src/cookie-policy.php:248
 msgid "Block all cookies (this may affect website functionality)"
-msgstr ""
+msgstr "Blokovat všechny cookies (může to ovlivnit funkčnost webu)"
 
 #: src/cookie-policy.php:253
 msgid "3.3 Do Not Track Signals"
-msgstr ""
+msgstr "3.3 Signály „Nesledovat“ (Do Not Track)"
 
 #: src/cookie-policy.php:256
 msgid ""
-"Some browsers include a \"Do Not Track\" feature that lets you tell websites "
-"that you do not want to have your online activities tracked. MultiFlexi "
+"Some browsers include a \"Do Not Track\" feature that lets you tell websites"
+" that you do not want to have your online activities tracked. MultiFlexi "
 "respects Do Not Track signals and will not set non-essential cookies when "
 "this signal is detected."
 msgstr ""
+"Některé prohlížeče obsahují funkci „Nesledovat“ (Do Not Track), kterou "
+"můžete webům sdělit, že si nepřejete sledování svých online aktivit. "
+"MultiFlexi respektuje signály Do Not Track a při jejich zjištění nenastaví "
+"žádné cookies, které nejsou nezbytné."
 
 #: src/cookie-policy.php:269 src/privacy-policy.php:184
 msgid "4. Contact Us"
-msgstr ""
+msgstr "4. Kontaktujte nás"
 
 #: src/cookie-policy.php:274
 msgid ""
 "If you have any questions about this Cookie Policy or our use of cookies, "
 "please contact us:"
 msgstr ""
+"Máte-li jakékoli dotazy k těmto zásadám používání cookies nebo k našemu "
+"používání cookies, kontaktujte nás:"
 
 #: src/cookie-policy.php:278 src/privacy-policy.php:55
 #: src/privacy-policy.php:193
 msgid "Email: info@vitexsoftware.cz"
-msgstr ""
+msgstr "E-mail: info@vitexsoftware.cz"
 
 #: src/cookie-policy.php:281 src/privacy-policy.php:52
 #: src/privacy-policy.php:196
 msgid "Website: "
-msgstr ""
+msgstr "Web: "
 
 #: src/cookie-policy.php:284 src/privacy-policy.php:199
 #, fuzzy
@@ -4042,25 +4078,27 @@ msgstr "Projekt na Githubu"
 
 #: src/cookie-policy.php:298
 msgid "Manage Your Cookie Preferences"
-msgstr ""
+msgstr "Spravujte své předvolby cookies"
 
 #: src/cookie-policy.php:306
 msgid "Cookie Preferences"
-msgstr ""
+msgstr "Předvolby cookies"
 
 #: src/cookie-policy.php:320 src/privacy-policy.php:235
 msgid "Show Consent Banner"
-msgstr ""
+msgstr "Zobrazit banner souhlasu"
 
 #: src/cookie-policy.php:336
 msgid "Your Current Cookie Settings"
-msgstr ""
+msgstr "Vaše aktuální nastavení cookies"
 
 #: src/cookie-policy.php:341
 msgid ""
 "The table below shows your current cookie preferences. You can change these "
 "at any time."
 msgstr ""
+"Níže uvedená tabulka zobrazuje vaše aktuální předvolby cookies. Můžete je "
+"kdykoli změnit."
 
 #: src/cookie-policy.php:361
 #, fuzzy
@@ -4088,7 +4126,7 @@ msgstr "Volitelné"
 
 #: src/cookie-policy.php:380
 msgid "Analytics"
-msgstr ""
+msgstr "Analytické"
 
 #: src/cookie-policy.php:383
 #, fuzzy
@@ -4110,7 +4148,7 @@ msgstr "Ještě ne"
 
 #: src/cookie-policy.php:418
 msgid "No cookie preferences have been set yet."
-msgstr ""
+msgstr "Zatím nebyly nastaveny žádné předvolby cookies."
 
 #: src/createaccount.php:21
 msgid "No Administrator found"
@@ -4734,8 +4772,8 @@ msgstr ""
 #: src/gdpr-user-deletion-request.php:108
 #, php-format
 msgid ""
-"Deletion request %d has been submitted for administrator review. You will be "
-"notified when it is processed."
+"Deletion request %d has been submitted for administrator review. You will be"
+" notified when it is processed."
 msgstr ""
 
 #: src/gdpr-user-deletion-request.php:122
@@ -4767,8 +4805,8 @@ msgstr ""
 #: src/gdpr-user-deletion-request.php:158
 #, php-format
 msgid ""
-"There is already a %s deletion request for this user (Request #%d, submitted "
-"%s). Status: %s"
+"There is already a %s deletion request for this user (Request #%d, submitted"
+" %s). Status: %s"
 msgstr ""
 
 #: src/index.php:26
@@ -4957,8 +4995,8 @@ msgid ""
 "Forgot your password? Enter your e-mail address you entered during the "
 "registration and we will send you a new one."
 msgstr ""
-"Zapomněli jste heslo? Zadejte svou e-mailovou adresu, kterou jste zadali při "
-"registraci, a my vám zašleme nové heslo."
+"Zapomněli jste heslo? Zadejte svou e-mailovou adresu, kterou jste zadali při"
+" registraci, a my vám zašleme nové heslo."
 
 #: src/passwordrecovery.php:89
 msgid "Password Recovery"
@@ -5143,8 +5181,8 @@ msgstr ""
 
 #: src/profile.php:66
 msgid ""
-"Under the General Data Protection Regulation (GDPR), you have several rights "
-"regarding your personal data:"
+"Under the General Data Protection Regulation (GDPR), you have several rights"
+" regarding your personal data:"
 msgstr ""
 
 #: src/profile.php:70
@@ -6517,11 +6555,11 @@ msgstr "chybějící heslo"
 #~ msgstr "heslo API mServer"
 
 #~ msgid ""
-#~ "Periodic Task Launcher systemd service is not running. Consider "
-#~ "`systemctl enable anacron`"
-#~ msgstr ""
-#~ "Služba spouštění periodických úloh systemd neběží. Zvažte `systemctl "
+#~ "Periodic Task Launcher systemd service is not running. Consider `systemctl "
 #~ "enable anacron`"
+#~ msgstr ""
+#~ "Služba spouštění periodických úloh systemd neběží. Zvažte `systemctl enable "
+#~ "anacron`"
 
 #~ msgid "Manual Schedule"
 #~ msgstr "Ruční plánování"
