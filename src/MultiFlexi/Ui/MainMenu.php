@@ -101,6 +101,8 @@ class MainMenu extends \Ease\Html\DivTag
                 'dashboard.php' => '📋&nbsp;'._('Dashboard'),
             ]);
 
+            $this->integrationsMenuEnabled($nav);
+
             // Privacy menu with dropdown
             $privacyMenu = [
                 'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy Preferences'),
@@ -167,6 +169,34 @@ class MainMenu extends \Ease\Html\DivTag
             'eventrules.php' => '📏 '._('Event Rules'),
         ];
         $nav->addDropDownMenu('⚡ '._('Events'), $eventsMenu);
+    }
+
+    /**
+     * Integrations menu.
+     *
+     * Shows links to external services that are installed and configured.
+     * The dropdown is rendered only when at least one integration is available.
+     *
+     * @param \Ease\Html\NavTag $nav
+     */
+    public function integrationsMenuEnabled($nav): void
+    {
+        $integrationsMenu = [];
+
+        // Node-RED — shown only when enabled and a URL is configured
+        if (\Ease\Shared::cfg('NODERED_ENABLED', false) && \Ease\Shared::cfg('NODERED_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('NODERED_URL')] = new \Ease\TWB5\Widgets\BsIcon('diagram-3').'&nbsp;'._('Node-RED');
+        }
+
+        // Zabbix — shown when the Zabbix frontend URL is configured
+        // (ZABBIX_SERVER is the trapper/proxy host, not the web frontend, so a dedicated URL is required)
+        if (\Ease\Shared::cfg('ZABBIX_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('ZABBIX_URL')] = new \Ease\TWB5\Widgets\BsIcon('graph-up').'&nbsp;'._('Zabbix');
+        }
+
+        if (!empty($integrationsMenu)) {
+            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('puzzle').'&nbsp;'._('Integrations'), $integrationsMenu);
+        }
     }
 
     /**
