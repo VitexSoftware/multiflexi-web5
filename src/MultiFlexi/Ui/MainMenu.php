@@ -194,6 +194,12 @@ class MainMenu extends \Ease\Html\DivTag
             $integrationsMenu[\Ease\Shared::cfg('ZABBIX_URL')] = new \Ease\TWB5\Widgets\BsIcon('graph-up').'&nbsp;'._('Zabbix');
         }
 
+        // OpenTelemetry — shown when enabled and an observability dashboard URL is configured
+        // (OTEL_EXPORTER_OTLP_ENDPOINT is an ingest endpoint, not a browsable UI)
+        if (\Ease\Shared::cfg('OTEL_ENABLED', false) && \Ease\Shared::cfg('OTEL_DASHBOARD_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('OTEL_DASHBOARD_URL')] = new \Ease\TWB5\Widgets\BsIcon('activity').'&nbsp;'._('OpenTelemetry');
+        }
+
         if (!empty($integrationsMenu)) {
             $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('puzzle').'&nbsp;'._('Integrations'), $integrationsMenu);
         }
