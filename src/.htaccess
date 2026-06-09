@@ -1,5 +1,6 @@
 RewriteEngine On
-RewriteBase /MultiFlexi/src/
 
-# Rewrite rule to handle API calls
+# Route REST API requests to the Slim entry point (src/api/index.php).
+# Do not set RewriteBase here — it must match the URL prefix of each deployment
+# (e.g. /multiflexi/, /multiflexi-web5/src/) and would break other installs.
 RewriteRule ^api/(.*)$ api/index.php [L,QSA]

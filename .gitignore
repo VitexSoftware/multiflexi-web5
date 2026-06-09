@@ -21,6 +21,9 @@ composer.lock
 nbproject/project.properties
 nbproject/project.xml
 src/php_errors.log
+# API entry points and controllers copied from ../multiflexi-api by `make api`
+src/api/
+src/MultiFlexi/Api/
 debian/multiflexi-web.debhelper.log
 debian/multiflexi-web.substvars
 debian/multiflexi-web/
