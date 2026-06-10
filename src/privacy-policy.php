@@ -31,16 +31,11 @@ $container->addItem('<p><strong>'._('Last updated: ').date('Y-m-d').'</strong></
 
 $container->addItem('<p>'._('This Privacy Policy describes how MultiFlexi ("we", "our", or "us") collects, uses, and protects your information when you use our service.').'</p>');
 
-// Data Controller Section
-$container->addItem(<<<'EOD'
+// Group the privacy policy sections into an accordion; the first is open.
+$privacyAccordion = new \Ease\TWB5\Accordion('privacyPolicySections');
 
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('1. Data Controller').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+// Data Controller Section
+$privacyAccordion->addAccordionItem(_('1. Data Controller'), <<<'EOD'
         <p>
 EOD._('MultiFlexi is developed and maintained by Vitex Software. For privacy-related inquiries, please contact:').<<<'EOD'
 </p>
@@ -55,21 +50,11 @@ EOD._('Website: ').<<<'EOD'
 EOD._('Email: info@vitexsoftware.cz').<<<'EOD'
 </li>
         </ul>
-    </div>
-</div>
 
-EOD);
+EOD, true);
 
 // Information We Collect
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('2. Information We Collect').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$privacyAccordion->addAccordionItem(_('2. Information We Collect'), <<<'EOD'
         <h3>
 EOD._('2.1 Personal Information').<<<'EOD'
 </h3>
@@ -126,21 +111,11 @@ EOD._('Job execution logs and results').<<<'EOD'
 EOD._('Scheduled task configurations').<<<'EOD'
 </li>
         </ul>
-    </div>
-</div>
 
 EOD);
 
 // Your Rights
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('3. Your Rights').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$privacyAccordion->addAccordionItem(_('3. Your Rights'), <<<'EOD'
         <p>
 EOD._('Under GDPR and applicable data protection laws, you have the following rights:').<<<'EOD'
 </p>
@@ -170,21 +145,11 @@ EOD._('Right to withdraw consent: Withdraw consent for optional processing').<<<
         <p>
 EOD._('To exercise your rights, please use our ').'<a href="consent-preferences.php">'._('Privacy Preferences').'</a>'._(' page or contact us directly.').<<<'EOD'
 </p>
-    </div>
-</div>
 
 EOD);
 
 // Contact Information
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('4. Contact Us').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$privacyAccordion->addAccordionItem(_('4. Contact Us'), <<<'EOD'
         <p>
 EOD._('If you have any questions about this Privacy Policy or our data practices, please contact us:').<<<'EOD'
 </p>
@@ -199,10 +164,10 @@ EOD._('Website: ').<<<'EOD'
 EOD._('Project: ').<<<'EOD'
 <a href="https://multiflexi.eu">https://multiflexi.eu</a></li>
         </ul>
-    </div>
-</div>
 
 EOD);
+
+$container->addItem($privacyAccordion);
 
 // Quick Actions
 $container->addItem(<<<'EOD'
