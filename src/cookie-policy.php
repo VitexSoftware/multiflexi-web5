@@ -31,37 +31,22 @@ $container->addItem('<p><strong>'._('Last updated: ').date('Y-m-d').'</strong></
 
 $container->addItem('<p>'._('This Cookie Policy explains how MultiFlexi uses cookies and similar tracking technologies when you visit our application.').'</p>');
 
-// What are Cookies
-$container->addItem(<<<'EOD'
+// Group the cookie policy sections into an accordion; the first is open.
+$cookieAccordion = new \Ease\TWB5\Accordion('cookiePolicySections');
 
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('1. What Are Cookies?').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+// What are Cookies
+$cookieAccordion->addAccordionItem(_('1. What Are Cookies?'), <<<'EOD'
         <p>
 EOD._('Cookies are small data files that are placed on your computer or mobile device when you visit a website or application. Cookies are widely used by website and application owners to make their services work more efficiently and to provide reporting information.').<<<'EOD'
 </p>
         <p>
 EOD._('Cookies set by the website owner (in this case, MultiFlexi) are called "first-party cookies." Cookies set by parties other than the website owner are called "third-party cookies."').<<<'EOD'
 </p>
-    </div>
-</div>
 
-EOD);
+EOD, true);
 
 // Types of Cookies
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('2. Types of Cookies We Use').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$cookieAccordion->addAccordionItem(_('2. Types of Cookies We Use'), <<<'EOD'
         <h3>
 EOD._('2.1 Essential Cookies').<<<'EOD'
 </h3>
@@ -206,21 +191,11 @@ EOD).<<<'EOD'
 
             </tbody>
         </table>
-    </div>
-</div>
 
 EOD);
 
 // Managing Cookies
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('3. How to Control Cookies').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$cookieAccordion->addAccordionItem(_('3. How to Control Cookies'), <<<'EOD'
         <h3>
 EOD._('3.1 MultiFlexi Cookie Preferences').<<<'EOD'
 </h3>
@@ -255,21 +230,11 @@ EOD._('3.3 Do Not Track Signals').<<<'EOD'
         <p>
 EOD._('Some browsers include a "Do Not Track" feature that lets you tell websites that you do not want to have your online activities tracked. MultiFlexi respects Do Not Track signals and will not set non-essential cookies when this signal is detected.').<<<'EOD'
 </p>
-    </div>
-</div>
 
 EOD);
 
 // Contact Information
-$container->addItem(<<<'EOD'
-
-<div class="card mt-4">
-    <div class="card-header">
-        <h2>
-EOD._('4. Contact Us').<<<'EOD'
-</h2>
-    </div>
-    <div class="card-body">
+$cookieAccordion->addAccordionItem(_('4. Contact Us'), <<<'EOD'
         <p>
 EOD._('If you have any questions about this Cookie Policy or our use of cookies, please contact us:').<<<'EOD'
 </p>
@@ -284,10 +249,10 @@ EOD._('Website: ').<<<'EOD'
 EOD._('Project: ').<<<'EOD'
 <a href="https://multiflexi.eu">https://multiflexi.eu</a></li>
         </ul>
-    </div>
-</div>
 
 EOD);
+
+$container->addItem($cookieAccordion);
 
 // Quick Actions
 $container->addItem(<<<'EOD'

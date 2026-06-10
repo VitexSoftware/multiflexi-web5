@@ -67,9 +67,12 @@ WebPage::singleton()->addItem(new PageTop(_('My Profile')));
 // Create main container
 $container = WebPage::singleton()->container;
 
+// Group the profile sections into an accordion; Profile Information is open
+// by default.
+$profileAccordion = new \Ease\TWB5\Accordion('profileSections');
+
 // Profile header section
-$profileHeader = new \Ease\TWB5\Card(_('Profile Information'));
-$profileHeader->addItem(new \Ease\Html\DivTag([
+$profileHeader = new \Ease\Html\DivTag([
     new \Ease\Html\H4Tag($currentUser->getUserName()),
     new \Ease\Html\PTag([
         new \Ease\Html\StrongTag(_('Login').': '),
@@ -83,19 +86,17 @@ $profileHeader->addItem(new \Ease\Html\DivTag([
         new \Ease\Html\StrongTag(_('Member since').': '),
         date('F j, Y', strtotime($currentUser->getDataValue($currentUser->createColumn))),
     ]),
-]));
+]);
 
-$container->addItem($profileHeader);
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('Profile Information'), $profileHeader, true);
 
 // Data correction form
-$correctionFormCard = new \Ease\TWB5\Card(_('Update Personal Information'));
-$correctionForm = new UserDataCorrectionForm($currentUser);
-$correctionFormCard->addItem($correctionForm);
-
-$container->addItem($correctionFormCard);
+$profileAccordion->addAccordionItem(
+    new \Ease\TWB5\Widgets\BsIcon('pencil-square').'&nbsp;'._('Update Personal Information'),
+    new UserDataCorrectionForm($currentUser),
+);
 
 // Password change section
-$passwordCard = new \Ease\TWB5\Card(_('Change Password'));
 $passwordForm = new \MultiFlexi\Ui\SecureForm([
     'method' => 'POST',
     'action' => 'profile.php',
@@ -119,12 +120,10 @@ $passwordForm->addItem(new \Ease\Html\DivTag(
     ['class' => 'text-end'],
 ));
 
-$passwordCard->addItem($passwordForm);
-$container->addItem($passwordCard);
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('key').'&nbsp;'._('Change Password'), $passwordForm);
 
 // GDPR Information section
-$gdprInfo = new \Ease\TWB5\Card(_('Your Rights Under GDPR'));
-$gdprInfo->addItem(new \Ease\Html\PTag(_('Under the General Data Protection Regulation (GDPR), you have several rights regarding your personal data:')));
+$gdprInfo = new \Ease\Html\DivTag(new \Ease\Html\PTag(_('Under the General Data Protection Regulation (GDPR), you have several rights regarding your personal data:')));
 
 $rightsList = new \Ease\Html\UlTag([
     new \Ease\Html\LiTag([
@@ -146,15 +145,13 @@ $rightsList = new \Ease\Html\UlTag([
 ]);
 
 $gdprInfo->addItem($rightsList);
-$container->addItem($gdprInfo);
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('shield-check').'&nbsp;'._('Your Rights Under GDPR'), $gdprInfo);
 
 // Recent data changes (audit log preview)
 $auditLogger = new \MultiFlexi\Audit\UserDataAuditLogger();
 $recentChanges = $auditLogger->getUserAuditLog($currentUser->getId(), 10);
 
 if (!empty($recentChanges)) {
-    $auditCard = new \Ease\TWB5\Card(_('Recent Data Changes'));
-
     $auditTable = new \Ease\Html\TableTag(null, ['class' => 'table table-sm']);
     $auditTable->addRowHeaderColumns([
         _('Field'),
@@ -196,9 +193,10 @@ if (!empty($recentChanges)) {
         ]);
     }
 
-    $auditCard->addItem($auditTable);
-    $container->addItem($auditCard);
+    $profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('clock-history').'&nbsp;'._('Recent Data Changes'), $auditTable);
 }
+
+$container->addItem($profileAccordion);
 
 WebPage::singleton()->addItem(new PageBottom());
 WebPage::singleton()->draw();
