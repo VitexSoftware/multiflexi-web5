@@ -29,20 +29,6 @@ class ExecutorSelect extends \Ease\Html\SelectTag
     protected array $executorData = [];
 
     /**
-     * Prevent InputGroup (TWB5) from overwriting the ID that selectize() already captured.
-     * SelectTag::setTagID() always generates a new random ID; we only allow that when
-     * an explicit ID is passed or no ID has been set yet.
-     */
-    public function setTagID($tagID = null): mixed
-    {
-        if ($tagID !== null || empty($this->getTagID())) {
-            return parent::setTagID($tagID);
-        }
-
-        return $this->getTagID();
-    }
-
-    /**
      *  Executor Select.
      *
      * @param string $name
