@@ -1,5 +1,9 @@
 multiflexi-web (2.4.1) unstable; urgency=medium
 
+  * Pre-Depend on multiflexi-common so the 'multiflexi' user (created by its
+    preinst) always exists before this package's postinst chowns the web files
+    (fixes intermittent "chown: invalid user: 'multiflexi:www-data'" install
+    failures, e.g. on Ubuntu jammy, which blocked the whole build matrix)
   * Add company-level RBAC access filtering across dashboard lists/charts
   * Hide Admin menu for unprivileged users and filter company dropdown
   * Add read-only notice and server-side protection for company-user assignment
