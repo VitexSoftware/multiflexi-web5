@@ -136,17 +136,25 @@ CSS);
         $flags = new \Ease\Html\SpanTag(null, ['class' => 'field-flags']);
 
         if ($field->isRequired()) {
-            $formGroup->addTagClass('required-field');
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('required-field');
+            }
+
             $flags->addItem(new \Ease\TWB5\Badge('danger', _('required')));
         }
 
         if ($field->isSecret()) {
-            $formGroup->addTagClass('secret-field');
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('secret-field');
+            }
+
             $flags->addItem(new \Ease\TWB5\Badge('dark', '🔒 '._('secret')));
         }
 
         if ($field->isExpiring()) {
-            $formGroup->addTagClass('expiring-field');
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('expiring-field');
+            }
             $flags->addItem(new \Ease\TWB5\Badge('warning', '⏳ '._('expiring')));
         }
 
