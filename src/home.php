@@ -205,7 +205,14 @@ try {
     ));
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Current Role'), ['class' => 'col-sm-3']));
-    $rbacInfo->addItem(new \Ease\Html\DdTag(_('Viewer (Full Access to Assigned Companies)'), ['class' => 'col-sm-9']));
+    $roleLabel = _('(none)');
+    if (isset($GLOBALS['rbac'])) {
+        $userRoles = $GLOBALS['rbac']->getUserRoles($currentUserId);
+        if (!empty($userRoles)) {
+            $roleLabel = implode(', ', array_column($userRoles, 'name'));
+        }
+    }
+    $rbacInfo->addItem(new \Ease\Html\DdTag($roleLabel, ['class' => 'col-sm-9']));
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Data Filtering'), ['class' => 'col-sm-3']));
     $filteringStatus = new \Ease\TWB5\Badge('🔒 '._('Enabled'), 'info');

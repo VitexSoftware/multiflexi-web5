@@ -54,6 +54,10 @@ class CompanyAccessControl
      */
     public static function userCanAccessCompany(int $userId, int $companyId): bool
     {
+        if (self::currentUserIsSuperAdmin()) {
+            return true;
+        }
+
         // Check if user is assigned to company via company_user
         $companyUser = new CompanyUser(new Company($companyId));
         $assigned = $companyUser->listingQuery()
@@ -70,6 +74,14 @@ class CompanyAccessControl
      */
     public static function getCurrentUserAccessibleCompanies(): array
     {
+        if (self::currentUserIsSuperAdmin()) {
+            $company = new Company();
+            $rows = $company->listingQuery()->select(['id'])->fetchAll();
+            $ids = array_map('intval', array_column($rows, 'id'));
+
+            return array_values(array_filter($ids, static fn ($id) => $id > 0));
+        }
+
         $userId = self::getCurrentUserId();
 
         if (!$userId) {
@@ -208,6 +220,14 @@ class CompanyAccessControl
         }
 
         return null;
+    }
+
+    /**
+     * Check whether the currently logged-in user holds the super_admin role.
+     */
+    private static function currentUserIsSuperAdmin(): bool
+    {
+        return isset($GLOBALS['rbac']) && $GLOBALS['rbac']->hasRole('super_admin');
     }
 
     /**
