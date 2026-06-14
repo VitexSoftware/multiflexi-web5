@@ -200,6 +200,7 @@ EOD);
         $runtemplateTabs->addTab('📅 '._('Scheduling'), $schedulingContent);
         $runtemplateTabs->addTab('⚙️ '._('Configuration'), [new RuntemplateConfigForm($runtemplate)]);
         $runtemplateTabs->addTab('🏁 '._('Jobs'), $runtemplateJobs);
+        $runtemplateTabs->addTab('📋 '._('Tasks'), [new TasksTable('all', $runtemplateId)]);
         $runtemplateTabs->addTab('🔐 '._('Environment'), [new EnvironmentView($runtemplate->credentialsEnvironment()), new RunTemplateDotEnv($runtemplate)]);
 
         $this->addItem($runtemplateTabs);

@@ -43,6 +43,13 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
         $metricsRow->addColumn(3, self::metricCard(_('Success Rate'), $this->stats['success_rate'].'%', $successColor, '✅'));
         $metricsRow->addColumn(3, self::metricCard(_('Failed'), number_format($this->stats['failed_jobs']), 'danger', '❌'));
         $metricsRow->addColumn(3, self::metricCard(_('Running'), number_format($this->stats['running_jobs']), 'info', '🔄'));
+        $metricsRow->addColumn(3, self::linkedMetricCard(
+            _('Tasks'),
+            number_format($this->stats['task_count']),
+            'secondary',
+            '📋',
+            'tasks.php?runtemplate_id='.$this->runtemplate->getMyKey(),
+        ));
 
         $this->addItem($metricsRow);
 
@@ -134,6 +141,23 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
         $body->addItem(new \Ease\Html\DivTag($value, [
             'class' => 'text-'.$context,
             'style' => 'font-size: 1.75rem; font-weight: 700; line-height: 1.2;',
+        ]));
+        $card->addItem($body);
+
+        return $card;
+    }
+
+    private static function linkedMetricCard(string $label, string $value, string $context, string $icon, string $href): \Ease\Html\DivTag
+    {
+        $card = new \Ease\Html\DivTag(null, ['class' => 'card border-0 shadow-sm h-100']);
+        $body = new \Ease\Html\DivTag(null, ['class' => 'card-body py-3']);
+        $body->addItem(new \Ease\Html\DivTag(
+            [$icon, ' ', new \Ease\Html\SpanTag($label, ['class' => 'text-muted'])],
+            ['class' => 'small mb-1'],
+        ));
+        $body->addItem(new \Ease\Html\ATag($href, $value, [
+            'class' => 'text-'.$context.' text-decoration-none',
+            'style' => 'font-size: 1.75rem; font-weight: 700; line-height: 1.2; display: block;',
         ]));
         $card->addItem($body);
 
@@ -281,6 +305,14 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
         $successRate = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
         $lastRun = $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('begin IS NOT NULL')->orderBy('begin DESC')->select('begin', true)->limit(1)->fetchColumn();
 
+        $taskCount = 0;
+
+        try {
+            $tasker = new \MultiFlexi\Task();
+            $taskCount = (int) $tasker->listingQuery()->where('runtemplate_id', $rtId)->count();
+        } catch (\Exception) {
+        }
+
         return [
             'total_jobs' => $totalJobs,
             'successful_jobs' => $successfulJobs,
@@ -288,6 +320,7 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
             'running_jobs' => $runningJobs,
             'success_rate' => $successRate,
             'last_run' => $lastRun ?: null,
+            'task_count' => $taskCount,
         ];
     }
 }
