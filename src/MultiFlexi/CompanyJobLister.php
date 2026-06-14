@@ -228,6 +228,10 @@ class CompanyJobLister extends CompanyJob
                     $dataRowRaw['DT_RowClass'] = 'job-success';
 
                     break;
+                case '75':
+                    $dataRowRaw['DT_RowClass'] = 'job-credential-blocked bg-warning text-dark';
+
+                    break;
                 case '1':
                     $dataRowRaw['DT_RowClass'] = 'bg-warning text-dark';
 

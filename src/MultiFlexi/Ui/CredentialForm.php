@@ -99,6 +99,8 @@ class CredentialForm extends SecureForm
 
                 if (class_exists($uiHelperClassName)) {
                     $formContents[] = (string) (new $uiHelperClassName($kredenc));
+                } elseif (null !== $kredenc->getMyKey()) {
+                    $formContents[] = self::availabilityPanel($credtypeHelper->checkAvailability());
                 }
             }
         }
@@ -162,6 +164,45 @@ class CredentialForm extends SecureForm
     {
         $this->fillUp((array) $this->kredenc->getData());
         parent::finalize();
+    }
+
+    private static function availabilityPanel(\MultiFlexi\CredentialCheckResult $result): DivTag
+    {
+        $styleMap = [
+            \MultiFlexi\CredentialState::Available->value     => 'success',
+            \MultiFlexi\CredentialState::Degraded->value      => 'warning',
+            \MultiFlexi\CredentialState::Unavailable->value   => 'danger',
+            \MultiFlexi\CredentialState::Misconfigured->value => 'danger',
+            \MultiFlexi\CredentialState::Unknown->value       => 'info',
+        ];
+        $iconMap = [
+            \MultiFlexi\CredentialState::Available->value     => '✅',
+            \MultiFlexi\CredentialState::Degraded->value      => '⚠️',
+            \MultiFlexi\CredentialState::Unavailable->value   => '🔴',
+            \MultiFlexi\CredentialState::Misconfigured->value => '🚫',
+            \MultiFlexi\CredentialState::Unknown->value       => 'ℹ️',
+        ];
+        $style = $styleMap[$result->state->value] ?? 'info';
+        $icon = $iconMap[$result->state->value] ?? 'ℹ️';
+        $msg = $result->message ?: _('Credential available');
+
+        $alert = new DivTag(
+            $icon.' '.$msg,
+            ['class' => 'alert alert-'.$style.' mt-2'],
+        );
+
+        if ($result->details) {
+            $dl = new \Ease\Html\DlTag(null, ['class' => 'row mt-1']);
+
+            foreach ($result->details as $k => $v) {
+                $dl->addItem(new \Ease\Html\DtTag((string) $k, ['class' => 'col-sm-4']));
+                $dl->addItem(new \Ease\Html\DdTag((string) $v, ['class' => 'col-sm-8']));
+            }
+
+            return new DivTag([$alert, $dl]);
+        }
+
+        return $alert;
     }
 
     private static function confiField(Credential $credential, ConfigField $field): Row

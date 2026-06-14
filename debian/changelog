@@ -1,4 +1,4 @@
-multiflexi-web (2.4.2) UNRELEASED; urgency=medium
+multiflexi-web (2.5.0) UNRELEASED; urgency=medium
 
   * Add tasks.php — task overview with metric cards, daily fulfilment chart,
     state distribution pie chart, and DataTables-powered task listing
@@ -9,8 +9,15 @@ multiflexi-web (2.4.2) UNRELEASED; urgency=medium
   * TasksTable: filterable task table with state-coloured rows, links to job
     detail, RunTemplate, and Company pages
   * MainMenu: add Tasks to the Logs dropdown
+  * CredentialForm: universal availability badge for credential types without a
+    custom UI helper (calls checkAvailability() on the prototype, renders
+    Bootstrap 5 alert + details panel)
+  * RuntemplateRequirementsChoser: live availability badge on each assigned
+    credential card (✅ / ⚠️ / 🔴 / 🚫 / ℹ️ keyed to CredentialState)
+  * ExitCode: map exit code 75 (EX_TEMPFAIL / credential blocked) → 'warning'
+  * CompanyJobLister: add job-credential-blocked row class for exit code 75
 
- -- vitex <info@vitexsoftware.cz>  Sat, 14 Jun 2026 10:30:00 +0200
+ -- vitex <info@vitexsoftware.cz>  Sat, 14 Jun 2026 14:00:00 +0200
 
 multiflexi-web (2.4.1) unstable; urgency=medium
 

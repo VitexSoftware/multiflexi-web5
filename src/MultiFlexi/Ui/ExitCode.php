@@ -66,6 +66,10 @@ class ExitCode extends \Ease\Html\SpanTag
             return 'secondary';
         }
 
+        if ($code === 75) {
+            return 'warning'; // EX_TEMPFAIL — credential blocked, deferred
+        }
+
         if ($code === 127) {
             return 'warning';
         }
