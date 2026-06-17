@@ -25,7 +25,7 @@ class RuntemplateTaskMetrics extends \Ease\TWB5\Row
 {
     public function __construct(\MultiFlexi\RunTemplate $runtemplate)
     {
-        parent::__construct(null, ['class' => 'g-2 mb-3']);
+        parent::__construct(null, 0, ['class' => 'g-2 mb-3']);
 
         $rtId = $runtemplate->getMyKey();
 

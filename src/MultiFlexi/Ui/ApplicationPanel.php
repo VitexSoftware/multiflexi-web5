@@ -60,12 +60,12 @@ class ApplicationPanel extends Panel
             $usedByDiv->addItem(new \Ease\Html\SmallTag(_('Used by').': ', ['class' => 'fw-bold mb-1 d-block text-uppercase small text-secondary']));
 
             WebPage::singleton()->addCSS(<<<'CSS'
-                .mf-usedby-box { background: #fff !important; }
-                .mf-usedby-box, .mf-usedby-box * { color: #212529 !important; }
-                .mf-usedby-box a { color: #0d6efd !important; }
-                .mf-usedby-box a:hover { color: #0a58ca !important; }
-                .mf-usedby-box .table td, .mf-usedby-box .table th { background: transparent !important; color: #212529 !important; }
-                .mf-usedby-box .text-muted { color: #6c757d !important; }
+                .mf-usedby-box { background: rgba(255,255,255,0.12) !important; border-color: rgba(255,255,255,0.25) !important; }
+                .mf-usedby-box, .mf-usedby-box * { color: rgba(255,255,255,0.9) !important; }
+                .mf-usedby-box a { color: #aad4f5 !important; }
+                .mf-usedby-box a:hover { color: #fff !important; }
+                .mf-usedby-box .table td, .mf-usedby-box .table th { background: transparent !important; color: rgba(255,255,255,0.85) !important; }
+                .mf-usedby-box .text-muted { color: rgba(255,255,255,0.55) !important; }
 CSS);
 
             // Create compact table instead of cards
