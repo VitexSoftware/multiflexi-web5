@@ -18,6 +18,7 @@ namespace MultiFlexi\Ui;
 use Ease\Html\ATag;
 use Ease\TWB5\Row;
 use MultiFlexi\Company;
+use Ease\Shared;
 
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();

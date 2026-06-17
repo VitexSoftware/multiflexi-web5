@@ -157,6 +157,78 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             new \Ease\Html\DivTag($deleteButton, ['class' => 'mt-4 text-end']),
         ]);
 
+        // ── Task SLA & Retry ────────────────────────────────────────────────────
+        $slaFields = [
+            [
+                'id' => $runtemplateId.'_deadline_offset',
+                'name' => 'deadline_offset',
+                'label' => _('Deadline Offset'),
+                'display' => (string) ($runtemplate->getDataValue('deadline_offset') ?? ''),
+                'hint' => _('+3h or 08:00 — empty means window end'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_max_attempts',
+                'name' => 'max_attempts',
+                'label' => _('Max Attempts'),
+                'display' => (string) ($runtemplate->getDataValue('max_attempts') ?? 1),
+                'hint' => _('per task window'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_retry_backoff',
+                'name' => 'retry_backoff',
+                'label' => _('Retry Backoff'),
+                'display' => (string) ($runtemplate->getDataValue('retry_backoff') ?? 'none'),
+                'hint' => _('spacing strategy'),
+                'type' => 'select',
+            ],
+            [
+                'id' => $runtemplateId.'_retry_min_gap',
+                'name' => 'retry_min_gap',
+                'label' => _('Retry Min Gap'),
+                'display' => (string) ($runtemplate->getDataValue('retry_min_gap') ?? 0),
+                'hint' => _('seconds between retries'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_allow_late',
+                'name' => 'allow_late',
+                'label' => _('Allow Late'),
+                'display' => $runtemplate->getDataValue('allow_late') ? _('Yes') : _('No'),
+                'hint' => _('count post-deadline success'),
+                'type' => 'select',
+            ],
+        ];
+
+        $slaInner = new \Ease\TWB5\Row();
+        $slaInner->addTagClass('g-3');
+
+        foreach ($slaFields as $f) {
+            $editLink = new \Ease\Html\ATag('#', $f['display'] ?: '—', [
+                'id' => $f['id'],
+                'class' => 'sla-editable',
+                'data-name' => $f['name'],
+                'data-pk' => $runtemplateId,
+                'data-url' => 'runtemplatesave.php',
+                'data-title' => $f['label'],
+                'data-type' => $f['type'],
+            ]);
+            $cell = new \Ease\Html\DivTag([
+                new \Ease\Html\SmallTag($f['label'], ['class' => 'd-block fw-bold text-muted mb-1']),
+                $editLink,
+                new \Ease\Html\SmallTag($f['hint'], ['class' => 'd-block text-muted mt-1']),
+            ]);
+            $slaInner->addColumn(2, $cell);
+        }
+
+        $slaRow = new \Ease\TWB5\Row();
+        $slaRow->addTagClass('mt-3');
+        $slaRow->addColumn(12, [
+            new \Ease\Html\H5Tag('🎯 '._('Task SLA & Retry')),
+            new \Ease\Html\DivTag($slaInner, ['class' => 'card card-body bg-light']),
+        ]);
+
         $runtemplateBottom = new \Ease\TWB5\Row();
 
         if ($runtemplate->getMyKey()) {
@@ -197,10 +269,10 @@ EOD);
 
         $runtemplateTabs = new \Ease\TWB5\Tabs();
         $runtemplateTabs->addTab('📊 '._('Dashboard'), $dashboardContent);
-        $runtemplateTabs->addTab('📅 '._('Scheduling'), $schedulingContent);
+        $runtemplateTabs->addTab('📅 '._('Scheduling'), [$schedulingContent, $slaRow]);
         $runtemplateTabs->addTab('⚙️ '._('Configuration'), [new RuntemplateConfigForm($runtemplate)]);
         $runtemplateTabs->addTab('🏁 '._('Jobs'), $runtemplateJobs);
-        $runtemplateTabs->addTab('📋 '._('Tasks'), [new TasksTable('all', $runtemplateId)]);
+        $runtemplateTabs->addTab('📋 '._('Tasks'), [new RuntemplateTaskMetrics($runtemplate), new TasksTable('all', $runtemplateId)]);
         $runtemplateTabs->addTab('🔐 '._('Environment'), [new EnvironmentView($runtemplate->credentialsEnvironment()), new RunTemplateDotEnv($runtemplate)]);
 
         $this->addItem($runtemplateTabs);
@@ -213,6 +285,12 @@ EOD);
     {
         \Ease\TWB5\Part::twBootstrapize();
         $csrfToken = isset($GLOBALS['csrfProtection']) ? $GLOBALS['csrfProtection']->generateToken() : '';
+        $noneLabel = _('None');
+        $fixedLabel = _('Fixed');
+        $linearLabel = _('Linear');
+        $exponentialLabel = _('Exponential');
+        $noLabel = _('No');
+        $yesLabel = _('Yes');
 
         // Configure editable to send CSRF token
         $this->addJavaScript(<<<EOD
@@ -233,6 +311,27 @@ $.fn.editable.defaults.params = function(params) {
 $(document).ready(function() {
     // Initialize regular editable fields (name field)
     $('.editable').not('#note').editable();
+
+    // SLA inline-editable fields (text/number)
+    $('.sla-editable[data-type="text"]').editable();
+
+    // retry_backoff select
+    $('#{$this->runtemplate->getMyKey()}_retry_backoff').editable({
+        source: [
+            {value: 'none',        text: '{$noneLabel}'},
+            {value: 'fixed',       text: '{$fixedLabel}'},
+            {value: 'linear',      text: '{$linearLabel}'},
+            {value: 'exponential', text: '{$exponentialLabel}'}
+        ]
+    });
+
+    // allow_late select
+    $('#{$this->runtemplate->getMyKey()}_allow_late').editable({
+        source: [
+            {value: '0', text: '{$noLabel}'},
+            {value: '1', text: '{$yesLabel}'}
+        ]
+    });
 
     // Configure WYSIWYG editor for note field with CSRF token
     $("#note").editable({

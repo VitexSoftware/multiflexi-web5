@@ -41,7 +41,8 @@
         "vitexsoftware/multiflexi-vaultwarden": "dev-main",
         "vitexsoftware/multiflexi-database-connection": "dev-main",
         "vitexsoftware/multiflexi-mail": "dev-main",
-        "vitexsoftware/multiflexi-raiffeisenbank": "dev-main"
+        "vitexsoftware/multiflexi-raiffeisenbank": "dev-main",
+        "vitexsoftware/multiflexi-zabbix": "dev-main"
     },
     "license": "MIT",
     "authors": [
