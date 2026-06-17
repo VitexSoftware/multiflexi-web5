@@ -103,17 +103,43 @@ if ($what === 'all' || $what === 'Company') {
 
 if ($what === 'all' || $what === 'Job') {
     $jobber = new \MultiFlexi\Job();
-    $jobsFound = $jobber->listingQuery()->where('stdout LIKE "%'.$searchTerm.'%"')->whereOr('stderr LIKE "%'.$searchTerm.'%"')->whereOr(['id' => $searchTerm]);
 
-    if ($jobsFound->count()) {
+    // Search job output via job_output_lines (stdout/stderr columns no longer exist on job table)
+    $outputLines = new \MultiFlexi\JobOutputLine();
+    $matchingJobIds = $outputLines->getFluentPDO()
+        ->from('job_output_lines')
+        ->select(null)->select('DISTINCT job_id')
+        ->where('line LIKE ?', '%'.$searchTerm.'%')
+        ->fetchAll(\PDO::FETCH_COLUMN);
+
+    // Also match by job ID
+    if (is_numeric($searchTerm)) {
+        $matchingJobIds[] = (int) $searchTerm;
+    }
+
+    if (!empty($matchingJobIds)) {
+        $jobsFound = $jobber->listingQuery()->where('id IN ('.implode(',', array_map('intval', $matchingJobIds)).')')->fetchAll();
+
         foreach ($jobsFound as $job) {
-            if (str_contains(strtolower($job['stdout']), strtolower($searchTerm))) {
-                addResult($foundItems, $resultCards, 'job.php?id='.$job['id'], 'Job', _('Job').' #'.$job['id'], 'stdout', mb_strimwidth((string) $job['stdout'], 0, 120, '…'));
-            } elseif (str_contains(strtolower($job['stderr']), strtolower($searchTerm))) {
-                addResult($foundItems, $resultCards, 'job.php?id='.$job['id'], 'Job', _('Job').' #'.$job['id'], 'stderr', mb_strimwidth((string) $job['stderr'], 0, 120, '…'));
-            } elseif ($job['id'] === $searchTerm) {
-                addResult($foundItems, $resultCards, 'job.php?id='.$job['id'], 'Job', _('Job').' #'.$job['id'], 'id', (string) $job['id']);
+            $snippet = '';
+            $matchType = 'id';
+
+            if (is_numeric($searchTerm) && (int) $job['id'] === (int) $searchTerm) {
+                $matchType = 'id';
+            } else {
+                $lineRow = $outputLines->getFluentPDO()
+                    ->from('job_output_lines')
+                    ->where('job_id', (int) $job['id'])
+                    ->where('line LIKE ?', '%'.$searchTerm.'%')
+                    ->fetch();
+
+                if ($lineRow) {
+                    $matchType = $lineRow['type'];
+                    $snippet   = mb_strimwidth((string) $lineRow['line'], 0, 120, '…');
+                }
             }
+
+            addResult($foundItems, $resultCards, 'job.php?id='.$job['id'], 'Job', _('Job').' #'.$job['id'], $matchType, $snippet);
         }
     }
 }
