@@ -130,7 +130,7 @@ class TasksTable extends \Ease\Html\DivTag
                 $dlSpan = new \Ease\Html\SpanTag($dl, ['class' => 'small'.(\in_array($state, ['failed', 'missed'], true) ? ' text-danger fw-bold' : '')]);
 
                 // State badge
-                $badge = new \Ease\TWB5\Badge($badgeType, $icon.' '._($state));
+                $badge = new \Ease\TWB5\Badge($icon.' '._($state), $badgeType);
 
                 // Fulfilled by Job
                 if ($task['fulfilled_by_job_id']) {

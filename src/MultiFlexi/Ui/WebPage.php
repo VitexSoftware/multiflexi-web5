@@ -362,7 +362,7 @@ class WebPage extends \Ease\TWB5\WebPage
             table.dataTable { border-radius: 8px; overflow: hidden; }
 
             /* Exit code indicator — pill badge with semantic background + dark text */
-            .mf-exit { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; padding: 0.15em 0.55em; }
+            .mf-exit { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; padding: 0.15em 0.55em; border-radius: 0.4em; display: inline-block; }
             .mf-exit-success   { color: #146c43; background-color: #d1e7dd; }  /* green  */
             .mf-exit-secondary { color: #0a4275; background-color: #cfe2ff; }  /* blue   */
             .mf-exit-danger    { color: #b02a37; background-color: #f8d7da; }  /* red    */

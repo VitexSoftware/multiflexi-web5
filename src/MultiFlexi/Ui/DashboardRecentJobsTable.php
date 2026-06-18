@@ -68,14 +68,14 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
 
                     if ($job['exitcode'] === null) {
                         if ($job['begin'] && !$job['end']) {
-                            $statusBadge = new \Ease\TWB5\Badge('primary', '▶️ '._('Running'));
+                            $statusBadge = new \Ease\TWB5\Badge('▶️ '._('Running'), 'primary');
                         } else {
                             // Job not started yet - check if scheduled
                             if ($job['schedule_id']) {
                                 // Has schedule entry - waiting in queue
                                 $queuePosition = $scheduledCounts[$job['id']] ?? '?';
                                 $totalInQueue = \count($scheduledCounts);
-                                $statusBadge = new \Ease\TWB5\Badge('info', sprintf('📅 #%s/%s %s', $queuePosition, $totalInQueue, _('in queue')));
+                                $statusBadge = new \Ease\TWB5\Badge(sprintf('📅 #%s/%s %s', $queuePosition, $totalInQueue, _('in queue')), 'info');
                             } else {
                                 // No schedule entry - orphaned job (queue was cleared) - make it clickable
                                 $orphanedLink = new \Ease\Html\ATag('reschedule.php?job_id='.$job['id'], '⚠️ '._('Orphaned'), ['class' => 'badge text-bg-warning', 'style' => 'text-decoration: none;', 'title' => _('Click to re-schedule this job')]);
@@ -83,9 +83,9 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
                             }
                         }
                     } elseif ((int) $job['exitcode'] === 0) {
-                        $statusBadge = new \Ease\TWB5\Badge('success', '✓ '._('Success'));
+                        $statusBadge = new \Ease\TWB5\Badge('✓ '._('Success'), 'success');
                     } else {
-                        $statusBadge = new \Ease\TWB5\Badge('danger', '✗ '._('Failed').' ('.$job['exitcode'].')');
+                        $statusBadge = new \Ease\TWB5\Badge('✗ '._('Failed').' ('.$job['exitcode'].')', 'danger');
                     }
 
                     // Create links with emoticons
@@ -129,10 +129,10 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
 
                 $this->addItem($table);
             } else {
-                $this->addItem(new \Ease\TWB5\Badge('info', _('No recent jobs')));
+                $this->addItem(new \Ease\TWB5\Badge(_('No recent jobs'), 'info'));
             }
         } catch (\Exception $e) {
-            $this->addItem(new \Ease\TWB5\Badge('danger', _('Error loading recent jobs: ').$e->getMessage()));
+            $this->addItem(new \Ease\TWB5\Badge(_('Error loading recent jobs: ').$e->getMessage(), 'danger'));
         }
     }
 }

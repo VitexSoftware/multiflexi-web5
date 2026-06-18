@@ -95,7 +95,7 @@ $addInfo = static function (\Ease\Html\DivTag $container, string $label, $value)
     ], ['class' => 'col-6 col-md-3']));
 };
 
-$addInfo($infoRows, _('State'), new \Ease\TWB5\Badge($badgeType, $icon.' '._($state)));
+$addInfo($infoRows, _('State'), new \Ease\TWB5\Badge($icon.' '._($state), $badgeType));
 $addInfo($infoRows, _('Window'), ($windowStart ? $windowStart->format('Y-m-d H:i:s') : '—').' → '.($windowEnd ? $windowEnd->format('Y-m-d H:i:s') : '—'));
 $addInfo($infoRows, _('Deadline'), new \Ease\Html\SpanTag($deadline ? $deadline->format('Y-m-d H:i:s') : '—', $deadlineMissed ? ['class' => 'text-danger fw-bold'] : []));
 $addInfo($infoRows, _('Attempts'), (string) $task->getDataValue('attempts'));
@@ -141,7 +141,7 @@ foreach ($streakRows as $row) {
     }
 }
 
-$streakBadge = new \Ease\TWB5\Badge($badgeType, '🔥 '.sprintf(_('%d %s in a row'), $streakCount, _($state)));
+$streakBadge = new \Ease\TWB5\Badge('🔥 '.sprintf(_('%d %s in a row'), $streakCount, _($state)), $badgeType);
 
 // ── Task panel ──────────────────────────────────────────────────────────────
 $taskPanel = new \Ease\TWB5\Panel([_('Task Information'), ' ', $streakBadge], $badgeType, $infoRows);
