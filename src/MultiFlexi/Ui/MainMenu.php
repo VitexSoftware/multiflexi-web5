@@ -92,30 +92,9 @@ class MainMenu extends \Ease\Html\DivTag
                 $this->adminMenuEnabled($nav);
             }
 
-            // $nav->addMenuItem(new \Ease\Html\ATag('logs.php', '<img height=30 src=images/log.svg> ' . _('Logs')), 'right');
-
-            $nav->addDropDownMenu('<img height=30 src=images/log.svg> '._('Logs'), [
-                'logs.php' => '📖&nbsp;'._('System'),
-                'joblist.php' => '🏁&nbsp;'._('Jobs'),
-                'tasks.php' => '📋&nbsp;'._('Tasks'),
-                'queue.php' => '⏳&nbsp;'._('Job queue'),
-                'dashboard.php' => '📊&nbsp;'._('Dashboard'),
-            ]);
-
             $this->integrationsMenuEnabled($nav);
 
-            // Privacy menu with dropdown
-            $privacyMenu = [
-                'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy Preferences'),
-                'data-export-page.php' => new \Ease\TWB5\Widgets\BsIcon('download').' '._('Export My Data'),
-                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\BsIcon('person-x').' '._('Request Account Deletion'),
-                '' => '',
-                'privacy-policy.php' => new \Ease\TWB5\Widgets\BsIcon('shield').' '._('Privacy Policy'),
-                'cookie-policy.php' => new \Ease\TWB5\Widgets\BsIcon('cookie').' '._('Cookie Policy'),
-            ];
-            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy'), $privacyMenu);
-
-            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=30 src=images/application-exit.svg> '._('Sign Off')), 'right');
+            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=24 src=images/application-exit.svg>', ['title' => _('Sign Off')]), 'right');
 
             if (\MultiFlexi\Runner::isServiceActive('multiflexi-scheduler.service') === false) {
                 WebPage::singleton()->addStatusMessage(_('My Scheduler systemd service is not running. Consider `systemctl start multiflexi-scheduler`'), 'warning');
@@ -277,6 +256,7 @@ class MainMenu extends \Ease\Html\DivTag
                 'profile.php' => new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('My Profile'),
                 'createaccount.php' => '🤬&nbsp;'._('New Admin'),
                 'createuser.php' => '👤&nbsp;'._('New User Account'),
+                'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
                 'envmods.php' => '🌦️&nbsp;'._('Environment Modules'),
                 'actionmodules.php' => '🤖&nbsp;'._('Actions'),
                 'executors.php' => '🚀&nbsp;'._('Executors'),
@@ -285,7 +265,17 @@ class MainMenu extends \Ease\Html\DivTag
                 'admin-deletion-requests.php' => '🗑️&nbsp;'._('Deletion Requests'),
                 'admin-data-corrections.php' => '✏️&nbsp;'._('Data Corrections'),
                 '' => '',
-                'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
+                'logs.php' => '📖&nbsp;'._('System log'),
+                'joblist.php' => '🏁&nbsp;'._('Jobs'),
+                'tasks.php' => '📋&nbsp;'._('Tasks'),
+                'queue.php' => '⏳&nbsp;'._('Job queue'),
+                'dashboard.php' => '📊&nbsp;'._('Dashboard'),
+                ' ' => '',
+                'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').'&nbsp;'._('Privacy Preferences'),
+                'data-export-page.php' => new \Ease\TWB5\Widgets\BsIcon('download').'&nbsp;'._('Export My Data'),
+                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\BsIcon('person-x').'&nbsp;'._('Request Account Deletion'),
+                'privacy-policy.php' => new \Ease\TWB5\Widgets\BsIcon('shield').'&nbsp;'._('Privacy Policy'),
+                'cookie-policy.php' => new \Ease\TWB5\Widgets\BsIcon('cookie').'&nbsp;'._('Cookie Policy'),
             ],
         );
     }
