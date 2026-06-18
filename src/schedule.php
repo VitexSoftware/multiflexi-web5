@@ -86,6 +86,8 @@ if (null === $runTemplate->getMyKey()) {
         }
 
         // Check all required fields (text and file)
+        $missingFields = [];
+
         foreach ($runTemplate->getEnvironment() as $field) {
             if ($field->isRequired() && empty($field->getValue())) {
                 $code = $field->getCode();
@@ -93,10 +95,12 @@ if (null === $runTemplate->getMyKey()) {
                 if ($field->getType() === 'file-path') {
                     if (empty($uploadedFiles[$code])) {
                         $allFieldsFilled = false;
+                        $missingFields[] = $field->getDescription() ?: $code;
                     }
-                } else {
+                } elseif ($field->getType() !== 'bool') {
                     if (empty(WebPage::getRequestValue($code))) {
                         $allFieldsFilled = false;
+                        $missingFields[] = $field->getDescription() ?: $code;
                     }
                 }
             }
@@ -196,6 +200,10 @@ EOD);
             WebPage::singleton()->container->addItem(new CompanyPanel($company, $appPanel));
         } else {
             // Not all required fields filled, re-show form with persisted file references
+            $runTemplate->addStatusMessage(
+                sprintf(_('Job not scheduled. Please fill in required fields: %s'), implode(', ', $missingFields)),
+                'warning',
+            );
             $appPanel = new ApplicationPanel($app, new JobScheduleForm($runTemplate, $uploadedFiles));
             $appPanel->headRow->addItem(new RuntemplateButton($runTemplate));
             WebPage::singleton()->container->addItem(new CompanyPanel($company, [$appPanel]));
