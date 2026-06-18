@@ -57,24 +57,28 @@ class CompanyAppsBar extends \Ease\Html\DivTag
                     $statusIcons .= '💣';
                 }
 
-                // Hourglass emoji if there is a scheduled future job for this runtemplate
+                // Hourglass link if there is a scheduled future job for this runtemplate
                 $scheduler = new \MultiFlexi\Scheduler();
                 $futureJob = $scheduler->listingQuery()
-                    ->select(['schedule.id'], true)
+                    ->select(['schedule.id', 'schedule.job'], true)
                     ->leftJoin('job ON job.id = schedule.job')
                     ->where('job.runtemplate_id = ? AND schedule.after > ?', [$job['runtemplate_id'], date('Y-m-d H:i:s')])
                     ->order('schedule.after ASC')
                     ->limit(1)
                     ->fetchAll();
 
-                if ($futureJob) {
-                    $statusIcons .= '⏳';
+                $companyAppStatus = new \Ease\Html\SpanTag([
+                    new \Ease\Html\ATag('job.php?id='.$job['id'], new ExitCode($job['exitcode'], ['style' => 'font-size: 2.0em; font-family: monospace;'])),
+                ]);
+
+                if ($job['begin'] && empty($job['end'])) {
+                    $companyAppStatus->addItem('💣');
                 }
 
-                $companyAppStatus = new \Ease\Html\ATag(
-                    'job.php?id='.$job['id'],
-                    new ExitCode($job['exitcode'], ['style' => 'font-size: 2.0em; font-family: monospace;']).$statusIcons,
-                );
+                if ($futureJob) {
+                    $futureJobId = $futureJob[0]['job'];
+                    $companyAppStatus->addItem(new \Ease\Html\ATag('job.php?id='.$futureJobId, '⏳', ['title' => _('Job waiting for execution')]));
+                }
             } else {
                 $companyAppStatus = new \Ease\TWB5\Badge('🪤', 'disabled', ['style' => 'font-size: 2.0em; font-family: monospace;']);
             }
