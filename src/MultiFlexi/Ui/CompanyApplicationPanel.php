@@ -60,7 +60,7 @@ class CompanyApplicationPanel extends Panel
 
         $usageTable = new \Ease\TWB5\Table(null, ['class' => 'table table-sm table-hover mb-0', 'style' => 'font-size: 0.85rem;']);
         $usageTable->addRowColumns([
-            [new \Ease\Html\SmallTag(_('Count'), ['class' => 'text-dark']), '&nbsp;', new \Ease\TWB5\Badge('primary', (string) $crls->count())],
+            [new \Ease\Html\SmallTag(_('Count'), ['class' => 'text-dark']), '&nbsp;', new \Ease\TWB5\Badge((string) $crls->count(), 'primary')],
             $crls,
         ]);
 
