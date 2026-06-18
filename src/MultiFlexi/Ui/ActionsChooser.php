@@ -115,6 +115,6 @@ class ActionsChooser extends \Ease\Html\DivTag
         }
 
         // If no inputs method exists, return empty badge
-        return new \Ease\TWB5\Badge('secondary', _('No configuration required'));
+        return new \Ease\TWB5\Badge(_('No configuration required'), 'secondary');
     }
 }

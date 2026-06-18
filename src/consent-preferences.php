@@ -119,7 +119,7 @@ foreach ($consentTypes as $type => $config) {
     if ($config['required']) {
         $switch->setValue(true);
         $switch->setTagProperty('disabled', 'disabled');
-        $panel->addItem(new \Ease\TWB5\Badge('success', _('Required')));
+        $panel->addItem(new \Ease\TWB5\Badge(_('Required'), 'success'));
         $panel->addItem(new \Ease\Html\PTag(''));
     }
 

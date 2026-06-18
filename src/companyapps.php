@@ -195,7 +195,7 @@ foreach ($allApps as $app) {
             $tag = trim($tag);
 
             if (!empty($tag)) {
-                $badge = new \Ease\TWB5\Badge('secondary', $tag, ['class' => 'me-1 mb-1 tag-badge']);
+                $badge = new \Ease\TWB5\Badge($tag, 'secondary', ['class' => 'me-1 mb-1 tag-badge']);
                 $tagBadges->addItem($badge);
             }
         }

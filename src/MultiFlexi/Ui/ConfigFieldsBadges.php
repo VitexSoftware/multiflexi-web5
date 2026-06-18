@@ -35,7 +35,7 @@ class ConfigFieldsBadges extends Container
         parent::__construct();
 
         foreach ($content as $conf) {
-            $this->addItem(new Badge(\array_key_exists('state', $conf) ? $conf['state'] : 'secondary', $conf['type'].' '.$conf['keyname']));
+            $this->addItem(new Badge($conf['type'].' '.$conf['keyname'], \array_key_exists('state', $conf) ? $conf['state'] : 'secondary'));
             $this->addItem(' ');
         }
     }

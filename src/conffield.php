@@ -75,26 +75,26 @@ $cfgs = new \Ease\Html\UlTag();
 foreach ($conffields->appConfigs($appId) as $configInfo) {
     $cnfRow = new Row();
     $cnfRow->addColumn(1, $configInfo['type']);
-    $cnfRow->addColumn(3, new ATag('conffield.php?app_id='.$appId.'&id='.$configInfo['id'], new \Ease\TWB5\Badge('success', $configInfo['keyname'])));
+    $cnfRow->addColumn(3, new ATag('conffield.php?app_id='.$appId.'&id='.$configInfo['id'], new \Ease\TWB5\Badge($configInfo['keyname'], 'success')));
     $cnfRow->addColumn(2, !empty($configInfo['name']) ? $configInfo['name'] : '');
     $cnfRow->addColumn(3, $configInfo['description']);
 
     $flags = new \Ease\Html\SpanTag();
 
     if (!empty($configInfo['required'])) {
-        $flags->addItem(new \Ease\TWB5\Badge('warning', _('required')));
+        $flags->addItem(new \Ease\TWB5\Badge(_('required'), 'warning'));
     }
 
     if (!empty($configInfo['secret'])) {
-        $flags->addItem(new \Ease\TWB5\Badge('dark', _('secret')));
+        $flags->addItem(new \Ease\TWB5\Badge(_('secret'), 'dark'));
     }
 
     if (!empty($configInfo['multiline'])) {
-        $flags->addItem(new \Ease\TWB5\Badge('info', _('multiline')));
+        $flags->addItem(new \Ease\TWB5\Badge(_('multiline'), 'info'));
     }
 
     if (!empty($configInfo['expiring'])) {
-        $flags->addItem(new \Ease\TWB5\Badge('danger', _('expiring')));
+        $flags->addItem(new \Ease\TWB5\Badge(_('expiring'), 'danger'));
     }
 
     $cnfRow->addColumn(2, $flags);

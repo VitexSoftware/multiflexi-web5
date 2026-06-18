@@ -269,8 +269,8 @@ $table->addRowHeaderColumns([
 
 foreach ($policies as $policy) {
     $statusBadge = $policy['enabled']
-        ? new Badge('success', _('Enabled'))
-        : new Badge('secondary', _('Disabled'));
+        ? new Badge(_('Enabled'), 'success')
+        : new Badge(_('Disabled'), 'secondary');
 
     $toggleForm = new Form('post', '', ['style' => 'display: inline;']);
     $toggleForm->addItem(new \Ease\Html\InputHiddenTag('action', 'toggle_policy'));

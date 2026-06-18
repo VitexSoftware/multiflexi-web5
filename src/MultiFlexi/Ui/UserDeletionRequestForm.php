@@ -168,7 +168,7 @@ class UserDeletionRequestForm extends SecureForm
         $hardOption->addItem(' ');
         $hardOption->addItem(new \Ease\Html\StrongTag(_('Hard Deletion')));
         $hardOption->addItem(' ');
-        $hardOption->addItem(new \Ease\TWB5\Badge('danger', _('Requires Admin Approval')));
+        $hardOption->addItem(new \Ease\TWB5\Badge(_('Requires Admin Approval'), 'danger'));
         $hardOption->addItem(new \Ease\Html\PTag());
         $hardOption->addItem(_('Permanently removes all user data except what\'s required for legal compliance. Cannot be undone.'));
 
@@ -178,7 +178,7 @@ class UserDeletionRequestForm extends SecureForm
         $anonymizeOption->addItem(' ');
         $anonymizeOption->addItem(new \Ease\Html\StrongTag(_('Data Anonymization')));
         $anonymizeOption->addItem(' ');
-        $anonymizeOption->addItem(new \Ease\TWB5\Badge('warning', _('Requires Admin Approval')));
+        $anonymizeOption->addItem(new \Ease\TWB5\Badge(_('Requires Admin Approval'), 'warning'));
         $anonymizeOption->addItem(new \Ease\Html\PTag());
         $anonymizeOption->addItem(_('Replaces personal data with anonymous values while preserving data structure. Account will be disabled.'));
 

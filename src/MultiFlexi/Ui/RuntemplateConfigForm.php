@@ -158,21 +158,21 @@ CSS);
 
             if ($field->isRequired()) {
                 $styleTarget->addTagClass('required-field');
-                $flags->addItem(new \Ease\TWB5\Badge('danger', _('required')));
+                $flags->addItem(new \Ease\TWB5\Badge(_('required'), 'danger'));
             }
 
             if ($field->isSecret()) {
                 $styleTarget->addTagClass('secret-field');
-                $flags->addItem(new \Ease\TWB5\Badge('dark', '🔒 '._('secret')));
+                $flags->addItem(new \Ease\TWB5\Badge('🔒 '._('secret'), 'dark'));
             }
 
             if ($field->isExpiring()) {
                 $styleTarget->addTagClass('expiring-field');
-                $flags->addItem(new \Ease\TWB5\Badge('warning', '⏳ '._('expiring')));
+                $flags->addItem(new \Ease\TWB5\Badge('⏳ '._('expiring'), 'warning'));
             }
 
             if ($field->isMultiLine()) {
-                $flags->addItem(new \Ease\TWB5\Badge('info', _('multiline')));
+                $flags->addItem(new \Ease\TWB5\Badge(_('multiline'), 'info'));
             }
 
             if (!empty($flags->pageParts)) {

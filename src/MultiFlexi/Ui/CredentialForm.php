@@ -128,7 +128,7 @@ class CredentialForm extends SecureForm
                     if ($lastJobInfo) {
                         $companyAppStatus = new ATag('job.php?id='.$lastJobInfo[0]['id'], new ExitCode($lastJobInfo[0]['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), ['class' => 'btn btn-inverse btn-sm']);
                     } else {
-                        $companyAppStatus = new Badge('disabled', '🪤', ['style' => 'font-size: 1.0em; font-family: monospace;']);
+                        $companyAppStatus = new Badge('🪤', 'disabled', ['style' => 'font-size: 1.0em; font-family: monospace;']);
                     }
 
                     $runtemplatesDiv->addItem(new DivTag([new ATag('runtemplate.php?id='.$runtemplateData['runtemplate_id'], '⚗ ️#'.$runtemplateData['runtemplate_id'].'&nbsp;'.$runtemplateData['name'], ['class' => 'btn-sm', 'title' => $runtemplateData['name']]), $companyAppStatus], ['class' => 'btn-group', 'role' => 'group']));

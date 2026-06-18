@@ -62,7 +62,7 @@ class EnvironmentView extends \Ease\Html\TableTag
         if ($field->isSecret()) {
             $envData['value'] = preg_replace('(.)', '*', $envData['value']);
         } else {
-            $envData['value'] = new \Ease\TWB5\Badge('inverse', $field->getDefaultValue(), ['title' => _('Default Value')]);
+            $envData['value'] = new \Ease\TWB5\Badge($field->getDefaultValue(), 'inverse', ['title' => _('Default Value')]);
         }
 
         //            if(empty($envData['value'])){

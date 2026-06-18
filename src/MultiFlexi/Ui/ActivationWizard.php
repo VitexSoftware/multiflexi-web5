@@ -545,7 +545,7 @@ EOD,
                 $slugsContainer = new \Ease\Html\DivTag(null, ['class' => 'mb-2']);
 
                 foreach ($appCompanies[$appData['id']] as $slug) {
-                    $slugsContainer->addItem(new \Ease\TWB5\Badge('info', $slug, ['class' => 'me-1 mb-1']));
+                    $slugsContainer->addItem(new \Ease\TWB5\Badge($slug, 'info', ['class' => 'me-1 mb-1']));
                 }
 
                 $cardBody->addItem($slugsContainer);
@@ -559,7 +559,7 @@ EOD,
                     $tag = trim($tag);
 
                     if (!empty($tag)) {
-                        $badge = new \Ease\TWB5\Badge('secondary', $tag, ['class' => 'me-1 mb-1 tag-badge']);
+                        $badge = new \Ease\TWB5\Badge($tag, 'secondary', ['class' => 'me-1 mb-1 tag-badge']);
                         $badge->setTagProperty('data-tag', $tag);
                         $tagBadges->addItem($badge);
                     }

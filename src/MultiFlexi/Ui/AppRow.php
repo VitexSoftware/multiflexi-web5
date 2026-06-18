@@ -55,7 +55,7 @@ class AppRow extends \Ease\TWB5\Row
         if (empty($uploadFields)) {
             $intervalChooser = new \MultiFlexi\Ui\IntervalChooser($appId.'_interval', \array_key_exists('interv', $appData) ? $appData['interv'] : 'n', ['id' => $appId.'_interval', 'data-company' => $appData['company_id'], 'checked' => 'true', 'data-app' => $appId]);
         } else {
-            $intervalChooser = new \Ease\TWB5\Badge('info', _('Upload field does not allow application scheduling'));
+            $intervalChooser = new \Ease\TWB5\Badge(_('Upload field does not allow application scheduling'), 'info');
         }
 
         if (\array_key_exists('runtemplateid', $appData)) {

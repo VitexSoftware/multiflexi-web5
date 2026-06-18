@@ -99,7 +99,7 @@ class TaskSuccessChart extends \Ease\Html\DivTag
                 $this->addItem(new \Ease\TWB5\Alert('info', _('No completed tasks in the last 14 days yet.')));
             }
         } catch (\Exception $e) {
-            $this->addItem(new \Ease\TWB5\Badge('danger', _('Chart error: ').$e->getMessage()));
+            $this->addItem(new \Ease\TWB5\Badge(_('Chart error: ').$e->getMessage(), 'danger'));
         }
     }
 }

@@ -60,6 +60,6 @@ class LaunchJob extends \MultiFlexi\Action\ChainRuntemplate
      */
     public function configForm(): \Ease\Embedable
     {
-        return new \Ease\TWB5\Badge('info', _('No additional configuration required'));
+        return new \Ease\TWB5\Badge(_('No additional configuration required'), 'info');
     }
 }

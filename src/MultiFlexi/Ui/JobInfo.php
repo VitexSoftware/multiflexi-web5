@@ -63,7 +63,7 @@ class JobInfo extends \Ease\Html\DivTag
             $launcherBadge = new \Ease\Html\ATag('user.php?id='.$launcher->getMyKey(), new \Ease\TWB5\Badge($userBadgeClass, $userLabel));
         } else {
             // Fallback for old records without user
-            $launcherBadge = new \Ease\TWB5\Badge('warning', '⏰ '._('Timer'));
+            $launcherBadge = new \Ease\TWB5\Badge('⏰ '._('Timer'), 'warning');
         }
 
         $jobInfoRow->addColumn(1, [_('Launched by').'<br>', $launcherBadge]);

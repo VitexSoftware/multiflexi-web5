@@ -76,7 +76,7 @@ class CompanyAppsBar extends \Ease\Html\DivTag
                     new ExitCode($job['exitcode'], ['style' => 'font-size: 2.0em; font-family: monospace;']).$statusIcons,
                 );
             } else {
-                $companyAppStatus = new \Ease\TWB5\Badge('disabled', '🪤', ['style' => 'font-size: 2.0em; font-family: monospace;']);
+                $companyAppStatus = new \Ease\TWB5\Badge('🪤', 'disabled', ['style' => 'font-size: 2.0em; font-family: monospace;']);
             }
 
             $companyAppCard->addItem(new \Ease\Html\DivTag(new \Ease\Html\H5Tag(_($companyApp['name']), ['class' => 'card-title']), ['class' => 'card-body']));
