@@ -35,7 +35,7 @@ class CompanyRuntemplatesLinks extends \Ease\Html\DivTag
         if ($runtemplatesRaw->count()) {
             WebPage::singleton()->addCss(<<<'CSS'
                 .runtemplate-compact-group .btn { padding: 0.1rem 0.4rem; font-size: 0.75rem; line-height: 1.5; }
-                .runtemplate-compact-id { font-weight: 500; background-color: #f1f3f5; color: #495057; border-color: #dee2e6; }
+                .btn.runtemplate-compact-id { font-weight: 500; background-color: #f1f3f5; color: #495057; border-color: #dee2e6; }
                 .runtemplate-compact-status { min-width: 24px; text-align: center; }
                 .runtemplate-compact-queued { padding: 0.1rem 0.3rem !important; }
 CSS);
