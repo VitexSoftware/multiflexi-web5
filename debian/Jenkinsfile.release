@@ -1,6 +1,7 @@
 #!groovy
 
-String[] distributions = ['debian:bookworm', 'debian:trixie', 'debian:forky', 'ubuntu:jammy', 'ubuntu:noble', 'ubuntu:resolute']
+// ubuntu:resolute (25.04) excluded: libjs-jquery-datatables, libjs-jquery-selectize.js, php-goat1000-svggraph not yet packaged for resolute
+String[] distributions = ['debian:bookworm', 'debian:trixie', 'debian:forky', 'ubuntu:jammy', 'ubuntu:noble']
 
 String vendor = 'vitexsoftware'
 String imagePrefix = 'multiflexi-'
