@@ -91,9 +91,21 @@ try {
     error_log('Failed to initialize database connection: '.$e->getMessage());
 }
 
-// Security middleware components use MySQL-specific DDL (AUTO_INCREMENT, ON DUPLICATE KEY UPDATE).
-// Skip them entirely when running on SQLite to avoid noisy but harmless notices.
-$useSecurityComponents = $pdo && !\in_array(Shared::cfg('DB_CONNECTION'), ['sqlite', 'sqlite3'], true);
+// Security middleware components (BruteForce, RBAC, 2FA, RateLimiter, Encryption, Audit) use
+// MySQL/PostgreSQL-specific DDL (AUTO_INCREMENT, ON DUPLICATE KEY UPDATE) and are not yet
+// portable to SQLite. They are skipped when running on SQLite. This means brute-force protection,
+// RBAC, and 2FA are NOT active for SQLite deployments — use MySQL or PostgreSQL in production.
+$isSqliteDriver = \in_array(Shared::cfg('DB_CONNECTION'), ['sqlite', 'sqlite3'], true);
+
+if ($pdo && $isSqliteDriver) {
+    error_log(
+        'MultiFlexi: Security components (BruteForce, RBAC, 2FA, RateLimiter, DataEncryption, AuditLog) '.
+        'are DISABLED because the SQLite driver does not support their schema. '.
+        'Use MySQL or PostgreSQL for a production deployment with full security controls.',
+    );
+}
+
+$useSecurityComponents = $pdo && !$isSqliteDriver;
 
 // Initialize brute force protection (disabled temporarily)
 if ($useSecurityComponents && Shared::cfg('BRUTE_FORCE_PROTECTION_ENABLED', true) && class_exists('\MultiFlexi\Security\BruteForceProtection')) {
