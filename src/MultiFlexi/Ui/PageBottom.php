@@ -82,6 +82,8 @@ class PageBottom extends \Ease\Html\FooterTag
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('book').'&nbsp;', new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Documentation'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('info-circle').'&nbsp;', new \Ease\Html\ATag('about.php', _('About MultiFlexi'))]),
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('github').'&nbsp;', new \Ease\Html\ATag('https://github.com/VitexSoftware/MultiFlexi/', _('Source code'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
+            new \Ease\Html\H5Tag(_('Browsing History')),
+            new \Ease\Html\Widgets\BrowsingHistory(),
         ];
 
         $drawer = new \Ease\TWB5\OffCanvas('helpOffCanvas', new \Ease\TWB5\Widgets\BsIcon('question-circle').'&nbsp;'._('Help & Information'), $body, 'end');
