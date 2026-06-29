@@ -4809,8 +4809,8 @@ msgid ""
 " %s). Status: %s"
 msgstr ""
 
-#: src/index.php:26
-msgid "There is no administrators in the database."
+#: src/login.php:74
+msgid "There are no administrators in the database."
 msgstr "V databázi nejsou žádní administrátoři."
 
 #: src/index.php:27
@@ -4915,25 +4915,29 @@ msgstr ""
 msgid "Your session has expired. Please log in again."
 msgstr ""
 
-#: src/login.php:70
-msgid "Invalid security token. Please try again."
-msgstr ""
+#: src/login.php:86
+msgid "Invalid security token. Please clear cookies and try again."
+msgstr "Neplatný bezpečnostní token. Vymažte prosím cookies a zkuste to znovu."
 
 #: src/login.php:82
 msgid "Too many login attempts. Please try again later."
 msgstr ""
 
-#: src/login.php:135
-msgid "Welcome to MultiFlexi"
-msgstr "Vítejte v MultiFlexi"
+#: src/login.php:123 src/login.php:143
+msgid "Invalid login or password"
+msgstr "Neplatné přihlašovací jméno nebo heslo"
 
-#: src/login.php:139
+#: src/login.php:168
+msgid "Recover your password"
+msgstr "Obnovit heslo"
+
+#: src/login.php:158
+msgid "Sign in to MultiFlexi"
+msgstr "Přihlaste se do MultiFlexi"
+
+#: src/login.php:160
 msgid "Sign in"
 msgstr "Přihlásit se"
-
-#: src/login.php:155
-msgid "the username you chose"
-msgstr "uživatelské jméno, které jste zvolili"
 
 #: src/logout.php:28
 msgid "Good bye"
