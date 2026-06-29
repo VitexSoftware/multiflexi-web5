@@ -32,18 +32,29 @@ echo "==============================================\n\n";
 
 // Check if required tables exist (created by migrations)
 try {
-    $pdo = new PDO(
-        \Ease\Shared::cfg('DB_CONNECTION').':host='.\Ease\Shared::cfg('DB_HOST').';dbname='.\Ease\Shared::cfg('DB_DATABASE'),
-        \Ease\Shared::cfg('DB_USERNAME'),
-        \Ease\Shared::cfg('DB_PASSWORD'),
-    );
+    $dbConnection = \Ease\Shared::cfg('DB_CONNECTION');
+
+    if (\in_array($dbConnection, ['sqlite', 'sqlite3'], true)) {
+        $pdo = new PDO('sqlite:'.\Ease\Shared::cfg('DB_DATABASE'));
+    } else {
+        $pdo = new PDO(
+            $dbConnection.':host='.\Ease\Shared::cfg('DB_HOST').';dbname='.\Ease\Shared::cfg('DB_DATABASE'),
+            \Ease\Shared::cfg('DB_USERNAME'),
+            \Ease\Shared::cfg('DB_PASSWORD'),
+        );
+    }
 
     // Check for required tables
     $requiredTables = ['user_data_audit', 'user_data_correction_requests'];
     $missingTables = [];
+    $isSqlite = \in_array($dbConnection, ['sqlite', 'sqlite3'], true);
 
     foreach ($requiredTables as $table) {
-        $result = $pdo->query("SHOW TABLES LIKE '{$table}'")->fetch();
+        if ($isSqlite) {
+            $result = $pdo->query("SELECT name FROM sqlite_master WHERE type='table' AND name='{$table}'")->fetch();
+        } else {
+            $result = $pdo->query("SHOW TABLES LIKE '{$table}'")->fetch();
+        }
 
         if (!$result) {
             $missingTables[] = $table;
