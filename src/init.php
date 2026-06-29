@@ -73,13 +73,20 @@ if (class_exists('\MultiFlexi\Security\SessionManager')) {
 $pdo = null;
 
 try {
-    $dsn = Shared::cfg('DB_CONNECTION').':host='.Shared::cfg('DB_HOST').';port='.Shared::cfg('DB_PORT', 3306).';dbname='.\Ease\Shared::cfg('DB_DATABASE').';charset=utf8mb4';
-    $pdo = new \PDO(
-        $dsn,
-        Shared::cfg('DB_USERNAME'),
-        Shared::cfg('DB_PASSWORD'),
-        [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
-    );
+    $dbConnection = Shared::cfg('DB_CONNECTION');
+
+    if (\in_array($dbConnection, ['sqlite', 'sqlite3'], true)) {
+        $dsn = 'sqlite:'.\Ease\Shared::cfg('DB_DATABASE');
+        $pdo = new \PDO($dsn, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    } else {
+        $dsn = $dbConnection.':host='.Shared::cfg('DB_HOST').';port='.Shared::cfg('DB_PORT', 3306).';dbname='.\Ease\Shared::cfg('DB_DATABASE').';charset=utf8mb4';
+        $pdo = new \PDO(
+            $dsn,
+            Shared::cfg('DB_USERNAME'),
+            Shared::cfg('DB_PASSWORD'),
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
+        );
+    }
 } catch (\Exception $e) {
     error_log('Failed to initialize database connection: '.$e->getMessage());
 }
