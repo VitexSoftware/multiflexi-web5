@@ -35,6 +35,19 @@ class DateTimeHelper
      */
     public static function autodetectServerTimezone(): ?string
     {
+        // Method 0: PHP's own date.timezone ini setting — no filesystem access needed.
+        $timezone = ini_get('date.timezone');
+
+        if (!empty($timezone)) {
+            try {
+                new \DateTimeZone($timezone);
+
+                return $timezone;
+            } catch (\Exception $e) {
+                error_log('Invalid timezone from date.timezone ini: '.$timezone);
+            }
+        }
+
         // Method 1: Read /etc/timezone file (Debian/Ubuntu)
         if (file_exists('/etc/timezone')) {
             $timezone = trim(file_get_contents('/etc/timezone'));
