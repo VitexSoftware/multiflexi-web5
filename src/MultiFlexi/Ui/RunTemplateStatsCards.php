@@ -295,32 +295,49 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
 
     private function calculateStats(): array
     {
-        $jobber = new \MultiFlexi\Job();
         $rtId = $this->runtemplate->getMyKey();
 
-        $totalJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->count();
-        $successfulJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('exitcode', 0)->count();
-        $failedJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('exitcode IS NOT NULL')->where('exitcode <> 0')->count();
-        $runningJobs = (int) $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('begin IS NOT NULL')->where('end IS NULL')->count();
-        $successRate = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
-        $lastRun = $jobber->listingQuery()->where('runtemplate_id', $rtId)->where('begin IS NOT NULL')->orderBy('begin DESC')->select('begin', true)->limit(1)->fetchColumn();
+        // One aggregation query instead of six.
+        // CASE WHEN ... THEN 1 END (no ELSE) works on MySQL, PostgreSQL and SQLite:
+        // COUNT() ignores NULLs, so the missing ELSE NULL is intentional.
+        // "end" as a column name inside the WHEN condition is unambiguous to all three
+        // parsers: the CASE-closing END can only appear after a THEN-result, not inside
+        // the boolean condition — the same reason it already works in WHERE clauses.
+        $row = $this->runtemplate->getFluentPDO(true)
+            ->from('job')
+            ->select([
+                'COUNT(*) AS total_jobs',
+                'COUNT(CASE WHEN exitcode = 0 THEN 1 END) AS successful_jobs',
+                'COUNT(CASE WHEN exitcode IS NOT NULL AND exitcode <> 0 THEN 1 END) AS failed_jobs',
+                'COUNT(CASE WHEN begin IS NOT NULL AND end IS NULL THEN 1 END) AS running_jobs',
+                'MAX(begin) AS last_run',
+            ], true)
+            ->where('runtemplate_id', $rtId)
+            ->fetch();
+
+        $totalJobs      = (int) ($row['total_jobs']     ?? 0);
+        $successfulJobs = (int) ($row['successful_jobs'] ?? 0);
+        $failedJobs     = (int) ($row['failed_jobs']    ?? 0);
+        $runningJobs    = (int) ($row['running_jobs']   ?? 0);
+        $successRate    = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
+        $lastRun        = $row['last_run'] ?? null;
 
         $taskCount = 0;
 
         try {
-            $tasker = new \MultiFlexi\Task();
+            $tasker    = new \MultiFlexi\Task();
             $taskCount = (int) $tasker->listingQuery()->where('runtemplate_id', $rtId)->count();
         } catch (\Exception) {
         }
 
         return [
-            'total_jobs' => $totalJobs,
+            'total_jobs'     => $totalJobs,
             'successful_jobs' => $successfulJobs,
-            'failed_jobs' => $failedJobs,
-            'running_jobs' => $runningJobs,
-            'success_rate' => $successRate,
-            'last_run' => $lastRun ?: null,
-            'task_count' => $taskCount,
+            'failed_jobs'    => $failedJobs,
+            'running_jobs'   => $runningJobs,
+            'success_rate'   => $successRate,
+            'last_run'       => $lastRun,
+            'task_count'     => $taskCount,
         ];
     }
 }
