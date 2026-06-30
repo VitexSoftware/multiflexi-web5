@@ -54,7 +54,7 @@ class CompanyAppsBar extends \Ease\Html\DivTag
 
                 // Bomb emoji if job is running (begin set, end not set)
                 if ($job['begin'] && empty($job['end'])) {
-                    $statusIcons .= '💣';
+                    $statusIcons .= '<span class="hourglass-spin">⏳</span>';
                 }
 
                 // Hourglass link if there is a scheduled future job for this runtemplate
@@ -72,7 +72,7 @@ class CompanyAppsBar extends \Ease\Html\DivTag
                 ]);
 
                 if ($job['begin'] && empty($job['end'])) {
-                    $companyAppStatus->addItem('💣');
+                    $companyAppStatus->addItem('<span class="hourglass-spin">⏳</span>');
                 }
 
                 if ($futureJob) {

@@ -125,6 +125,14 @@ class WebPage extends \Ease\TWB5\WebPage
             .table td { vertical-align: middle; }
             .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; }
 
+            /* ── Spinning hourglass for pending/scheduled jobs ───────── */
+            @keyframes hourglass-flip {
+                0%,  40% { transform: rotate(0deg); }
+                50%, 90% { transform: rotate(180deg); }
+                100%     { transform: rotate(360deg); }
+            }
+            .hourglass-spin { display: inline-block; animation: hourglass-flip 3s ease-in-out infinite; }
+
             /* ── Main navbar ─────────────────────────────────────────── */
             .mf-navbar {
                 background: linear-gradient(135deg, #1a1f36 0%, #1e2d4a 60%, #0f3460 100%) !important;

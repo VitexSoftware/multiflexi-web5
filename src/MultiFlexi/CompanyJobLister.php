@@ -336,13 +336,13 @@ class CompanyJobLister extends CompanyJob
                     }
 
                     $dataRowRaw['begin'] = sprintf(
-                        '💣 <span title="%s" style="font-size: 0.85em; white-space: nowrap;">%s</span>%s',
+                        '<span class="hourglass-spin">⏳</span> <span title="%s" style="font-size: 0.85em; white-space: nowrap;">%s</span>%s',
                         htmlspecialchars($dataRowRaw['schedule']),
                         htmlspecialchars($relativeTime),
                         $queueInfo,
                     );
                 } catch (\Exception $e) {
-                    $dataRowRaw['begin'] = '💣 <span style="font-size: 0.85em;">'.htmlspecialchars($dataRowRaw['schedule']).'</span>';
+                    $dataRowRaw['begin'] = '<span class="hourglass-spin">⏳</span> <span style="font-size: 0.85em;">'.htmlspecialchars($dataRowRaw['schedule']).'</span>';
                 }
             } else {
                 $dataRowRaw['begin'] = '<span style="font-size: 0.85em; color: #999;">—</span>';

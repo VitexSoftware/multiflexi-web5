@@ -124,7 +124,7 @@ foreach ($jobs as $job) {
             try {
                 $scheduleTime = new \DateTime($job['schedule'], \MultiFlexi\DateTimeHelper::getConfiguredTimezone());
                 $relativeTime = \MultiFlexi\CompanyJobLister::getRelativeTime($scheduleTime);
-                $jobRow[] = '💣 <span title="'.htmlspecialchars($job['schedule']).'">'.$relativeTime.'</span>';
+                $jobRow[] = '<span class="hourglass-spin">⏳</span> <span title="'.htmlspecialchars($job['schedule']).'">'.$relativeTime.'</span>';
             } catch (\Exception $e) {
                 $jobRow[] = _('Scheduled');
             }
