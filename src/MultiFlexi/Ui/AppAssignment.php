@@ -22,6 +22,7 @@ use Ease\TWB5\Widgets\Toggle;
 use MultiFlexi\Application;
 use MultiFlexi\Company;
 use MultiFlexi\CompanyApp;
+use MultiFlexi\Ui\CompanyLogo;
 
 /**
  * MultiFlexi - Application Launch Form.
@@ -36,7 +37,7 @@ class AppAssignment extends DivTag
     public function __construct(Application $application, $properties = [])
     {
         $companies = new Company();
-        $allCompanies = $companies->listingQuery()->select(['id', 'name'], true)->orderBy('name')->fetchAll();
+        $allCompanies = $companies->listingQuery()->select(['id', 'name', 'logo'], true)->orderBy('name')->fetchAll();
         $companyApp = new CompanyApp();
         $assignedTo = $companyApp->listingQuery()->where('app_id', $application->getMyKey())->fetchAll('company_id');
 
@@ -50,8 +51,10 @@ class AppAssignment extends DivTag
                 (string) $companyData['id'],
                 ['class' => 'company-assign-toggle', 'data-company-id' => $companyData['id'], 'data-app-id' => $application->getMyKey()],
             );
+            $company = new Company($companyData, ['autoload' => false]);
+            $logo = new CompanyLogo($company, ['height' => '32', 'class' => 'me-2 rounded']);
             $assignmentsTable->addRowColumns([
-                new ATag('companyapp.php?company_id='.$companyData['id'].'&app_id='.$application->getMyKey(), $companyData['name']),
+                new ATag('companyapp.php?company_id='.$companyData['id'].'&app_id='.$application->getMyKey(), [$logo, $companyData['name']]),
                 $toggle,
             ]);
         }

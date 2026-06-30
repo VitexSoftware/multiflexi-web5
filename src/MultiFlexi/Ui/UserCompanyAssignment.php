@@ -21,6 +21,7 @@ use Ease\TWB5\Table;
 use Ease\TWB5\Widgets\Toggle;
 use MultiFlexi\Company;
 use MultiFlexi\CompanyUser;
+use MultiFlexi\Ui\CompanyLogo;
 use MultiFlexi\User;
 
 /**
@@ -33,7 +34,7 @@ class UserCompanyAssignment extends DivTag
     public function __construct(User $user, $properties = [])
     {
         $companyEngine = new Company();
-        $allCompanies = $companyEngine->listingQuery()->select(['id', 'name', 'slug'], true)->orderBy('name')->fetchAll();
+        $allCompanies = $companyEngine->listingQuery()->select(['id', 'name', 'slug', 'logo'], true)->orderBy('name')->fetchAll();
 
         $companyUser = new CompanyUser();
         $assignedCompanies = [];
@@ -57,8 +58,10 @@ class UserCompanyAssignment extends DivTag
                 ['class' => 'user-company-assign-toggle', 'data-company-id' => $companyId, 'data-user-id' => $user->getMyKey()],
             );
 
+            $company = new Company($companyData, ['autoload' => false]);
+            $logo = new CompanyLogo($company, ['height' => '32', 'class' => 'me-2 rounded']);
             $assignmentsTable->addRowColumns([
-                new ATag('company.php?id='.$companyId, (string) $companyData['name']),
+                new ATag('company.php?id='.$companyId, [$logo, (string) $companyData['name']]),
                 (string) ($companyData['slug'] ?? ''),
                 $role,
                 $toggle,
