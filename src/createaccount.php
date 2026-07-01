@@ -115,6 +115,15 @@ if (WebPage::singleton()->isPosted()) {
                 \Ease\Shared::user()->addStatusMessage(_('Admin account created'), 'success');
                 $newAdmin->setDataValue('enabled', true);
                 $newAdmin->saveToSQL();
+
+                // Grant the system super_admin RBAC role to the very first user
+                if (\MultiFlexi\Security\RbacHelpers::isAvailable()) {
+                    if (\MultiFlexi\Security\RbacHelpers::assignRoleToUser((int) $newAdmin->getUserID(), 'super_admin', (int) $newAdmin->getUserID())) {
+                        \Ease\Shared::user()->addStatusMessage(_('Super administrator role assigned'), 'success');
+                    } else {
+                        \Ease\Shared::user()->addStatusMessage(_('Could not assign the super administrator role'), 'warning');
+                    }
+                }
             } else {
                 \Ease\Shared::user()->addStatusMessage(_('User account created'), 'success');
             }

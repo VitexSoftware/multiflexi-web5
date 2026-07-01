@@ -86,28 +86,15 @@ class MainMenu extends \Ease\Html\DivTag
             }
 
             $this->eventsMenuEnabled($nav);
-            $this->adminMenuEnabled($nav);
-            // $nav->addMenuItem(new \Ease\Html\ATag('logs.php', '<img height=30 src=images/log.svg> ' . _('Logs')), 'right');
 
-            $nav->addDropDownMenu('<img height=30 src=images/log.svg> '._('Logs'), [
-                'logs.php' => '📖&nbsp;'._('System'),
-                'joblist.php' => '🏁&nbsp;'._('Jobs'),
-                'queue.php' => '⏳&nbsp;'._('Job queue'),
-                'dashboard.php' => '📋&nbsp;'._('Dashboard'),
-            ]);
+            // Show Admin menu only to privileged users.
+            if (!\MultiFlexi\Security\RbacHelpers::isAvailable() || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()) {
+                $this->adminMenuEnabled($nav);
+            }
 
-            // Privacy menu with dropdown
-            $privacyMenu = [
-                'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy Preferences'),
-                'data-export-page.php' => new \Ease\TWB5\Widgets\BsIcon('download').' '._('Export My Data'),
-                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\BsIcon('person-x').' '._('Request Account Deletion'),
-                '' => '',
-                'privacy-policy.php' => new \Ease\TWB5\Widgets\BsIcon('shield').' '._('Privacy Policy'),
-                'cookie-policy.php' => new \Ease\TWB5\Widgets\BsIcon('cookie').' '._('Cookie Policy'),
-            ];
-            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('person-lock').' '._('Privacy'), $privacyMenu);
+            $this->integrationsMenuEnabled($nav);
 
-            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=30 src=images/application-exit.svg> '._('Sign Off')), 'right');
+            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=24 src=images/application-exit.svg>', ['title' => _('Sign Off')]), 'right');
 
             if (\MultiFlexi\Runner::isServiceActive('multiflexi-scheduler.service') === false) {
                 WebPage::singleton()->addStatusMessage(_('My Scheduler systemd service is not running. Consider `systemctl start multiflexi-scheduler`'), 'warning');
@@ -162,6 +149,40 @@ class MainMenu extends \Ease\Html\DivTag
             'eventrules.php' => '📏 '._('Event Rules'),
         ];
         $nav->addDropDownMenu('⚡ '._('Events'), $eventsMenu);
+    }
+
+    /**
+     * Integrations menu.
+     *
+     * Shows links to external services that are installed and configured.
+     * The dropdown is rendered only when at least one integration is available.
+     *
+     * @param \Ease\Html\NavTag $nav
+     */
+    public function integrationsMenuEnabled($nav): void
+    {
+        $integrationsMenu = [];
+
+        // Node-RED — shown only when enabled and a URL is configured
+        if (\Ease\Shared::cfg('NODERED_ENABLED', false) && \Ease\Shared::cfg('NODERED_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('NODERED_URL')] = new \Ease\TWB5\Widgets\BsIcon('diagram-3').'&nbsp;'._('Node-RED');
+        }
+
+        // Zabbix — shown when the Zabbix frontend URL is configured
+        // (ZABBIX_SERVER is the trapper/proxy host, not the web frontend, so a dedicated URL is required)
+        if (\Ease\Shared::cfg('ZABBIX_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('ZABBIX_URL')] = new \Ease\TWB5\Widgets\BsIcon('graph-up').'&nbsp;'._('Zabbix');
+        }
+
+        // OpenTelemetry — shown when enabled and an observability dashboard URL is configured
+        // (OTEL_EXPORTER_OTLP_ENDPOINT is an ingest endpoint, not a browsable UI)
+        if (\Ease\Shared::cfg('OTEL_ENABLED', false) && \Ease\Shared::cfg('OTEL_DASHBOARD_URL')) {
+            $integrationsMenu[\Ease\Shared::cfg('OTEL_DASHBOARD_URL')] = new \Ease\TWB5\Widgets\BsIcon('activity').'&nbsp;'._('OpenTelemetry');
+        }
+
+        if (!empty($integrationsMenu)) {
+            $nav->addDropDownMenu(new \Ease\TWB5\Widgets\BsIcon('puzzle').'&nbsp;'._('Integrations'), $integrationsMenu);
+        }
     }
 
     /**
@@ -231,10 +252,11 @@ class MainMenu extends \Ease\Html\DivTag
     {
         $nav->addDropDownMenu(
             '<img width=30 src=images/system-users.svg> '._('Admin'),
-            array_merge([
+            [
                 'profile.php' => new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('My Profile'),
                 'createaccount.php' => '🤬&nbsp;'._('New Admin'),
                 'createuser.php' => '👤&nbsp;'._('New User Account'),
+                'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
                 'envmods.php' => '🌦️&nbsp;'._('Environment Modules'),
                 'actionmodules.php' => '🤖&nbsp;'._('Actions'),
                 'executors.php' => '🚀&nbsp;'._('Executors'),
@@ -243,8 +265,18 @@ class MainMenu extends \Ease\Html\DivTag
                 'admin-deletion-requests.php' => '🗑️&nbsp;'._('Deletion Requests'),
                 'admin-data-corrections.php' => '✏️&nbsp;'._('Data Corrections'),
                 '' => '',
-                'users.php' => new \Ease\TWB5\Widgets\BsIcon('list').'&nbsp;'._('Users'),
-            ], $this->getMenuList(\Ease\Shared::user())),
+                'logs.php' => '📖&nbsp;'._('System log'),
+                'joblist.php' => '🏁&nbsp;'._('Jobs'),
+                'tasks.php' => '📋&nbsp;'._('Tasks'),
+                'queue.php' => '⏳&nbsp;'._('Job queue'),
+                'dashboard.php' => '📊&nbsp;'._('Dashboard'),
+                ' ' => '',
+                'consent-preferences.php' => new \Ease\TWB5\Widgets\BsIcon('person-lock').'&nbsp;'._('Privacy Preferences'),
+                'data-export-page.php' => new \Ease\TWB5\Widgets\BsIcon('download').'&nbsp;'._('Export My Data'),
+                'gdpr-user-deletion-request.php' => new \Ease\TWB5\Widgets\BsIcon('person-x').'&nbsp;'._('Request Account Deletion'),
+                'privacy-policy.php' => new \Ease\TWB5\Widgets\BsIcon('shield').'&nbsp;'._('Privacy Policy'),
+                'cookie-policy.php' => new \Ease\TWB5\Widgets\BsIcon('cookie').'&nbsp;'._('Cookie Policy'),
+            ],
         );
     }
 
@@ -319,6 +351,13 @@ EOD);
         $namecolumn = $source->getNameColumn();
         $columns = [$source->getkeyColumn(), $namecolumn];
 
+        $accessibleCompanyIds = null;
+
+        if ($source instanceof \MultiFlexi\Company) {
+            $accessibleCompanyIds = array_map('intval', \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies());
+            $accessibleCompanyIds = array_values(array_unique($accessibleCompanyIds));
+        }
+
         if ($icon) {
             $columns[] = $icon;
         }
@@ -328,6 +367,10 @@ EOD);
 
         if ($lister) {
             foreach ($lister as $uID => $uInfo) {
+                if ($accessibleCompanyIds !== null && !\in_array((int) $uID, $accessibleCompanyIds, true)) {
+                    continue;
+                }
+
                 if (null !== $nest && ($nest->getMyKey() === $uID)) {
                     $uInfo[$namecolumn] .= ' ✓';
                 }

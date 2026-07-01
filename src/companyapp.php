@@ -31,6 +31,12 @@ WebPage::singleton()->onlyForLogged();
 $companer = new Company(WebPage::getRequestValue('company_id', 'int'));
 $application = new Application(WebPage::getRequestValue('app_id', 'int'));
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companer->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companer->getRecordName()),
+);
+
 WebPage::singleton()->addItem(new PageTop(_($application->getRecordName()).'@'.$companer->getRecordName()));
 
 // Create CompanyApp object for chart
@@ -118,7 +124,7 @@ foreach ($jobs as $job) {
             try {
                 $scheduleTime = new \DateTime($job['schedule'], \MultiFlexi\DateTimeHelper::getConfiguredTimezone());
                 $relativeTime = \MultiFlexi\CompanyJobLister::getRelativeTime($scheduleTime);
-                $jobRow[] = '💣 <span title="'.htmlspecialchars($job['schedule']).'">'.$relativeTime.'</span>';
+                $jobRow[] = '<span class="hourglass-spin">⏳</span> <span title="'.htmlspecialchars($job['schedule']).'">'.$relativeTime.'</span>';
             } catch (\Exception $e) {
                 $jobRow[] = _('Scheduled');
             }

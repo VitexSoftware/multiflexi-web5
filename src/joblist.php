@@ -23,7 +23,8 @@ $appId = WebPage::singleton()->getRequestValue('app_id');
 $companyId = WebPage::singleton()->getRequestValue('company_id');
 $filter = WebPage::singleton()->getRequestValue('filter');
 
-$engine = new \MultiFlexi\CompanyJobLister();
+// Use filtered job lister that respects user access via RBAC
+$engine = new \MultiFlexi\FilteredCompanyJobLister();
 $objectName = \Ease\Functions::baseClassName($engine);
 
 // Nastavení titulku podle filtru

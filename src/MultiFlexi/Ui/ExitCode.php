@@ -36,7 +36,7 @@ class ExitCode extends \Ease\Html\SpanTag
         $properties['class'] = trim('mf-exit mf-exit-'.$status.' '.($properties['class'] ?? ''));
 
         if (!isset($properties['title'])) {
-            $properties['title'] = $status;
+            $properties['title'] = null === $exitcode ? _('Pending') : $status;
         }
 
         parent::__construct('&nbsp;'.$label.'&nbsp;', $properties);
@@ -64,6 +64,10 @@ class ExitCode extends \Ease\Html\SpanTag
 
         if ($code === -1) {
             return 'secondary';
+        }
+
+        if ($code === 75) {
+            return 'warning'; // EX_TEMPFAIL — credential blocked, deferred
         }
 
         if ($code === 127) {

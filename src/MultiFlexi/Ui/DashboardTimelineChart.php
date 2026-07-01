@@ -84,10 +84,10 @@ class DashboardTimelineChart extends \Ease\Html\DivTag
                 $graph->values(['success' => array_combine($dates, $successData), 'fail' => array_combine($dates, $failData)]);
                 $this->addItem(new \Ease\Html\DivTag($graph->fetch('MultiLineGraph'), ['class' => 'chart-container']));
             } else {
-                $this->addItem(new \Ease\TWB5\Badge('info', _('No execution data for the last 7 days')));
+                $this->addItem(new \Ease\TWB5\Badge(_('No execution data for the last 7 days'), 'info'));
             }
         } catch (\Exception $e) {
-            $this->addItem(new \Ease\TWB5\Badge('danger', _('Error loading timeline: ').$e->getMessage()));
+            $this->addItem(new \Ease\TWB5\Badge(_('Error loading timeline: ').$e->getMessage(), 'danger'));
         }
     }
 }

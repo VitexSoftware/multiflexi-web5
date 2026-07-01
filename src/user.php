@@ -26,8 +26,79 @@ $user_id = WebPage::singleton()->getRequestValue('id', 'int');
 $user = new \MultiFlexi\User($user_id);
 
 if (WebPage::singleton()->isPosted()) {
-    unset($_REQUEST['class']);
-    $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
+    if (WebPage::singleton()->getRequestValue('action') === 'rbac_update') {
+        // Handle RBAC role assignment - only administrators may change roles
+        if (\MultiFlexi\Security\RbacHelpers::isAvailable() && !\MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()) {
+            $user->addStatusMessage(_('Only administrators can modify user roles'), 'danger');
+
+            if (isset($GLOBALS['securityAuditLogger'])) {
+                $GLOBALS['securityAuditLogger']->logEvent(
+                    'access_denied',
+                    "Non-administrator attempted to modify roles for user {$user_id}",
+                    'medium',
+                    (int) \Ease\Shared::user()->getUserID(),
+                    ['target_user_id' => $user_id, 'action' => 'rbac_update'],
+                );
+            }
+        } elseif (\MultiFlexi\Security\RbacHelpers::isAvailable()) {
+            $allRoles = \MultiFlexi\Security\RbacHelpers::getAllRoles();
+            $selectedRoles = $_POST['roles'] ?? [];
+            $currentRoles = $GLOBALS['rbac']->getUserRoles((int) $user_id);
+            $currentRoleIds = array_map(static fn ($r) => (string) $r['id'], $currentRoles);
+
+            // Remove roles that were unchecked
+            foreach ($currentRoleIds as $roleId) {
+                if (!\in_array($roleId, $selectedRoles, true)) {
+                    $GLOBALS['rbac']->removeRoleFromUser((int) $user_id, (int) $roleId);
+                }
+            }
+
+            // Add newly checked roles
+            foreach ($selectedRoles as $roleId) {
+                if (!\in_array($roleId, $currentRoleIds, true)) {
+                    $GLOBALS['rbac']->assignRoleToUser(
+                        (int) $user_id,
+                        (int) $roleId,
+                        (int) \Ease\Shared::user()->getUserID(),
+                    );
+                }
+            }
+
+            $user->addStatusMessage(_('Roles updated'), 'success');
+        }
+    } else {
+        $newPassword = trim((string) WebPage::singleton()->getRequestValue('new_password'));
+        $passwordConfirm = trim((string) WebPage::singleton()->getRequestValue('new_password_confirm'));
+
+        if (!empty($newPassword)) {
+            if ($newPassword !== $passwordConfirm) {
+                $user->addStatusMessage(_('Password confirmation does not match'), 'warning');
+            } else {
+                $passwordValidator = new \MultiFlexi\Security\PasswordValidator(
+                    \Ease\Shared::cfg('PASSWORD_MIN_LENGTH', 8),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_UPPERCASE', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_LOWERCASE', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_NUMBERS', true),
+                    \Ease\Shared::cfg('PASSWORD_REQUIRE_SPECIAL_CHARS', true),
+                );
+                $passwordValidation = $passwordValidator->validate($newPassword);
+
+                if (!$passwordValidation['valid']) {
+                    foreach ($passwordValidation['errors'] as $passwordError) {
+                        $user->addStatusMessage($passwordError, 'warning');
+                    }
+                } elseif ($user->passwordChange($newPassword)) {
+                    $user->addStatusMessage(_('Password changed successfully'), 'success');
+                } else {
+                    $user->addStatusMessage(_('Password change failed'), 'error');
+                }
+            }
+        }
+
+        unset($_REQUEST['new_password'], $_REQUEST['new_password_confirm'], $_REQUEST['class']);
+
+        $user->addStatusMessage(_('Update'), $user->takeData($_REQUEST) && $user->dbsync() ? 'success' : 'error');
+    }
 }
 
 // }
@@ -62,6 +133,20 @@ switch (WebPage::singleton()->getRequestValue('action')) {
         //        $operationsMenu->dropdown->addTagClass('pull-right');
 
         WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(['<strong>'.$user->getUserName().'</strong>'/* $operationsMenu */], 'info', new UserForm($user)));
+
+        // RBAC role management panel
+        WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(
+            '<i class="fas fa-shield-alt"></i> '._('Access Control (RBAC)'),
+            'warning',
+            new \MultiFlexi\Ui\UserRbacForm($user),
+        ));
+
+        // Company assignment panel - show which companies this user is assigned to
+        WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(
+            '<i class="fas fa-building"></i> '._('Company Assignments'),
+            'info',
+            new \MultiFlexi\Ui\UserCompanyAssignment($user),
+        ));
 
         break;
 }

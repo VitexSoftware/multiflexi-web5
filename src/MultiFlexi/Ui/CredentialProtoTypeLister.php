@@ -90,7 +90,7 @@ class CredentialProtoTypeLister extends \Ease\TWB5\Table
                         ['onclick' => 'return confirm(\''._('Really delete credential prototype?').'\');'],
                     ));
                 } else {
-                    $actions->addItem(new \Ease\TWB5\Badge('secondary', _('System')));
+                    $actions->addItem(new \Ease\TWB5\Badge(_('System'), 'secondary'));
                 }
 
                 $row->addItem(new \Ease\Html\TdTag($protoTypeInfo['id']));

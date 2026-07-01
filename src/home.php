@@ -70,10 +70,8 @@ $failedJobsCount = $jobEngine->getFluentPDO()->from($jobEngine->getMyTable())
     ->count();
 
 // Count user's log entries
-$logEngine = new \MultiFlexi\Logger();
-$totalLogsCount = $logEngine->getFluentPDO()->from('log')
-    ->where('log.user_id', $currentUserId)
-    ->count();
+$logEngine = new \MultiFlexi\UserLogger();
+$totalLogsCount = $logEngine->listingQuery()->count();
 
 // Display statistics cards — col-6 col-md-3 = 2×2 on mobile, 4 across on desktop
 $statDefs = [
@@ -92,9 +90,11 @@ foreach ($statDefs as [$count, $label, $numClass, $extra]) {
 
 $container->addItem($statsRow);
 
-// Recent jobs section
-$recentJobsCard = new \Ease\TWB5\Card(_('Recent Jobs'));
+// Collapse the detail sections into an accordion so the dashboard stays
+// compact; Recent Jobs is expanded by default.
+$dashboardAccordion = new \Ease\TWB5\Accordion('homeDashboard');
 
+// Recent jobs section
 // Note: job table uses 'launched_by' text field, showing all recent jobs
 $recentJobs = $jobEngine->getFluentPDO()->from('job j')
     ->select('j.id')
@@ -110,8 +110,8 @@ $recentJobs = $jobEngine->getFluentPDO()->from('job j')
     ->fetchAll() ?: [];
 
 if (!empty($recentJobs)) {
-    $jobsTable = new \Ease\Html\TableTag(null, ['class' => 'table table-sm table-striped']);
-    $jobsTable->addRowHeaderColumns([
+    $recentJobsContent = new \Ease\Html\TableTag(null, ['class' => 'table table-sm table-striped']);
+    $recentJobsContent->addRowHeaderColumns([
         _('ID'),
         _('Application'),
         _('Company'),
@@ -133,7 +133,7 @@ if (!empty($recentJobs)) {
             $statusBadge = new \Ease\TWB5\Badge('⏳ '._('Pending'), 'warning');
         }
 
-        $jobsTable->addRowColumns([
+        $recentJobsContent->addRowColumns([
             new \Ease\Html\ATag('job.php?id='.$job['id'], (string) $job['id']),
             (string) $job['app'],
             (string) $job['company'],
@@ -142,30 +142,22 @@ if (!empty($recentJobs)) {
             $statusBadge,
         ]);
     }
-
-    $recentJobsCard->addItem($jobsTable);
 } else {
-    $recentJobsCard->addItem(new \Ease\TWB5\Alert(_('No jobs found'), 'info'));
+    $recentJobsContent = new \Ease\TWB5\Alert(_('No jobs found'), 'info');
 }
 
-$container->addItem($recentJobsCard);
+$dashboardAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('flag').'&nbsp;'._('Recent Jobs'), $recentJobsContent, true);
 
 // Recent logs section
-$recentLogsCard = new \Ease\TWB5\Card(_('My Recent Activity Log'));
-
-// Create custom logger instance filtered by user_id
-$userLogEngine = new \MultiFlexi\Logger();
-$userLogEngine->filter = ['user_id' => $currentUserId];
-
-// Add DataTable with user's logs
+// Use UserLogger — the user_id filter is enforced server-side in
+// listingQuery(), so it cannot be bypassed via URL tampering.
 WebPage::singleton()->includeJavascript('js/dismisLog.js');
-$recentLogsCard->addItem(new DBDataTable($userLogEngine, ['buttons' => false]));
-
-$container->addItem($recentLogsCard);
+$dashboardAccordion->addAccordionItem(
+    new \Ease\TWB5\Widgets\BsIcon('list-task').'&nbsp;'._('My Recent Activity Log'),
+    new DBDataTable($logEngine, ['buttons' => false]),
+);
 
 // Account information section
-$accountCard = new \Ease\TWB5\Card(_('Account Information'));
-
 $accountInfo = new \Ease\Html\DlTag(null, ['class' => 'row']);
 
 $accountInfo->addItem(new \Ease\Html\DtTag(_('Login'), ['class' => 'col-sm-3']));
@@ -180,13 +172,102 @@ $accountInfo->addItem(new \Ease\Html\DdTag(
     ['class' => 'col-sm-9'],
 ));
 
-$accountCard->addItem($accountInfo);
-$accountCard->addItem(new \Ease\Html\DivTag(
-    new \Ease\TWB5\LinkButton('profile.php', new \Ease\TWB5\Widgets\BsIcon('pencil').' '._('Edit Profile'), 'primary'),
-    ['class' => 'text-end mt-3'],
-));
+$accountContent = new \Ease\Html\DivTag([
+    $accountInfo,
+    new \Ease\Html\DivTag(
+        new \Ease\TWB5\LinkButton('profile.php', new \Ease\TWB5\Widgets\BsIcon('pencil').' '._('Edit Profile'), 'primary'),
+        ['class' => 'text-end mt-3'],
+    ),
+]);
 
-$container->addItem($accountCard);
+$dashboardAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('Account Information'), $accountContent);
+
+// RBAC privileges section
+$rbacContent = new \Ease\Html\DivTag();
+
+try {
+    $accessControl = new \MultiFlexi\Security\CompanyAccessControl();
+    $accessibleCompanyIds = $accessControl->getCurrentUserAccessibleCompanies();
+
+    // RBAC Status
+    $rbacInfo = new \Ease\Html\DlTag(null, ['class' => 'row']);
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Access Control Status'), ['class' => 'col-sm-3']));
+    $statusBadge = \count($accessibleCompanyIds) > 0
+        ? new \Ease\TWB5\Badge('✅ '._('Active'), 'success')
+        : new \Ease\TWB5\Badge('⚠️ '._('No Access'), 'warning');
+    $rbacInfo->addItem(new \Ease\Html\DdTag($statusBadge, ['class' => 'col-sm-9']));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Companies Assigned'), ['class' => 'col-sm-3']));
+    $rbacInfo->addItem(new \Ease\Html\DdTag(
+        (string) \count($accessibleCompanyIds),
+        ['class' => 'col-sm-9'],
+    ));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Current Role'), ['class' => 'col-sm-3']));
+    $roleLabel = _('(none)');
+    if (isset($GLOBALS['rbac'])) {
+        $userRoles = $GLOBALS['rbac']->getUserRoles($currentUserId);
+        if (!empty($userRoles)) {
+            $roleLabel = implode(', ', array_column($userRoles, 'name'));
+        }
+    }
+    $rbacInfo->addItem(new \Ease\Html\DdTag($roleLabel, ['class' => 'col-sm-9']));
+
+    $rbacInfo->addItem(new \Ease\Html\DtTag(_('Data Filtering'), ['class' => 'col-sm-3']));
+    $filteringStatus = new \Ease\TWB5\Badge('🔒 '._('Enabled'), 'info');
+    $rbacInfo->addItem(new \Ease\Html\DdTag($filteringStatus, ['class' => 'col-sm-9']));
+
+    $rbacContent->addItem($rbacInfo);
+
+    // Assigned companies list
+    if (\count($accessibleCompanyIds) > 0) {
+        $rbacContent->addItem('<hr>');
+        $rbacContent->addItem(new \Ease\Html\H5Tag(_('Your Assigned Companies')));
+
+        $companyList = new \Ease\Html\UlTag(null, ['class' => 'list-group list-group-flush']);
+
+        foreach ($accessibleCompanyIds as $companyId) {
+            // Load company by passing ID to constructor
+            $company = new \MultiFlexi\Company((int) $companyId);
+
+            if ($company && $company->getMyKey()) {
+                $listItem = new \Ease\Html\LiTag(null, ['class' => 'list-group-item']);
+                $listItem->addItem(new \Ease\Html\ATag(
+                    'company.php?id='.$company->getMyKey(),
+                    '🏢 '.$company->getRecordName(),
+                ));
+                $companyList->addItem($listItem);
+            }
+        }
+
+        $rbacContent->addItem($companyList);
+    } else {
+        $rbacContent->addItem(new \Ease\TWB5\Alert(
+            _('You have not been assigned to any companies. Contact your administrator to request access.'),
+            'warning',
+        ));
+    }
+} catch (Exception $e) {
+    $rbacContent->addItem(new \Ease\TWB5\Alert(
+        _('Error loading RBAC information').': '.$e->getMessage(),
+        'danger',
+    ));
+}
+
+$dashboardAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('shield-lock').'&nbsp;'._('RBAC Privileges & Access'), $rbacContent);
+
+$container->addItem($dashboardAccordion);
+
+// Recalculate DataTables column widths when a collapsed accordion section
+// holding a table is revealed (tables sized while hidden render at zero width).
+WebPage::singleton()->addJavaScript(<<<'EOD'
+$('#homeDashboard').on('shown.bs.collapse', function () {
+    if ($.fn.dataTable) {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    }
+});
+EOD);
 
 WebPage::singleton()->addItem(new PageBottom());
 WebPage::singleton()->draw();

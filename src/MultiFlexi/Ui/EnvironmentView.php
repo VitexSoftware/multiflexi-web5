@@ -40,13 +40,17 @@ class EnvironmentView extends \Ease\Html\TableTag
 
     public static function sourceView(string $source): \Ease\Html\DivTag
     {
-        if (\Ease\Euri::isValid($source)) {
-            $origin = \Ease\Euri::toObject($source);
+        if (!empty($source) && \Ease\Euri::isValid($source)) {
+            try {
+                $origin = \Ease\Euri::toObject($source);
 
-            if (method_exists($origin, 'getObjectName')) {
-                $source = $origin->getObjectName();
-            } else {
-                $source = \Ease\Functions::baseClassName($origin);
+                if (method_exists($origin, 'getObjectName')) {
+                    $source = $origin->getObjectName();
+                } else {
+                    $source = \Ease\Functions::baseClassName($origin);
+                }
+            } catch (\InvalidArgumentException $e) {
+                // Euri source has empty identifier — show raw source string
             }
         }
 
@@ -58,7 +62,7 @@ class EnvironmentView extends \Ease\Html\TableTag
         if ($field->isSecret()) {
             $envData['value'] = preg_replace('(.)', '*', $envData['value']);
         } else {
-            $envData['value'] = new \Ease\TWB5\Badge('inverse', $field->getDefaultValue(), ['title' => _('Default Value')]);
+            $envData['value'] = new \Ease\TWB5\Badge($field->getDefaultValue(), 'inverse', ['title' => _('Default Value')]);
         }
 
         //            if(empty($envData['value'])){

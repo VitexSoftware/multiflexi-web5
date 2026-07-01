@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8e3a8ebd2c7df3b8f62b9ee8b7f522c3",
+    "content-hash": "54eb429e19ecdd8c7309cf02e2cbe508",
     "packages": [
         {
             "name": "brick/math",
@@ -571,22 +571,21 @@
         },
         {
             "name": "datatables.net/datatables.net",
-            "version": "dev-master",
+            "version": "2.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/Dist-DataTables.git",
-                "reference": "910b3c8293a34d4bacb13c213ec99ac13d3d2dd6"
+                "reference": "77dd1e1b317eefc684166d283f9e5a47011a8442"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables/zipball/910b3c8293a34d4bacb13c213ec99ac13d3d2dd6",
-                "reference": "910b3c8293a34d4bacb13c213ec99ac13d3d2dd6",
+                "url": "https://api.github.com/repos/DataTables/Dist-DataTables/zipball/77dd1e1b317eefc684166d283f9e5a47011a8442",
+                "reference": "77dd1e1b317eefc684166d283f9e5a47011a8442",
                 "shasum": ""
             },
             "require": {
                 "components/jquery": ">=1.7"
             },
-            "default-branch": true,
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -609,27 +608,26 @@
                 "forum": "https://datatables.net/forums",
                 "source": "https://github.com/DataTables/Dist-DataTables"
             },
-            "time": "2026-06-29T21:00:21+00:00"
+            "time": "2026-04-27T09:15:41+00:00"
         },
         {
             "name": "datatables.net/datatables.net-bs5",
-            "version": "dev-master",
+            "version": "2.3.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/DataTables/Dist-DataTables-Bootstrap5.git",
-                "reference": "fddb761f362af402134bde90e409610e60a4d12a"
+                "reference": "fb6bb07ee24644ecefcd5e794c47157e343ef300"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Bootstrap5/zipball/fddb761f362af402134bde90e409610e60a4d12a",
-                "reference": "fddb761f362af402134bde90e409610e60a4d12a",
+                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Bootstrap5/zipball/fb6bb07ee24644ecefcd5e794c47157e343ef300",
+                "reference": "fb6bb07ee24644ecefcd5e794c47157e343ef300",
                 "shasum": ""
             },
             "require": {
                 "datatables.net/datatables.net": ">=1.12.1",
                 "twbs/bootstrap": "5.*"
             },
-            "default-branch": true,
             "type": "library",
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -655,7 +653,105 @@
                 "issues": "https://github.com/DataTables/Dist-DataTables-Bootstrap5/issues",
                 "source": "https://github.com/DataTables/Dist-DataTables-Bootstrap5"
             },
-            "time": "2026-06-29T21:01:06+00:00"
+            "time": "2026-04-27T09:17:27+00:00"
+        },
+        {
+            "name": "datatables.net/datatables.net-buttons",
+            "version": "3.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DataTables/Dist-DataTables-Buttons.git",
+                "reference": "69c84572a3fd605a6eba1619b15f6948ff5fdbce"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Buttons/zipball/69c84572a3fd605a6eba1619b15f6948ff5fdbce",
+                "reference": "69c84572a3fd605a6eba1619b15f6948ff5fdbce",
+                "shasum": ""
+            },
+            "require": {
+                "datatables.net/datatables.net": ">=1.12.1"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SpryMedia",
+                    "homepage": "https://datatables.net"
+                }
+            ],
+            "description": "The Buttons extension for DataTables provides a common set of options, API methods and styling to display buttons on a page that will interact with a DataTable. It also provides plug-ins for file export (HTML5 and Flash), print view and column visibility. Other libraries, such as Editor and Select also provide buttons specific to their use cases. This is Buttons for DataTables",
+            "homepage": "http://www.datatables.net/",
+            "keywords": [
+                "Column Visibility",
+                "buttons",
+                "csv",
+                "datatables",
+                "excel",
+                "jquery",
+                "pdf",
+                "print",
+                "table"
+            ],
+            "support": {
+                "forum": "https://datatables.net/forums",
+                "source": "https://github.com/DataTables/Dist-DataTables-Buttons"
+            },
+            "time": "2025-12-23T12:05:29+00:00"
+        },
+        {
+            "name": "datatables.net/datatables.net-buttons-bs5",
+            "version": "3.2.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/DataTables/Dist-DataTables-Buttons-Bootstrap5.git",
+                "reference": "4526a67f2a43fa99c3334c2f8b5d2f5355d6ad30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/DataTables/Dist-DataTables-Buttons-Bootstrap5/zipball/4526a67f2a43fa99c3334c2f8b5d2f5355d6ad30",
+                "reference": "4526a67f2a43fa99c3334c2f8b5d2f5355d6ad30",
+                "shasum": ""
+            },
+            "require": {
+                "datatables.net/datatables.net-bs5": ">=1.12.1",
+                "datatables.net/datatables.net-buttons": ">=2.2.3"
+            },
+            "type": "library",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "SpryMedia",
+                    "homepage": "https://datatables.net"
+                }
+            ],
+            "description": "The Buttons extension for DataTables provides a common set of options, API methods and styling to display buttons on a page that will interact with a DataTable. It also provides plug-ins for file export (HTML5 and Flash), print view and column visibility. Other libraries, such as Editor and Select also provide buttons specific to their use cases. This is Buttons for DataTables with styling for [Bootstrap5](https://getbootstrap.com/)",
+            "homepage": "http://www.datatables.net/",
+            "keywords": [
+                "Column Visibility",
+                "bootstrap",
+                "bootstrap5",
+                "buttons",
+                "csv",
+                "datatables",
+                "excel",
+                "jquery",
+                "pdf",
+                "print",
+                "table"
+            ],
+            "support": {
+                "forum": "https://datatables.net/forums",
+                "issues": "https://github.com/DataTables/Dist-DataTables-Buttons-Bootstrap5/issues",
+                "source": "https://github.com/DataTables/Dist-DataTables-Buttons-Bootstrap5"
+            },
+            "time": "2025-08-12T10:24:53+00:00"
         },
         {
             "name": "doctrine/lexer",
@@ -7439,6 +7535,57 @@
             "time": "2026-06-14T21:37:41+00:00"
         },
         {
+            "name": "vitexsoftware/multiflexi-zabbix",
+            "version": "dev-main",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/VitexSoftware/multiflexi-zabbix.git",
+                "reference": "ae55203be9f03f7b1cd8241c8091e82045802a1c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/VitexSoftware/multiflexi-zabbix/zipball/ae55203be9f03f7b1cd8241c8091e82045802a1c",
+                "reference": "ae55203be9f03f7b1cd8241c8091e82045802a1c",
+                "shasum": ""
+            },
+            "require": {
+                "vitexsoftware/multiflexi-core": "dev-main"
+            },
+            "require-dev": {
+                "ergebnis/composer-normalize": "^2.50",
+                "ergebnis/php-cs-fixer-config": "^6.60",
+                "friendsofphp/php-cs-fixer": "^3.94",
+                "phpstan/phpstan": "*",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpunit/phpunit": "*"
+            },
+            "default-branch": true,
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "MultiFlexi\\": "src/MultiFlexi/",
+                    "MultiFlexi\\Action\\": "src/MultiFlexi/Action/",
+                    "MultiFlexi\\Zabbix\\": "src/MultiFlexi/Zabbix/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Vítězslav Dvořák",
+                    "email": "info@vitexsoftware.cz"
+                }
+            ],
+            "description": "Zabbix integration for MultiFlexi",
+            "support": {
+                "issues": "https://github.com/VitexSoftware/multiflexi-zabbix/issues",
+                "source": "https://github.com/VitexSoftware/multiflexi-zabbix/tree/main"
+            },
+            "time": "2026-06-09T18:11:32+00:00"
+        },
+        {
             "name": "ybelenko/openapi-data-mocker",
             "version": "1.1.0",
             "source": {
@@ -9012,8 +9159,8 @@
             "version": "2.2.x-dev",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/4048833dd47b377287818841877fb3087289509c",
-                "reference": "4048833dd47b377287818841877fb3087289509c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/f2d2d94fc75007787e1813b66f690e6efd0f27ca",
+                "reference": "f2d2d94fc75007787e1813b66f690e6efd0f27ca",
                 "shasum": ""
             },
             "require": {
@@ -9070,7 +9217,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-30T21:15:26+00:00"
+            "time": "2026-07-01T08:36:46+00:00"
         },
         {
             "name": "phpstan/phpstan-phpunit",
@@ -11290,7 +11437,8 @@
         "vitexsoftware/multiflexi-database-connection": 20,
         "vitexsoftware/multiflexi-mail": 20,
         "vitexsoftware/multiflexi-raiffeisenbank": 20,
-        "vitexsoftware/multiflexi-vaultwarden": 20
+        "vitexsoftware/multiflexi-vaultwarden": 20,
+        "vitexsoftware/multiflexi-zabbix": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

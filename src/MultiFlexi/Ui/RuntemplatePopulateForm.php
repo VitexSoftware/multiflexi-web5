@@ -29,7 +29,7 @@ class RuntemplatePopulateForm extends SecureForm
         parent::__construct(['action' => 'runtemplatepopulate.php?id='.(string) $runtemplate->getMyKey(), 'class' => 'form-inline']);
         $this->addInput(new \Ease\Html\InputFileTag('env', '.env'), _('Load .env').'&nbsp;', '');
         $this->addItem(new \Ease\TWB5\SubmitButton('🚚 '._('Populate'), 'success mb-2', ['type' => 'submit']));
-        $this->addItem([_('Replace Existing'), new \Ease\TWB5\Widgets\Toggle('replace')]);
+        $this->addItem(new \Ease\Html\DivTag([_('Replace Existing'), new \Ease\TWB5\Widgets\Toggle('replace')], ['class' => 'd-inline-flex align-items-center gap-2']));
         $this->setTagProperty('enctype', 'multipart/form-data');
     }
 

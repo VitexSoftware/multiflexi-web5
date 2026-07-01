@@ -18,6 +18,7 @@ namespace MultiFlexi\Ui;
 use Ease\Html\ATag;
 use Ease\TWB5\Row;
 use MultiFlexi\Company;
+use Ease\Shared;
 
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
@@ -26,7 +27,11 @@ WebPage::singleton()->addItem(new PageTop(_('Company')));
 $companyConfig = [];
 
 $companies = new Company(WebPage::getRequestValue('id', 'int'), $companyConfig);
-
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companies->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
+);
 $_SESSION['company'] = $companies->getMyKey();
 $companyEnver = new \MultiFlexi\CompanyEnv($companies);
 
@@ -45,8 +50,9 @@ if (WebPage::singleton()->isPosted()) {
             try {
                 $companies->saveToSQL();
                 $companies->addStatusMessage(_('Company Saved'), 'success');
-                //        $companies->prepareRemoteCompany(); TODO: Run applications setup on new company
-                WebPage::singleton()->redirect('?id='.$companies->getMyKey());
+                $companyUser = new \MultiFlexi\CompanyUser($companies);
+                $result = $companyUser->assignUser(Shared::user()->getMyKey()) ? 200 : 500;
+                WebPage::singleton()->redirect('activation-wizard.php?company='.$companies->getMyKey());
             } catch (\Exception $exc) {
                 $companies->addStatusMessage($exc->getMessage(), 'error');
             }

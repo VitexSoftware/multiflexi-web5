@@ -18,6 +18,18 @@ tests: vendor
 .PHONY: vendor
 vendor: composer.json composer.lock ## 📦 Installs composer dependencies
 	composer install
+	@$(MAKE) api
+
+.PHONY: api
+api: ## 🔗 Copy API sources from multiflexi-api for local Apache
+	@if [ ! -d ../multiflexi-api/src/api ]; then \
+		echo "multiflexi-api not found at ../multiflexi-api — install multiflexi-api or clone it there"; \
+		exit 1; \
+	fi
+	rm -rf src/api
+	cp -a ../multiflexi-api/src/api src/api
+	rm -rf src/MultiFlexi/Api
+	cp -a ../multiflexi-api/src/MultiFlexi/Api src/MultiFlexi/Api
 
 .PHONY: cs
 cs: ## ✨ Update Coding Standards

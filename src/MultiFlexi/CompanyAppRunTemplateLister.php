@@ -288,13 +288,13 @@ class CompanyAppRunTemplateLister extends RunTemplate
                 $relativeTime = \MultiFlexi\CompanyJobLister::getRelativeTime($scheduleTime);
                 $jobParts[] = (string) new \Ease\Html\ATag(
                     'job.php?id='.$dataRowRaw['last_scheduled_job_id'],
-                    '💣 #'.$dataRowRaw['last_scheduled_job_id'],
+                    '<span class="hourglass-spin">⏳</span> #'.$dataRowRaw['last_scheduled_job_id'],
                     ['title' => _('Scheduled').': '.$relativeTime],
                 );
             } catch (\Exception $e) {
                 $jobParts[] = (string) new \Ease\Html\ATag(
                     'job.php?id='.$dataRowRaw['last_scheduled_job_id'],
-                    '💣 #'.$dataRowRaw['last_scheduled_job_id'],
+                    '<span class="hourglass-spin">⏳</span> #'.$dataRowRaw['last_scheduled_job_id'],
                     ['title' => _('Scheduled')],
                 );
             }

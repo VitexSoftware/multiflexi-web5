@@ -25,6 +25,13 @@ use MultiFlexi\Company;
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
 $companies = new Company(WebPage::getRequestValue('company_id', 'int'));
+
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companies->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
+);
+
 WebPage::singleton()->addItem(new PageTop(_('Company').': '.$companies->getRecordName()));
 
 $kredenc = new \MultiFlexi\Credential();
@@ -67,7 +74,7 @@ foreach ($creds as $crd) {
             if ($lastJobInfo) {
                 $companyAppStatus = new \Ease\Html\ATag('job.php?id='.$lastJobInfo[0]['id'], new ExitCode($lastJobInfo[0]['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), ['class' => 'btn btn-inverse btn-sm']);
             } else {
-                $companyAppStatus = new \Ease\TWB5\Badge('disabled', '🪤', ['style' => 'font-size: 1.0em; font-family: monospace;']);
+                $companyAppStatus = new \Ease\TWB5\Badge('🪤', 'disabled', ['style' => 'font-size: 1.0em; font-family: monospace;']);
             }
 
             $runtemplatesDiv->addItem(new \Ease\Html\SpanTag([new \Ease\Html\ATag('runtemplate.php?id='.$runtemplateData['id'], '⚗️#'.$runtemplateData['id'], ['class' => 'btn btn-inverse btn-sm', 'title' => $runtemplateData['name']]), $companyAppStatus], ['class' => 'btn-group', 'role' => 'group']));

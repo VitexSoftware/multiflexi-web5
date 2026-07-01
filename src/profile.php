@@ -25,8 +25,41 @@ $currentUser->loadFromSQL(\Ease\Shared::user()->getUserID());
 
 // Handle profile update form submission
 if (WebPage::singleton()->isPosted()) {
-    $correctionForm = new UserDataCorrectionForm($currentUser);
-    $correctionForm->processSubmission($_POST);
+    if (WebPage::singleton()->getRequestValue('action') === 'change_password') {
+        $currentPassword = trim((string) WebPage::singleton()->getRequestValue('current_password'));
+        $newPassword = trim((string) WebPage::singleton()->getRequestValue('new_password'));
+        $passwordConfirm = trim((string) WebPage::singleton()->getRequestValue('new_password_confirm'));
+
+        if (empty($currentPassword) || empty($newPassword) || empty($passwordConfirm)) {
+            \Ease\Shared::user()->addStatusMessage(_('All password fields are required'), 'warning');
+        } elseif ($newPassword !== $passwordConfirm) {
+            \Ease\Shared::user()->addStatusMessage(_('Password confirmation does not match'), 'warning');
+        } elseif (!\MultiFlexi\User::passwordValidation($currentPassword, (string) $currentUser->getDataValue($currentUser->passwordColumn))) {
+            \Ease\Shared::user()->addStatusMessage(_('Current password is not valid'), 'warning');
+        } else {
+            $passwordValidator = new \MultiFlexi\Security\PasswordValidator(
+                \Ease\Shared::cfg('PASSWORD_MIN_LENGTH', 8),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_UPPERCASE', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_LOWERCASE', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_NUMBERS', true),
+                \Ease\Shared::cfg('PASSWORD_REQUIRE_SPECIAL_CHARS', true),
+            );
+            $passwordValidation = $passwordValidator->validate($newPassword);
+
+            if (!$passwordValidation['valid']) {
+                foreach ($passwordValidation['errors'] as $passwordError) {
+                    \Ease\Shared::user()->addStatusMessage($passwordError, 'warning');
+                }
+            } elseif ($currentUser->passwordChange($newPassword)) {
+                \Ease\Shared::user()->addStatusMessage(_('Password changed successfully'), 'success');
+            } else {
+                \Ease\Shared::user()->addStatusMessage(_('Password change failed'), 'error');
+            }
+        }
+    } else {
+        $correctionForm = new UserDataCorrectionForm($currentUser);
+        $correctionForm->processSubmission($_POST);
+    }
 }
 
 WebPage::singleton()->addItem(new PageTop(_('My Profile')));
@@ -34,9 +67,12 @@ WebPage::singleton()->addItem(new PageTop(_('My Profile')));
 // Create main container
 $container = WebPage::singleton()->container;
 
+// Group the profile sections into an accordion; Profile Information is open
+// by default.
+$profileAccordion = new \Ease\TWB5\Accordion('profileSections');
+
 // Profile header section
-$profileHeader = new \Ease\TWB5\Card(_('Profile Information'));
-$profileHeader->addItem(new \Ease\Html\DivTag([
+$profileHeader = new \Ease\Html\DivTag([
     new \Ease\Html\H4Tag($currentUser->getUserName()),
     new \Ease\Html\PTag([
         new \Ease\Html\StrongTag(_('Login').': '),
@@ -50,20 +86,44 @@ $profileHeader->addItem(new \Ease\Html\DivTag([
         new \Ease\Html\StrongTag(_('Member since').': '),
         date('F j, Y', strtotime($currentUser->getDataValue($currentUser->createColumn))),
     ]),
-]));
+]);
 
-$container->addItem($profileHeader);
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('person-circle').'&nbsp;'._('Profile Information'), $profileHeader, true);
 
 // Data correction form
-$correctionFormCard = new \Ease\TWB5\Card(_('Update Personal Information'));
-$correctionForm = new UserDataCorrectionForm($currentUser);
-$correctionFormCard->addItem($correctionForm);
+$profileAccordion->addAccordionItem(
+    new \Ease\TWB5\Widgets\BsIcon('pencil-square').'&nbsp;'._('Update Personal Information'),
+    new UserDataCorrectionForm($currentUser),
+);
 
-$container->addItem($correctionFormCard);
+// Password change section
+$passwordForm = new \MultiFlexi\Ui\SecureForm([
+    'method' => 'POST',
+    'action' => 'profile.php',
+]);
+
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('Current Password'),
+    new \Ease\Html\InputPasswordTag('current_password', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('New Password'),
+    new \Ease\Html\InputPasswordTag('new_password', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\TWB5\FormGroup(
+    _('Confirm New Password'),
+    new \Ease\Html\InputPasswordTag('new_password_confirm', '', ['class' => 'form-control']),
+));
+$passwordForm->addItem(new \Ease\Html\InputHiddenTag('action', 'change_password'));
+$passwordForm->addItem(new \Ease\Html\DivTag(
+    new \Ease\TWB5\SubmitButton(_('Change Password'), 'warning', ['id' => 'changePasswordButton']),
+    ['class' => 'text-end'],
+));
+
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('key').'&nbsp;'._('Change Password'), $passwordForm);
 
 // GDPR Information section
-$gdprInfo = new \Ease\TWB5\Card(_('Your Rights Under GDPR'));
-$gdprInfo->addItem(new \Ease\Html\PTag(_('Under the General Data Protection Regulation (GDPR), you have several rights regarding your personal data:')));
+$gdprInfo = new \Ease\Html\DivTag(new \Ease\Html\PTag(_('Under the General Data Protection Regulation (GDPR), you have several rights regarding your personal data:')));
 
 $rightsList = new \Ease\Html\UlTag([
     new \Ease\Html\LiTag([
@@ -85,15 +145,13 @@ $rightsList = new \Ease\Html\UlTag([
 ]);
 
 $gdprInfo->addItem($rightsList);
-$container->addItem($gdprInfo);
+$profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('shield-check').'&nbsp;'._('Your Rights Under GDPR'), $gdprInfo);
 
 // Recent data changes (audit log preview)
 $auditLogger = new \MultiFlexi\Audit\UserDataAuditLogger();
 $recentChanges = $auditLogger->getUserAuditLog($currentUser->getId(), 10);
 
 if (!empty($recentChanges)) {
-    $auditCard = new \Ease\TWB5\Card(_('Recent Data Changes'));
-
     $auditTable = new \Ease\Html\TableTag(null, ['class' => 'table table-sm']);
     $auditTable->addRowHeaderColumns([
         _('Field'),
@@ -135,9 +193,10 @@ if (!empty($recentChanges)) {
         ]);
     }
 
-    $auditCard->addItem($auditTable);
-    $container->addItem($auditCard);
+    $profileAccordion->addAccordionItem(new \Ease\TWB5\Widgets\BsIcon('clock-history').'&nbsp;'._('Recent Data Changes'), $auditTable);
 }
+
+$container->addItem($profileAccordion);
 
 WebPage::singleton()->addItem(new PageBottom());
 WebPage::singleton()->draw();

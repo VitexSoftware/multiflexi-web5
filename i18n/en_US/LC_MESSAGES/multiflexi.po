@@ -4819,9 +4819,9 @@ msgstr ""
 "There is already a %s deletion request for this user (Request #%d, submitted "
 "%s). Status: %s"
 
-#: src/index.php:26
-msgid "There is no administrators in the database."
-msgstr "There is no administrators in the database."
+#: src/login.php:74
+msgid "There are no administrators in the database."
+msgstr "There are no administrators in the database."
 
 #: src/index.php:27
 msgid "Create first Administrator Account"
@@ -4923,25 +4923,29 @@ msgstr "Access denied from your IP address"
 msgid "Your session has expired. Please log in again."
 msgstr "Your session has expired. Please log in again."
 
-#: src/login.php:70
-msgid "Invalid security token. Please try again."
-msgstr "Invalid security token. Please try again."
+#: src/login.php:86
+msgid "Invalid security token. Please clear cookies and try again."
+msgstr "Invalid security token. Please clear cookies and try again."
 
 #: src/login.php:82
 msgid "Too many login attempts. Please try again later."
 msgstr "Too many login attempts. Please try again later."
 
-#: src/login.php:135
-msgid "Welcome to MultiFlexi"
-msgstr "Welcome to MultiFlexi"
+#: src/login.php:123 src/login.php:143
+msgid "Invalid login or password"
+msgstr "Invalid login or password"
 
-#: src/login.php:139
+#: src/login.php:168
+msgid "Recover your password"
+msgstr "Recover your password"
+
+#: src/login.php:158
+msgid "Sign in to MultiFlexi"
+msgstr "Sign in to MultiFlexi"
+
+#: src/login.php:160
 msgid "Sign in"
 msgstr "Sign in"
-
-#: src/login.php:155
-msgid "the username you chose"
-msgstr "the username you chose"
 
 #: src/logout.php:28
 msgid "Good bye"

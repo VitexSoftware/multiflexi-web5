@@ -180,7 +180,19 @@ class JobChart extends \Ease\Html\DivTag
     public function getJobs()
     {
         $since = (new \DateTimeImmutable('today'))->modify('-29 days')->format('Y-m-d');
+        $query = $this->engine->getFluentPDO(true)
+            ->from('job')
+            ->select(['begin', 'exitcode'], true)
+            ->where('begin >= ?', $since);
 
-        return $this->engine->getFluentPDO(true)->from('job')->select(['begin', 'exitcode'], true)->where('begin >= ?', $since)->order('begin');
+        $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
+
+        if (empty($accessibleCompanyIds)) {
+            return $query->where('1=0')->order('begin');
+        }
+
+        return $query
+            ->where('job.company_id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')')
+            ->order('begin');
     }
 }

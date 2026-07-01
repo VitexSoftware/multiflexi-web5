@@ -12,6 +12,7 @@ Architecture: all
 Conflicts: multiflexi-web
 Replaces: multiflexi-web
 Provides: multiflexi-web
+Pre-Depends: multiflexi-common
 Depends: ${misc:Depends},
  multiflexi-common,
  php-vitexsoftware-multiflexi-core,

@@ -25,6 +25,12 @@ WebPage::singleton()->addItem(new PageTop(_('Company')));
 
 $companies = new Company(WebPage::getRequestValue('id', 'int'));
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companies->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
+);
+
 $_SESSION['company'] = $companies->getMyKey();
 
 $companyEnver = new \MultiFlexi\CompanyEnv($companies);
@@ -35,11 +41,15 @@ if (WebPage::singleton()->isPosted()) {
     $logger = new \MultiFlexi\Logger();
     $logger->deleteFromSQL(['company_id' => $companies->getMyKey()]);
 
-    $jobber = new \MultiFlexi\Job();
-    $jobber->deleteFromSQL(['company_id' => $companies->getMyKey()]);
+    // Delete each RunTemplate individually so its deleteFromSQL() properly
+    // removes child rows (actionconfig, runtemplate_topics, jobs, etc.)
+    // before removing the runtemplate itself.
+    $rtpl = new \MultiFlexi\RunTemplate();
 
-    $companyRuntemplates = new \MultiFlexi\RunTemplate();
-    $companyRuntemplates->deleteFromSQL(['company_id' => $companies->getMyKey()]);
+    foreach ($rtpl->listingQuery()->where('company_id', $companies->getMyKey()) as $rtplRow) {
+        $rtplToDelete = new \MultiFlexi\RunTemplate((int) $rtplRow['id']);
+        $rtplToDelete->deleteFromSQL();
+    }
 
     $confer = new \MultiFlexi\Configuration();
     $confer->deleteFromSQL(['company_id' => $companies->getMyKey()]);

@@ -28,6 +28,12 @@ if (!$jobber->getMyKey()) {
     WebPage::singleton()->redirect('main.php');
 }
 
+// Enforce access control for job
+\MultiFlexi\Security\CompanyAccessControl::enforceJobAccess(
+    (int) $jobber->getMyKey(),
+    _('You do not have access to this job'),
+);
+
 $runTemplate = new \MultiFlexi\RunTemplate($jobber->getDataValue('runtemplate_id'));
 
 if (!$runTemplate->getMyKey()) {
@@ -55,8 +61,8 @@ if (!$runTemplate->getMyKey()) {
     $jobPanel->addItem($infoDiv);
 
     $outputTabs = new \Ease\TWB5\Tabs();
-    $stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert(stripslashes((string) $jobber->getDataValue('stdout'))))), ['style' => 'background: black; font-family: monospace;']);
-    $errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert(stripslashes((string) $jobber->getDataValue('stderr'))))), ['style' => 'background: #330000; font-family: monospace;']);
+    $stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getOutput()))), ['style' => 'background: black; font-family: monospace;']);
+    $errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getErrorOutput()))), ['style' => 'background: #330000; font-family: monospace;']);
 
     $outputTabs->addTab(_('Output'), [$stdTerminal]);
     $outputTabs->addTab(_('Errors'), [$errorTerminal]);
@@ -75,22 +81,26 @@ $appInfo = $runTemplate->getAppInfo();
 $apps = new Application($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
 
-$errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert(stripslashes((string) $jobber->getDataValue('stderr'))))), ['style' => 'background: #330000; font-family: monospace;']);
-$stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert(stripslashes((string) $jobber->getDataValue('stdout'))))), ['style' => 'background:  black; font-family: monospace;']);
+$errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getErrorOutput()))), ['style' => 'background: #330000; font-family: monospace;']);
+$stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getOutput()))), ['style' => 'background:  black; font-family: monospace;']);
 
-$liveOutputSocket = \Ease\Shared::cfg('LIVE_OUTPUT_SOCKET');
-
-if ($liveOutputSocket && isset($_SESSION['ws_token'])) {
-    $wsToken = $_SESSION['ws_token'];
-
+// Connect SSE stream only while the job is still running (no exitcode yet)
+if ($jobber->getDataValue('exitcode') === null && $jobber->getDataValue('begin') !== null) {
     WebPage::singleton()->addJavaScript(<<<EOD
 
-var ws = new WebSocket('{$liveOutputSocket}?token={$wsToken}');
-ws.onmessage = function(event) {
-    var data = JSON.parse(event.data);
-    var output = document.getElementById('live-output');
-    output.textContent += data.message + '\\n';
-};
+(function () {
+    var liveOut = document.getElementById('live-output');
+    if (!liveOut) { return; }
+    var es = new EventSource('jobstream.php?id={$jobID}');
+    es.addEventListener('output', function (e) {
+        var d = JSON.parse(e.data);
+        liveOut.textContent += d.line;
+        liveOut.scrollTop = liveOut.scrollHeight;
+    });
+    es.addEventListener('done', function () { es.close(); });
+    es.addEventListener('timeout', function () { es.close(); });
+    es.onerror = function () { es.close(); };
+})();
 
 EOD);
 }
@@ -99,12 +109,35 @@ EOD);
 $orphanedWarning = null;
 
 if (!$jobber->getDataValue('begin') && !$jobber->isScheduled()) {
-    // Job not started and not in schedule queue - it's orphaned
-    $orphanedWarning = new \Ease\TWB5\Alert('warning', [
-        new \Ease\Html\H4Tag(['⚠️ ', _('Orphaned Job')]),
-        new \Ease\Html\PTag(_('This job has not been executed yet and does not have its place in the execution queue. This can happen when the schedule queue is manually cleared or due to system errors.')),
-        new \Ease\Html\PTag([_('Use the '), new \Ease\Html\StrongTag(_('Re-schedule')), _(' button below to add this job back to the queue.')]),
-    ], ['style' => 'border-left: 5px solid #ff9800;']);
+    // The daemon removes the schedule entry before the executor subprocess sets begin.
+    // Allow a grace window before declaring the job truly orphaned.
+    $scheduleTime = $jobber->getDataValue('schedule');
+    $gracePeriodSeconds = 300; // 5 minutes — covers slow executor startup
+    $withinGrace = false;
+
+    if ($scheduleTime) {
+        $timezone = \MultiFlexi\DateTimeHelper::getConfiguredTimezone();
+        $scheduledAt = new \DateTime($scheduleTime, $timezone);
+        $now = new \DateTime('now', $timezone);
+        $secondsSinceSchedule = $now->getTimestamp() - $scheduledAt->getTimestamp();
+        $withinGrace = $secondsSinceSchedule >= 0 && $secondsSinceSchedule < $gracePeriodSeconds;
+    }
+
+    if ($withinGrace) {
+        // Executor claimed the job and is starting it — auto-refresh to show progress
+        WebPage::singleton()->addJavaScript('setTimeout(function(){ window.location.reload(); }, 5000);');
+        $orphanedWarning = new \Ease\TWB5\Alert('info', [
+            new \Ease\Html\H4Tag(['⏳ ', _('Job Starting')]),
+            new \Ease\Html\PTag(_('The executor has claimed this job and will start it shortly. This page will refresh automatically.')),
+        ]);
+    } else {
+        // Job not started and not in schedule queue - it's orphaned
+        $orphanedWarning = new \Ease\TWB5\Alert('warning', [
+            new \Ease\Html\H4Tag(['⚠️ ', _('Orphaned Job')]),
+            new \Ease\Html\PTag(_('This job has not been executed yet and does not have its place in the execution queue. This can happen when the schedule queue is manually cleared or due to system errors.')),
+            new \Ease\Html\PTag([_('Use the '), new \Ease\Html\StrongTag(_('Re-schedule')), _(' button below to add this job back to the queue.')]),
+        ], ['style' => 'border-left: 5px solid #ff9800;']);
+    }
 }
 
 $outputTabs = new \Ease\TWB5\Tabs();

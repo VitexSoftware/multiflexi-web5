@@ -83,7 +83,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $runtemplateJobs = new \MultiFlexi\Ui\RuntemplateJobsListing($runtemplate);
-        $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
+        $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold; color: #fff;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
 
         // Add note field as WYSIWYG editable textarea
         $noteValue = $runtemplate->getDataValue('note') ?: _('Click to add notes...');
@@ -95,17 +95,17 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             'data-type' => 'textarea',
             'data-title' => _('Update RunTemplate notes'),
             'data-wysiwyg' => 'summernote',
-            'style' => 'display: block; margin-top: 5px; padding: 5px; border: 1px solid #ddd; border-radius: 4px; min-height: 40px; background: #fff;',
+            'style' => 'display: block; margin-top: 5px; padding: 5px; border: 1px solid rgba(255,255,255,0.2); border-radius: 4px; min-height: 40px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);',
         ]);
 
         // Actions Header
         $headerRow = new \Ease\TWB5\Row();
 
-        $logoCol = $headerRow->addColumn(2, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), [new AppLogo($this->runtemplate->getApplication(), ['style' => 'height: 60px', 'class' => 'img-thumbnail shadow-sm'])]));
+        $logoCol = $headerRow->addColumn(1, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), '⚗️', ['style' => 'font-size: 3rem; text-decoration: none;', 'title' => $this->runtemplate->getApplication()->getRecordName()]));
         $logoCol->addTagClass('text-center my-auto');
 
-        $titleCol = $headerRow->addColumn(4, [
-            new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'text-muted d-block font-weight-bold text-uppercase small']),
+        $titleCol = $headerRow->addColumn(5, [
+            new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'd-block fw-bold text-uppercase small', 'style' => 'color: rgba(255,255,255,0.6);']),
             $nameInput,
             $noteInput,
         ]);
@@ -113,7 +113,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statusCol = $headerRow->addColumn(3, [
             new \Ease\Html\DivTag([
-                new \Ease\Html\SmallTag(_('Status'), ['class' => 'font-weight-bold text-muted text-uppercase d-block mb-1 small']),
+                new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small text-secondary']),
                 new \Ease\TWB5\Widgets\Toggle('active', $runtemplate->getDataValue('active') ? true : false, $runtemplate->getDataValue('active') ? 'false' : 'true', [
                     'title' => $runtemplate->getDataValue('active') ? _('Enabled') : _('Disabled'),
                     'data-runtemplate' => $runtemplateId,
@@ -123,7 +123,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
                     'data-size' => 'small',
                 ]),
                 new \Ease\Html\SpanTag('', ['id' => 'deactivated']),
-            ], ['class' => 'p-2 bg-light rounded border text-center shadow-sm']),
+            ], ['class' => 'p-2 rounded border text-center shadow-sm', 'style' => 'background: rgba(255,255,255,0.95);']),
         ]);
         $statusCol->addTagClass('my-auto');
 
@@ -157,6 +157,78 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             new \Ease\Html\DivTag($deleteButton, ['class' => 'mt-4 text-end']),
         ]);
 
+        // ── Task SLA & Retry ────────────────────────────────────────────────────
+        $slaFields = [
+            [
+                'id' => $runtemplateId.'_deadline_offset',
+                'name' => 'deadline_offset',
+                'label' => _('Deadline Offset'),
+                'display' => (string) ($runtemplate->getDataValue('deadline_offset') ?? ''),
+                'hint' => _('+3h or 08:00 — empty means window end'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_max_attempts',
+                'name' => 'max_attempts',
+                'label' => _('Max Attempts'),
+                'display' => (string) ($runtemplate->getDataValue('max_attempts') ?? 1),
+                'hint' => _('per task window'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_retry_backoff',
+                'name' => 'retry_backoff',
+                'label' => _('Retry Backoff'),
+                'display' => (string) ($runtemplate->getDataValue('retry_backoff') ?? 'none'),
+                'hint' => _('spacing strategy'),
+                'type' => 'select',
+            ],
+            [
+                'id' => $runtemplateId.'_retry_min_gap',
+                'name' => 'retry_min_gap',
+                'label' => _('Retry Min Gap'),
+                'display' => (string) ($runtemplate->getDataValue('retry_min_gap') ?? 0),
+                'hint' => _('seconds between retries'),
+                'type' => 'text',
+            ],
+            [
+                'id' => $runtemplateId.'_allow_late',
+                'name' => 'allow_late',
+                'label' => _('Allow Late'),
+                'display' => $runtemplate->getDataValue('allow_late') ? _('Yes') : _('No'),
+                'hint' => _('count post-deadline success'),
+                'type' => 'select',
+            ],
+        ];
+
+        $slaInner = new \Ease\TWB5\Row();
+        $slaInner->addTagClass('g-3');
+
+        foreach ($slaFields as $f) {
+            $editLink = new \Ease\Html\ATag('#', $f['display'] ?: '—', [
+                'id' => $f['id'],
+                'class' => 'sla-editable',
+                'data-name' => $f['name'],
+                'data-pk' => $runtemplateId,
+                'data-url' => 'runtemplatesave.php',
+                'data-title' => $f['label'],
+                'data-type' => $f['type'],
+            ]);
+            $cell = new \Ease\Html\DivTag([
+                new \Ease\Html\SmallTag($f['label'], ['class' => 'd-block fw-bold text-muted mb-1']),
+                $editLink,
+                new \Ease\Html\SmallTag($f['hint'], ['class' => 'd-block text-muted mt-1']),
+            ]);
+            $slaInner->addColumn(2, $cell);
+        }
+
+        $slaRow = new \Ease\TWB5\Row();
+        $slaRow->addTagClass('mt-3');
+        $slaRow->addColumn(12, [
+            new \Ease\Html\H5Tag('🎯 '._('Task SLA & Retry')),
+            new \Ease\Html\DivTag($slaInner, ['class' => 'card card-body bg-light']),
+        ]);
+
         $runtemplateBottom = new \Ease\TWB5\Row();
 
         if ($runtemplate->getMyKey()) {
@@ -165,12 +237,14 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $this->addCSS(<<<'CSS'
-            .runtemplate-header { background: #fff; padding: 1rem; border-bottom: 1px solid #dee2e6; margin-bottom: 1rem; }
+            .runtemplate-tabs .card-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
+            .runtemplate-tabs .card-header, .runtemplate-tabs .card-header * { color: #212529 !important; }
+            .runtemplate-tabs .card-header .text-muted { color: #6c757d !important; }
+            .runtemplate-tabs .card-header .editable { color: #0d6efd !important; }
+            .runtemplate-tabs .card-header .bg-light { background-color: #fff !important; }
             .runtemplate-tabs .nav-tabs { border-bottom: 2px solid #007bff; margin-bottom: 1rem; }
             .runtemplate-tabs .nav-link { font-weight: 500; color: #495057; border: none; padding: 0.75rem 1.25rem; }
             .runtemplate-tabs .nav-link.active { color: #007bff; border-bottom: 3px solid #007bff; background: transparent; }
-            .dashboard-card { transition: transform 0.2s, box-shadow 0.2s; border: none; border-radius: 8px; }
-            .dashboard-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
             .btn-group-vertical > .btn { border-radius: 4px !important; margin-bottom: 2px; }
 CSS);
         $this->addTagClass('runtemplate-tabs');
@@ -195,9 +269,10 @@ EOD);
 
         $runtemplateTabs = new \Ease\TWB5\Tabs();
         $runtemplateTabs->addTab('📊 '._('Dashboard'), $dashboardContent);
-        $runtemplateTabs->addTab('📅 '._('Scheduling'), $schedulingContent);
+        $runtemplateTabs->addTab('📅 '._('Scheduling'), [$schedulingContent, $slaRow]);
         $runtemplateTabs->addTab('⚙️ '._('Configuration'), [new RuntemplateConfigForm($runtemplate)]);
         $runtemplateTabs->addTab('🏁 '._('Jobs'), $runtemplateJobs);
+        $runtemplateTabs->addTab('📋 '._('Tasks'), [new RuntemplateTaskMetrics($runtemplate), new TasksTable('all', $runtemplateId)]);
         $runtemplateTabs->addTab('🔐 '._('Environment'), [new EnvironmentView($runtemplate->credentialsEnvironment()), new RunTemplateDotEnv($runtemplate)]);
 
         $this->addItem($runtemplateTabs);
@@ -210,6 +285,12 @@ EOD);
     {
         \Ease\TWB5\Part::twBootstrapize();
         $csrfToken = isset($GLOBALS['csrfProtection']) ? $GLOBALS['csrfProtection']->generateToken() : '';
+        $noneLabel = _('None');
+        $fixedLabel = _('Fixed');
+        $linearLabel = _('Linear');
+        $exponentialLabel = _('Exponential');
+        $noLabel = _('No');
+        $yesLabel = _('Yes');
 
         // Configure editable to send CSRF token
         $this->addJavaScript(<<<EOD
@@ -230,6 +311,27 @@ $.fn.editable.defaults.params = function(params) {
 $(document).ready(function() {
     // Initialize regular editable fields (name field)
     $('.editable').not('#note').editable();
+
+    // SLA inline-editable fields (text/number)
+    $('.sla-editable[data-type="text"]').editable();
+
+    // retry_backoff select
+    $('#{$this->runtemplate->getMyKey()}_retry_backoff').editable({
+        source: [
+            {value: 'none',        text: '{$noneLabel}'},
+            {value: 'fixed',       text: '{$fixedLabel}'},
+            {value: 'linear',      text: '{$linearLabel}'},
+            {value: 'exponential', text: '{$exponentialLabel}'}
+        ]
+    });
+
+    // allow_late select
+    $('#{$this->runtemplate->getMyKey()}_allow_late').editable({
+        source: [
+            {value: '0', text: '{$noLabel}'},
+            {value: '1', text: '{$yesLabel}'}
+        ]
+    });
 
     // Configure WYSIWYG editor for note field with CSRF token
     $("#note").editable({

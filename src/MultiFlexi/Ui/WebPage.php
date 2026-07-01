@@ -84,11 +84,54 @@ class WebPage extends \Ease\TWB5\WebPage
             .nav-link { font-weight: 500; color: #6c757d; border: none !important; padding: 12px 20px; }
             .nav-link.active { color: #007bff !important; border-bottom: 3px solid #007bff !important; background: transparent !important; }
             .btn { border-radius: 6px; font-weight: 500; transition: all 0.2s; }
+            .btn.mf-entity-link {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.55rem;
+                min-height: 2.5rem;
+                padding: 0.35rem 0.65rem;
+                border-radius: 0.7rem;
+                border: 1px solid #cbd5e1;
+                background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+                color: #0f172a !important;
+                text-decoration: none;
+                font-weight: 600;
+                box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+                transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
+            }
+            .btn.mf-entity-link:hover {
+                background: #f1f5f9;
+                border-color: #94a3b8;
+                color: #0f172a !important;
+                text-decoration: none;
+                box-shadow: 0 4px 10px rgba(15, 23, 42, 0.10);
+            }
+            .btn.mf-entity-link:focus-visible {
+                outline: 2px solid #0284c7;
+                outline-offset: 2px;
+            }
+            .btn.mf-entity-link img {
+                width: 2rem;
+                height: 2rem !important;
+                max-width: 2rem;
+                max-height: 2rem !important;
+                object-fit: cover;
+                border-radius: 0.4rem;
+                flex: 0 0 2rem;
+            }
             .btn-outline-danger:hover { transform: translateY(-2px); box-shadow: 0 4px 6px rgba(220, 53, 69, 0.2); }
             .application-metadata h3 { color: #343a40; font-weight: 700; }
             .table thead th { border-top: none; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 1px; color: #8898aa; border-bottom: 1px solid #e9ecef; }
             .table td { vertical-align: middle; }
             .shadow-sm { box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important; }
+
+            /* ── Spinning hourglass for pending/scheduled jobs ───────── */
+            @keyframes hourglass-flip {
+                0%,  40% { transform: rotate(0deg); }
+                50%, 90% { transform: rotate(180deg); }
+                100%     { transform: rotate(360deg); }
+            }
+            .hourglass-spin { display: inline-block; animation: hourglass-flip 3s ease-in-out infinite; }
 
             /* ── Main navbar ─────────────────────────────────────────── */
             .mf-navbar {
@@ -326,14 +369,13 @@ class WebPage extends \Ease\TWB5\WebPage
             table.dataTable tbody tr:hover > td { background-color: #e1eaff !important; box-shadow: none !important; }
             table.dataTable { border-radius: 8px; overflow: hidden; }
 
-            /* Exit code indicator — dark, high-contrast semantic text colours
-               that stay readable on the tinted job rows */
-            .mf-exit { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
-            .mf-exit-success   { color: #146c43; }  /* dark green  */
-            .mf-exit-secondary { color: #0a4275; }  /* dark blue   */
-            .mf-exit-danger    { color: #b02a37; }  /* dark red    */
-            .mf-exit-warning   { color: #985700; }  /* dark orange */
-            .mf-exit-info      { color: #087990; }  /* dark cyan   */
+            /* Exit code indicator — pill badge with semantic background + dark text */
+            .mf-exit { font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; padding: 0.15em 0.55em; border-radius: 0.4em; display: inline-block; }
+            .mf-exit-success   { color: #146c43; background-color: #d1e7dd; }  /* green  */
+            .mf-exit-secondary { color: #0a4275; background-color: #cfe2ff; }  /* blue   */
+            .mf-exit-danger    { color: #b02a37; background-color: #f8d7da; }  /* red    */
+            .mf-exit-warning   { color: #985700; background-color: #fff3cd; }  /* orange */
+            .mf-exit-info      { color: #087990; background-color: #cff4fc; }  /* cyan   */
 
             /* DataTable toolbar buttons */
             .dt-buttons { margin-bottom: 0.6rem; display: flex; flex-wrap: wrap; gap: 4px; }

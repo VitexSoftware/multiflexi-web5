@@ -38,6 +38,8 @@ class SecurityAuditLogger
     public const EVENT_PERMISSION_CHANGE = 'permission_change';
     public const EVENT_ROLE_ASSIGNED = 'role_assigned';
     public const EVENT_ROLE_REMOVED = 'role_removed';
+    public const EVENT_COMPANY_USER_ASSIGNED = 'company_user_assigned';
+    public const EVENT_COMPANY_USER_REMOVED = 'company_user_removed';
     public const EVENT_SESSION_HIJACK_DETECTED = 'session_hijack_detected';
     public const EVENT_BRUTE_FORCE_DETECTED = 'brute_force_detected';
     public const EVENT_DATA_EXPORT = 'data_export';
@@ -270,6 +272,43 @@ EOD;
             self::SEVERITY_HIGH,
             $userId,
             ['role' => $roleName, 'removed_by' => $removedBy],
+        );
+    }
+
+    /**
+     * Log assignment of a user to a company.
+     *
+     * @param int      $userId     Affected user ID
+     * @param int      $companyId  Company ID
+     * @param int      $assignedBy User ID who performed the assignment
+     * @param string   $role       Role granted within the company
+     */
+    public function logCompanyUserAssigned(int $userId, int $companyId, int $assignedBy, string $role = 'viewer'): bool
+    {
+        return $this->logEvent(
+            self::EVENT_COMPANY_USER_ASSIGNED,
+            "User {$userId} assigned to company {$companyId} as {$role}",
+            self::SEVERITY_MEDIUM,
+            $assignedBy,
+            ['user_id' => $userId, 'company_id' => $companyId, 'role' => $role, 'assigned_by' => $assignedBy],
+        );
+    }
+
+    /**
+     * Log removal of a user from a company.
+     *
+     * @param int $userId    Affected user ID
+     * @param int $companyId Company ID
+     * @param int $removedBy User ID who performed the removal
+     */
+    public function logCompanyUserRemoved(int $userId, int $companyId, int $removedBy): bool
+    {
+        return $this->logEvent(
+            self::EVENT_COMPANY_USER_REMOVED,
+            "User {$userId} removed from company {$companyId}",
+            self::SEVERITY_MEDIUM,
+            $removedBy,
+            ['user_id' => $userId, 'company_id' => $companyId, 'removed_by' => $removedBy],
         );
     }
 

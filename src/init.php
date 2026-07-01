@@ -73,19 +73,42 @@ if (class_exists('\MultiFlexi\Security\SessionManager')) {
 $pdo = null;
 
 try {
-    $dsn = Shared::cfg('DB_CONNECTION').':host='.Shared::cfg('DB_HOST').';port='.Shared::cfg('DB_PORT', 3306).';dbname='.\Ease\Shared::cfg('DB_DATABASE').';charset=utf8mb4';
-    $pdo = new \PDO(
-        $dsn,
-        Shared::cfg('DB_USERNAME'),
-        Shared::cfg('DB_PASSWORD'),
-        [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
-    );
+    $dbConnection = Shared::cfg('DB_CONNECTION');
+
+    if (\in_array($dbConnection, ['sqlite', 'sqlite3'], true)) {
+        $dsn = 'sqlite:'.\Ease\Shared::cfg('DB_DATABASE');
+        $pdo = new \PDO($dsn, null, null, [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION]);
+    } else {
+        $dsn = $dbConnection.':host='.Shared::cfg('DB_HOST').';port='.Shared::cfg('DB_PORT', 3306).';dbname='.\Ease\Shared::cfg('DB_DATABASE').';charset=utf8mb4';
+        $pdo = new \PDO(
+            $dsn,
+            Shared::cfg('DB_USERNAME'),
+            Shared::cfg('DB_PASSWORD'),
+            [\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION],
+        );
+    }
 } catch (\Exception $e) {
     error_log('Failed to initialize database connection: '.$e->getMessage());
 }
 
+// Security middleware components (BruteForce, RBAC, 2FA, RateLimiter, Encryption, Audit) use
+// MySQL/PostgreSQL-specific DDL (AUTO_INCREMENT, ON DUPLICATE KEY UPDATE) and are not yet
+// portable to SQLite. They are skipped when running on SQLite. This means brute-force protection,
+// RBAC, and 2FA are NOT active for SQLite deployments — use MySQL or PostgreSQL in production.
+$isSqliteDriver = \in_array(Shared::cfg('DB_CONNECTION'), ['sqlite', 'sqlite3'], true);
+
+if ($pdo && $isSqliteDriver) {
+    error_log(
+        'MultiFlexi: Security components (BruteForce, RBAC, 2FA, RateLimiter, DataEncryption, AuditLog) '.
+        'are DISABLED because the SQLite driver does not support their schema. '.
+        'Use MySQL or PostgreSQL for a production deployment with full security controls.',
+    );
+}
+
+$useSecurityComponents = $pdo && !$isSqliteDriver;
+
 // Initialize brute force protection (disabled temporarily)
-if ($pdo && Shared::cfg('BRUTE_FORCE_PROTECTION_ENABLED', true) && class_exists('\MultiFlexi\Security\BruteForceProtection')) {
+if ($useSecurityComponents && Shared::cfg('BRUTE_FORCE_PROTECTION_ENABLED', true) && class_exists('\MultiFlexi\Security\BruteForceProtection')) {
     try {
         $bruteForceProtection = new \MultiFlexi\Security\BruteForceProtection(
             $pdo,
@@ -102,7 +125,7 @@ if ($pdo && Shared::cfg('BRUTE_FORCE_PROTECTION_ENABLED', true) && class_exists(
 }
 
 // Initialize security audit logger (disabled temporarily)
-if ($pdo && Shared::cfg('SECURITY_LOGGING_ENABLED', true) && class_exists('\MultiFlexi\Security\SecurityAuditLogger')) {
+if ($useSecurityComponents && Shared::cfg('SECURITY_LOGGING_ENABLED', true) && class_exists('\MultiFlexi\Security\SecurityAuditLogger')) {
     try {
         $securityAuditLogger = new \MultiFlexi\Security\SecurityAuditLogger($pdo);
         $GLOBALS['securityAuditLogger'] = $securityAuditLogger;
@@ -113,7 +136,7 @@ if ($pdo && Shared::cfg('SECURITY_LOGGING_ENABLED', true) && class_exists('\Mult
 }
 
 // Initialize data encryption (disabled temporarily due to key initialization issues)
-if ($pdo && Shared::cfg('DATA_ENCRYPTION_ENABLED', true) && class_exists('\MultiFlexi\Security\DataEncryption')) {
+if ($useSecurityComponents && Shared::cfg('DATA_ENCRYPTION_ENABLED', true) && class_exists('\MultiFlexi\Security\DataEncryption')) {
     try {
         $dataEncryption = new \MultiFlexi\Security\DataEncryption($pdo);
 
@@ -128,7 +151,7 @@ if ($pdo && Shared::cfg('DATA_ENCRYPTION_ENABLED', true) && class_exists('\Multi
 }
 
 // Initialize rate limiter (disabled temporarily)
-if ($pdo && Shared::cfg('RATE_LIMITING_ENABLED', true) && class_exists('\MultiFlexi\Security\RateLimiter')) {
+if ($useSecurityComponents && Shared::cfg('RATE_LIMITING_ENABLED', true) && class_exists('\MultiFlexi\Security\RateLimiter')) {
     try {
         $rateLimiter = new \MultiFlexi\Security\RateLimiter($pdo);
 
@@ -140,7 +163,7 @@ if ($pdo && Shared::cfg('RATE_LIMITING_ENABLED', true) && class_exists('\MultiFl
 }
 
 // Initialize IP whitelist (disabled temporarily)
-if ($pdo && Shared::cfg('IP_WHITELIST_ENABLED', false) && class_exists('\MultiFlexi\Security\IpWhitelist')) {
+if ($useSecurityComponents && Shared::cfg('IP_WHITELIST_ENABLED', false) && class_exists('\MultiFlexi\Security\IpWhitelist')) {
     try {
         $ipWhitelist = new \MultiFlexi\Security\IpWhitelist($pdo);
 
@@ -152,7 +175,7 @@ if ($pdo && Shared::cfg('IP_WHITELIST_ENABLED', false) && class_exists('\MultiFl
 }
 
 // Initialize Two-Factor Authentication (disabled temporarily)
-if ($pdo && Shared::cfg('TWO_FACTOR_AUTH_ENABLED', true) && class_exists('\MultiFlexi\Security\TwoFactorAuth')) {
+if ($useSecurityComponents && Shared::cfg('TWO_FACTOR_AUTH_ENABLED', true) && class_exists('\MultiFlexi\Security\TwoFactorAuth')) {
     try {
         $twoFactorAuth = new \MultiFlexi\Security\TwoFactorAuth($pdo);
 
@@ -164,7 +187,7 @@ if ($pdo && Shared::cfg('TWO_FACTOR_AUTH_ENABLED', true) && class_exists('\Multi
 }
 
 // Initialize Role-Based Access Control (RBAC) (disabled temporarily)
-if ($pdo && Shared::cfg('RBAC_ENABLED', true) && class_exists('\MultiFlexi\Security\RoleBasedAccessControl')) {
+if ($useSecurityComponents && Shared::cfg('RBAC_ENABLED', true) && class_exists('\MultiFlexi\Security\RoleBasedAccessControl')) {
     try {
         $rbac = new \MultiFlexi\Security\RoleBasedAccessControl($pdo);
 

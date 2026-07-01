@@ -39,9 +39,16 @@ class ServicesForCompanyForm extends SecureForm
     {
         $companyID = $company->getMyKey();
 
+        if (!$companyID) {
+            parent::__construct($tagProperties);
+            $this->addItem(new \Ease\TWB5\Alert('warning', _('No company selected.')));
+
+            return;
+        }
+
         $serverCompanyInfo = (new Company())->listingQuery()->where('company.id', $companyID)->select('servers.type')->leftJoin('servers ON servers.id = company.server')->fetch();
         $apper = new Application();
-        $platformApps = $apper->getAvailbleApps($serverCompanyInfo['type'])->orderBy('name');
+        $platformApps = $apper->getAvailbleApps($serverCompanyInfo['type'] ?? null)->orderBy('name');
         // (new Application())->listingQuery()->select('id AS app_id')->select('name AS app_name')->where('enabled', 1)->fetchAll();
 
         $glue = new RunTemplate();

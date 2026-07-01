@@ -47,11 +47,14 @@ class JobScheduleForm extends SecureForm
         $this->addCSS(<<<'CSS'
             .schedule-form .form-group { margin-bottom: 0.75rem; padding: 0.5rem; border-radius: 4px; transition: background-color 0.2s; }
             .schedule-form .form-group:hover { background-color: #f8f9fa; }
-            .required-field { border-left: 3px solid #dc3545 !important; }
+            .required-field { border-left: 3px solid #dc3545 !important; background-color: #fff8f8; }
             .secret-field { border-left: 3px solid #343a40 !important; }
             .expiring-field { border-left: 3px solid #ffc107 !important; }
             .required-field.secret-field { border-left: 3px solid #dc3545 !important; border-right: 3px solid #343a40 !important; }
             .required-field.expiring-field { border-left: 3px solid #dc3545 !important; border-right: 3px solid #ffc107 !important; }
+            .required-field .form-label::after { content: " *"; color: #dc3545; font-weight: bold; }
+            .required-field input, .required-field select, .required-field textarea { border-color: #dc3545 !important; }
+            .required-field input[type="file"] { border: 1px solid #dc3545 !important; border-radius: 0.375rem; }
             .field-flags { display: inline; margin-left: 0.4rem; }
             .field-flags .badge { font-size: 0.7rem; margin-left: 0.15rem; vertical-align: middle; }
 CSS);
@@ -81,6 +84,10 @@ CSS);
             if ($field->isRequired() && empty($field->getValue())) {
                 $code = $field->getCode();
 
+                $caption = $field->isRequired()
+                    ? $field->getDescription().'<span class="text-danger ms-1 fw-bold" title="'._('required').'">*</span>'
+                    : $field->getDescription();
+
                 switch ($field->getType()) {
                     case 'file-path':
                         if (!empty($this->uploadedFiles[$code])) {
@@ -90,15 +97,21 @@ CSS);
                                 (isset($fileInfo['name']) ? htmlspecialchars($fileInfo['name']) : _('File uploaded')).
                                 '</div></div>');
                         } else {
-                            $formGroup = $this->addInput(new \Ease\Html\InputFileTag($code), $field->getDescription());
+                            $input = new \Ease\Html\InputFileTag($code);
+
+                            if ($field->isRequired()) {
+                                $input->addTagClass('border-danger');
+                            }
+
+                            $formGroup = $this->addInput($input, $caption);
                             self::addFieldFlags($formGroup, $field);
                         }
 
                         break;
                     case 'bool':
                         $formGroup = $this->addInput(
-                            new \Ease\Html\DivTag(new \Ease\TWB5\Widgets\Toggle($code, false, 'true', ['data-size' => 'small'])),
-                            $field->getDescription(),
+                            new \Ease\TWB5\Widgets\Toggle($code, false, 'true', ['data-size' => 'small']),
+                            $caption,
                         );
                         self::addFieldFlags($formGroup, $field);
 
@@ -111,7 +124,11 @@ CSS);
                             $input = new \Ease\Html\InputTextTag($code, WebPage::getRequestValue($code));
                         }
 
-                        $formGroup = $this->addInput($input, $field->getDescription());
+                        if ($field->isRequired()) {
+                            $input->addTagClass('border-danger');
+                        }
+
+                        $formGroup = $this->addInput($input, $caption);
                         self::addFieldFlags($formGroup, $field);
 
                         break;
@@ -136,22 +153,30 @@ CSS);
         $flags = new \Ease\Html\SpanTag(null, ['class' => 'field-flags']);
 
         if ($field->isRequired()) {
-            $formGroup->addTagClass('required-field');
-            $flags->addItem(new \Ease\TWB5\Badge('danger', _('required')));
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('required-field');
+            }
+
+            $flags->addItem(new \Ease\TWB5\Badge(_('required'), 'danger'));
         }
 
         if ($field->isSecret()) {
-            $formGroup->addTagClass('secret-field');
-            $flags->addItem(new \Ease\TWB5\Badge('dark', '🔒 '._('secret')));
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('secret-field');
+            }
+
+            $flags->addItem(new \Ease\TWB5\Badge('🔒 '._('secret'), 'dark'));
         }
 
         if ($field->isExpiring()) {
-            $formGroup->addTagClass('expiring-field');
-            $flags->addItem(new \Ease\TWB5\Badge('warning', '⏳ '._('expiring')));
+            if (method_exists($formGroup, 'addTagClass')) {
+                $formGroup->addTagClass('expiring-field');
+            }
+            $flags->addItem(new \Ease\TWB5\Badge('⏳ '._('expiring'), 'warning'));
         }
 
         if ($field->isMultiLine()) {
-            $flags->addItem(new \Ease\TWB5\Badge('info', _('multiline')));
+            $flags->addItem(new \Ease\TWB5\Badge(_('multiline'), 'info'));
         }
 
         if (!empty($flags->pageParts)) {

@@ -119,7 +119,7 @@ CSS);
      */
     private function buildButtons(): void
     {
-        $buttonGroup = $this->addItem(new \Ease\Html\DivTag(null, ['class' => 'btn-group btn-group-sm', 'role' => 'group']));
+        $buttonGroup = new \Ease\Html\DivTag(null, ['class' => 'btn-group btn-group-sm', 'role' => 'group']);
 
         // All Jobs button
         $allJobsClass = empty($this->activeFilter) ? 'btn btn-primary' : 'btn btn-outline-primary';
@@ -138,10 +138,12 @@ CSS);
 
         // Scheduled/Waiting button
         $scheduledClass = ($this->activeFilter === 'scheduled') ? 'btn btn-secondary' : 'btn btn-outline-secondary';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=scheduled', '💣 '._('Scheduled'), ['class' => $scheduledClass, 'title' => _('Show scheduled jobs'), 'id' => 'scheduledjobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=scheduled', '<span class="hourglass-spin">⏳</span> '._('Scheduled'), ['class' => $scheduledClass, 'title' => _('Show scheduled jobs'), 'id' => 'scheduledjobsbuttonmain']));
         // Today button
         $todayClass = ($this->activeFilter === 'today') ? 'btn btn-warning' : 'btn btn-outline-warning';
         $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=today', '📅 '._('Today'), ['class' => $todayClass, 'title' => _('Show today\'s jobs'), 'id' => 'todayjobsbuttonmain']));
+
+        $this->addItem($buttonGroup);
     }
 
     /**

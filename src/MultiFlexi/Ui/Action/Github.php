@@ -47,6 +47,6 @@ class Github extends \MultiFlexi\Action\Github
      */
     public function inputs(string $action): \Ease\Embedable
     {
-        return new \Ease\TWB5\Badge('info', _('No Fields required').' ('.$action.')');
+        return new \Ease\TWB5\Badge(_('No Fields required').' ('.$action.')', 'info');
     }
 }

@@ -73,10 +73,10 @@ class DashboardJobsByCompanyChart extends \Ease\Html\DivTag
                 $graph->values($chartData);
                 $this->addItem(new \Ease\Html\DivTag($graph->fetch('PieGraph'), ['class' => 'chart-container']));
             } else {
-                $this->addItem(new \Ease\TWB5\Badge('info', _('No data available')));
+                $this->addItem(new \Ease\TWB5\Badge(_('No data available'), 'info'));
             }
         } catch (\Exception $e) {
-            $this->addItem(new \Ease\TWB5\Badge('danger', _('Error loading chart: ').$e->getMessage()));
+            $this->addItem(new \Ease\TWB5\Badge(_('Error loading chart: ').$e->getMessage(), 'danger'));
         }
     }
 }

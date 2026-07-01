@@ -36,6 +36,12 @@ if (null === $companer->getMyKey()) {
     WebPage::singleton()->redirect('companies.php');
 }
 
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companer->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companer->getRecordName()),
+);
+
 $companyApp = new \MultiFlexi\CompanyApp($companer);
 
 // Handle form submission
@@ -189,7 +195,7 @@ foreach ($allApps as $app) {
             $tag = trim($tag);
 
             if (!empty($tag)) {
-                $badge = new \Ease\TWB5\Badge('secondary', $tag, ['class' => 'me-1 mb-1 tag-badge']);
+                $badge = new \Ease\TWB5\Badge($tag, 'secondary', ['class' => 'me-1 mb-1 tag-badge']);
                 $tagBadges->addItem($badge);
             }
         }

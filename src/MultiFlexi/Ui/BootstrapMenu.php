@@ -40,6 +40,11 @@ class BootstrapMenu extends \Ease\TWB5\Navbar
         $this->mainpage = 'main.php';
         parent::__construct(new \Ease\Html\ImgTag('images/project-logo.svg', $name, ['width' => 50, 'height' => 50, 'class' => 'img-rounded d-inline-block align-top']), 'main-menu', ['class' => 'sticky-top '.(\array_key_exists('class', $properties) ? $properties['class'] : '')]);
 
+        // Render the collapsible menu as a left slide-in Offcanvas drawer on
+        // small screens (it stays inline on lg+ via navbar-expand-lg).
+        $this->offcanvas = true;
+        $this->offcanvasPlacement = 'start';
+
         if (\Ease\Shared::user()->isLogged() === false) {
             // Bootstrap 5 inline form: flex row on the inner form div (2nd arg)
             // instead of the removed BS4 form-inline class

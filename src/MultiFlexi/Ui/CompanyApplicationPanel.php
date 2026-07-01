@@ -55,12 +55,12 @@ class CompanyApplicationPanel extends Panel
 
         $crls = new \MultiFlexi\Ui\CompanyRuntemplatesLinks($company, $this->application, [], ['class' => 'btn btn-outline-secondary btn-sm p-0 px-1', 'style' => 'font-size: 0.7rem;']);
 
-        $usageDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 bg-light rounded shadow-sm border']);
-        $usageDiv->addItem(new \Ease\Html\SmallTag(_('Active RunTemplates').': ', ['class' => 'font-weight-bold mb-1 d-block text-uppercase small text-secondary']));
+        $usageDiv = new \Ease\Html\DivTag(null, ['class' => 'p-2 bg-white rounded border border-2']);
+        $usageDiv->addItem(new \Ease\Html\SmallTag(_('Active RunTemplates').': ', ['class' => 'fw-bold mb-1 d-block text-uppercase small text-dark']));
 
         $usageTable = new \Ease\TWB5\Table(null, ['class' => 'table table-sm table-hover mb-0', 'style' => 'font-size: 0.85rem;']);
         $usageTable->addRowColumns([
-            [new \Ease\Html\SmallTag(_('Count'), ['class' => 'text-muted']), '&nbsp;', new \Ease\TWB5\Badge('primary', (string) $crls->count())],
+            [new \Ease\Html\SmallTag(_('Count'), ['class' => 'text-dark']), '&nbsp;', new \Ease\TWB5\Badge((string) $crls->count(), 'primary')],
             $crls,
         ]);
 

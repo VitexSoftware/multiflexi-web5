@@ -23,7 +23,15 @@ $runtemplate_id = \Ease\TWB5\WebPage::getRequestValue('runtemplate', 'int');
 $active = \Ease\TWB5\WebPage::getRequestValue('active', 'bool');
 
 if (null !== $runtemplate_id) {
-    $switcher = new \MultiFlexi\RunTemplate();
+    $switcher = new \MultiFlexi\RunTemplate($runtemplate_id);
+
+    // Enforce access control - user must have access to the run template's company
+    if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany((int) $switcher->getDataValue('company_id'))) {
+        http_response_code(403);
+
+        exit;
+    }
+
     $switcher->setData(['id' => $runtemplate_id, 'active' => $active]);
     http_response_code($switcher->dbsync() ? 201 : 400);
 } else {

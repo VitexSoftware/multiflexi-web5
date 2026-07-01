@@ -21,6 +21,13 @@ use MultiFlexi\Company;
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
 $companies = new Company(WebPage::getRequestValue('id', 'int'));
+
+// Enforce access control
+\MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
+    (int) $companies->getMyKey(),
+    sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
+);
+
 WebPage::singleton()->addItem(new PageTop(_('Company').': '.$companies->getRecordName()));
 
 $_SESSION['company'] = $companies->getMyKey();
@@ -153,6 +160,26 @@ $companyPanelContents[] = $graphRow;
 $companyPanelContents[] = new \Ease\Html\H3Tag(_('job queue'));
 $companyPanelContents[] = $jobList;
 $bottomLine = new CompanyDbStatus($companies);
+
+// Slide-in quick-view drawer with the company record at a glance, so the
+// details can be inspected without leaving the page.
+$detailRows = [];
+
+foreach (($companies->getData() ?? []) as $detailKey => $detailValue) {
+    if (\is_scalar($detailValue) || $detailValue === null) {
+        $detailRows[] = new \Ease\Html\DivTag(
+            '<strong>'.htmlspecialchars((string) $detailKey).':</strong> '.htmlspecialchars((string) $detailValue),
+            ['class' => 'mb-1 text-break'],
+        );
+    }
+}
+
+$detailDrawer = new \Ease\TWB5\OffCanvas('companyDetail', _('Company details'), $detailRows, 'end');
+array_unshift($companyPanelContents, new \Ease\Html\DivTag(
+    $detailDrawer->triggerButton(new \Ease\TWB5\Widgets\BsIcon('info-circle').'&nbsp;'._('Details'), 'outline-info'),
+    ['class' => 'mb-3 text-end'],
+));
+$companyPanelContents[] = $detailDrawer;
 
 WebPage::singleton()->container->addItem(new CompanyPanel($companies, $companyPanelContents, $bottomLine));
 WebPage::singleton()->addItem(new PageBottom('company/'.$companies->getMyKey()));

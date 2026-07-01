@@ -286,7 +286,7 @@ function createRequestsTable(string $statusFilter): \Ease\TWB5\Card
         // View details button
         $viewBtn = new \Ease\TWB5\LinkButton(
             '#',
-            new \Ease\TWB5\Widgets\FaIcon('eye'),
+            new \Ease\TWB5\Widgets\BsIcon('eye'),
             'info',
             [
                 'data-bs-toggle' => 'modal',
@@ -299,7 +299,7 @@ function createRequestsTable(string $statusFilter): \Ease\TWB5\Card
         // Approval/rejection buttons for pending requests
         if ($request['status'] === 'pending') {
             $approveBtn = new \Ease\Html\ButtonTag(
-                new \Ease\TWB5\Widgets\FaIcon('check'),
+                new \Ease\TWB5\Widgets\BsIcon('check-lg'),
                 [
                     'type' => 'button',
                     'class' => 'btn btn-success btn-sm',
@@ -310,7 +310,7 @@ function createRequestsTable(string $statusFilter): \Ease\TWB5\Card
             $actions->addItem($approveBtn);
 
             $rejectBtn = new \Ease\Html\ButtonTag(
-                new \Ease\TWB5\Widgets\FaIcon('times'),
+                new \Ease\TWB5\Widgets\BsIcon('x-lg'),
                 [
                     'type' => 'button',
                     'class' => 'btn btn-danger btn-sm',
@@ -324,7 +324,7 @@ function createRequestsTable(string $statusFilter): \Ease\TWB5\Card
         // Process button for approved requests
         if ($request['status'] === 'approved') {
             $processBtn = new \Ease\Html\ButtonTag(
-                new \Ease\TWB5\Widgets\FaIcon('cog'),
+                new \Ease\TWB5\Widgets\BsIcon('gear'),
                 [
                     'type' => 'button',
                     'class' => 'btn btn-warning btn-sm',

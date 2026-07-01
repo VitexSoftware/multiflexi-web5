@@ -26,7 +26,7 @@ WebPage::singleton()->container->addItem(new CompaniesBar());
 // Get filter parameter
 $filter = WebPage::singleton()->getRequestValue('filter');
 
-$engine = new \MultiFlexi\CompanyJobLister();
+$engine = new \MultiFlexi\FilteredCompanyJobLister();
 
 // Apply filter if specified
 if (!empty($filter)) {

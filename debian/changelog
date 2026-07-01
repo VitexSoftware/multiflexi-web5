@@ -1,3 +1,38 @@
+multiflexi-web (2.5.0) UNRELEASED; urgency=medium
+
+  * Add tasks.php — task overview with metric cards, daily fulfilment chart,
+    state distribution pie chart, and DataTables-powered task listing
+  * TaskMetricsCards: 6 cards (Total, Fulfilled, Late, Failed, Missed, Active)
+    with today's success percentile on the Fulfilled card
+  * TaskSuccessChart: 14-day daily fulfilment rate line chart (SVGGraph)
+  * TaskStateChart: all-time state distribution pie chart
+  * TasksTable: filterable task table with state-coloured rows, links to job
+    detail, RunTemplate, and Company pages
+  * MainMenu: add Tasks to the Logs dropdown
+  * CredentialForm: universal availability badge for credential types without a
+    custom UI helper (calls checkAvailability() on the prototype, renders
+    Bootstrap 5 alert + details panel)
+  * RuntemplateRequirementsChoser: live availability badge on each assigned
+    credential card (✅ / ⚠️ / 🔴 / 🚫 / ℹ️ keyed to CredentialState)
+  * ExitCode: map exit code 75 (EX_TEMPFAIL / credential blocked) → 'warning'
+  * CompanyJobLister: add job-credential-blocked row class for exit code 75
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 14 Jun 2026 14:00:00 +0200
+
+multiflexi-web (2.4.1) unstable; urgency=medium
+
+  * Pre-Depend on multiflexi-common so the 'multiflexi' user (created by its
+    preinst) always exists before this package's postinst chowns the web files
+    (fixes intermittent "chown: invalid user: 'multiflexi:www-data'" install
+    failures, e.g. on Ubuntu jammy, which blocked the whole build matrix)
+  * Add company-level RBAC access filtering across dashboard lists/charts
+  * Hide Admin menu for unprivileged users and filter company dropdown
+  * Add read-only notice and server-side protection for company-user assignment
+  * Add activation wizard deep-link support (?company=... -> step 2)
+  * Improve DataTables paging defaults and backend length limits for stability
+
+ -- vitex <info@vitexsoftware.cz>  Sat, 06 Jun 2026 12:20:00 +0200
+
 multiflexi-web (2.4.0) unstable; urgency=medium
 
   * Migrate the whole web interface from Bootstrap 4 to Bootstrap 5
