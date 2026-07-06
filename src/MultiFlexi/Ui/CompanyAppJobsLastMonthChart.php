@@ -37,6 +37,6 @@ class CompanyAppJobsLastMonthChart extends JobChart
         $today = date('Y-m-d');
         $tomorrow = date('Y-m-d', strtotime('+1 day', strtotime($today)));
 
-        return parent::getJobs()->where('app_id', $this->engine->app->getMyKey())->where('begin < ?', $tomorrow);
+        return parent::getJobs()->where('app_id', $this->engine->app->getMyKey())->where('company_id', $this->engine->company->getMyKey())->where('begin < ?', $tomorrow);
     }
 }
