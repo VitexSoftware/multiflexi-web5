@@ -1,7 +1,8 @@
 #!groovy
 
-// ubuntu:resolute (25.04) excluded: libjs-jquery-datatables, libjs-jquery-selectize.js, php-goat1000-svggraph not yet packaged for resolute
-String[] distributions = ['debian:bookworm', 'debian:trixie', 'ubuntu:jammy', 'ubuntu:noble']
+// ubuntu:resolute re-enabled: libjs-jquery-datatables and libjs-jquery-selectize.js are now
+// in the Ubuntu resolute universe archive; php-goat1000-svggraph now builds for resolute too.
+String[] distributions = ['debian:bookworm', 'debian:trixie', 'ubuntu:jammy', 'ubuntu:noble', 'ubuntu:resolute']
 
 String vendor = 'vitexsoftware'
 String imagePrefix = 'multiflexi-'
