@@ -34,6 +34,7 @@ $companies = new Company(WebPage::getRequestValue('id', 'int'), $companyConfig);
 );
 $_SESSION['company'] = $companies->getMyKey();
 $companyEnver = new \MultiFlexi\CompanyEnv($companies);
+$isNewCompany = empty($companies->getMyKey());
 
 if (WebPage::singleton()->isPosted()) {
     if (\array_key_exists('env', $_POST)) {
@@ -52,7 +53,12 @@ if (WebPage::singleton()->isPosted()) {
                 $companies->addStatusMessage(_('Company Saved'), 'success');
                 $companyUser = new \MultiFlexi\CompanyUser($companies);
                 $result = $companyUser->assignUser(Shared::user()->getMyKey()) ? 200 : 500;
-                WebPage::singleton()->redirect('activation-wizard.php?company='.$companies->getMyKey());
+
+                if ($isNewCompany) {
+                    WebPage::singleton()->redirect('activation-wizard.php?company='.$companies->getMyKey());
+                } else {
+                    WebPage::singleton()->redirect('companysetup.php?id='.$companies->getMyKey());
+                }
             } catch (\Exception $exc) {
                 $companies->addStatusMessage($exc->getMessage(), 'error');
             }
