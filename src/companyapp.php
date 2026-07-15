@@ -48,6 +48,8 @@ $runtemplatesDiv = new \Ease\Html\DivTag();
 // Add chart above RunTemplates table
 $runtemplatesDiv->addItem(new CompanyAppJobsLastMonthChart($companyApp));
 
+$runtemplatesDiv->addItem(new JobGraphWidget(null, (int) $companer->getMyKey(), (int) $application->getMyKey()));
+
 $runtemplatesHeader = new Row(null, 0, ['style' => 'margin-top: 20px;']);
 $runtemplatesHeader->addColumn(6, new H3Tag('⚗️ '._('RunTemplates for this Company')));
 $runtemplatesHeader->addColumn(6, [

@@ -35,6 +35,8 @@ if (!empty($filter)) {
 
 WebPage::singleton()->container->addItem(new AllJobsLastMonthChart($engine, ['id' => 'container']));
 
+WebPage::singleton()->container->addItem(new JobGraphWidget());
+
 // Add filter toolbar
 WebPage::singleton()->container->addItem(new JobFilterToolbar($filter, 'main.php'));
 

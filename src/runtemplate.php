@@ -153,5 +153,9 @@ $appPanel = new ApplicationPanel($app, new RunTemplatePanel($runTemplate));
 
 WebPage::singleton()->container->addItem(new CompanyPanel($companies, $appPanel));
 
+if ((int) $runTemplate->getMyKey() > 0) {
+    WebPage::singleton()->container->addItem(new JobGraphWidget($runTemplate));
+}
+
 WebPage::singleton()->addItem(new PageBottom('runtemplate/'.$runTemplate->getMyKey()));
 WebPage::singleton()->draw();

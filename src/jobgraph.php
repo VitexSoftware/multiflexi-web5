@@ -17,10 +17,15 @@ namespace MultiFlexi\Ui;
 
 require_once './init.php';
 
+WebPage::singleton()->onlyForLogged();
+
 $companyId = WebPage::getRequestValue('company_id', 'int');
 $runtemplateId = WebPage::getRequestValue('runtemplate_id', 'int');
+$appId = WebPage::getRequestValue('app_id', 'int');
 $width = WebPage::getRequestValue('width', 'int');
 $height = WebPage::getRequestValue('height', 'int');
+
+$accessibleCompanies = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
 
 $jobber = new \MultiFlexi\Job();
 
@@ -28,9 +33,24 @@ $jobber = new \MultiFlexi\Job();
 $query = $jobber->listingQuery()->select('exitcode', true)->limit($width * $height)->orderBy('id DESC');
 
 if ($runtemplateId) {
+    $runtemplate = new \MultiFlexi\RunTemplate($runtemplateId);
+    \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess((int) $runtemplate->getDataValue('company_id'));
     $query->where('runtemplate_id', $runtemplateId);
 } elseif ($companyId) {
+    \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess($companyId);
     $query->where('company_id', $companyId);
+
+    if ($appId) {
+        $query->where('app_id', $appId);
+    }
+} elseif (!empty($accessibleCompanies)) {
+    $query->where('company_id', $accessibleCompanies);
+
+    if ($appId) {
+        $query->where('app_id', $appId);
+    }
+} else {
+    $query->where('1=0');
 }
 
 $todaysJobs = $query->fetchAll();
