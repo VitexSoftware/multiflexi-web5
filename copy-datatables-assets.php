@@ -18,6 +18,13 @@ declare(strict_types=1);
  * src/ directories. Run automatically by composer install/update. The exact,
  * mutually-compatible versions (DataTables 2.x core + Buttons 3.x) are pinned
  * in composer.lock so every checkout produces identical assets.
+ *
+ * The copied files under src/js/ and src/css/ are committed to git (not
+ * gitignored) because the Debian packaging pipeline (debian/rules) never
+ * runs `composer install` — it relies on Debian-packaged autoloaders for PHP
+ * dependencies, so vendor/ does not exist at build time. Re-run this script
+ * and commit the result whenever the pinned DataTables/Buttons versions
+ * change in composer.lock.
  */
 $root = __DIR__;
 
