@@ -33,4 +33,14 @@ override_dh_install:
 	sed -i 's/css\/selectize/\/javascript\/selectize.js\/css\/selectize/' debian/multiflexi-web5/usr/lib/multiflexi-web/MultiFlexi/Ui/DBDataTable.php
 	sed -i -e 's/css\/font-awesome.min.css/\/javascript\/font-awesome\/css\/font-awesome.min.css/g' debian/multiflexi-web5/usr/lib/multiflexi-web/MultiFlexi/Ui/WebPage.php
 	sed -i -e 's/\.\.\/i18n/\/usr\/share\/locale/g'            	     debian/multiflexi-web5/usr/share/multiflexi-web/init.php
+	# Fix vendor/env references one directory deeper (src/api/*.php -> usr/share/multiflexi-web/api/*.php)
+	sed -i \
+		-e "s|__DIR__\.'/\.\./\.\./vendor/autoload\.php'|'/usr/share/php/multiflexi-web/autoload.php'|g" \
+		-e "s|'\.\./\.\./vendor/autoload\.php'|'/usr/share/php/multiflexi-web/autoload.php'|g" \
+		-e "s|\\\\dirname(__DIR__)\.'/\.\./\.env'|'/etc/multiflexi/multiflexi.env'|g" \
+		debian/multiflexi-web5/usr/share/multiflexi-web/api/index.php \
+		debian/multiflexi-web5/usr/share/multiflexi-web/api/debug.php \
+		debian/multiflexi-web5/usr/share/multiflexi-web/api/index-my.php
+	sed -i -e "s|require_once '\.\./init\.php'|require_once '/usr/share/multiflexi-web/init.php'|g" \
+		debian/multiflexi-web5/usr/share/multiflexi-web/api/data-export.php
 ##	sed -i "s/'';/'$$(echo $${BUILD_NUMBER})';/"  src/MultiFlexi/Ui/PageBottom.php
