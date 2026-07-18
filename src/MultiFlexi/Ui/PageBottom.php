@@ -59,7 +59,7 @@ class PageBottom extends \Ease\Html\FooterTag
 
         $lnks = $footrow->addColumn(4, new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Docs')));
 
-        if ($this->apiLink) {
+        if ($this->apiLink && self::apiAvailable()) {
             $lnks->addItem($this->apiLinks());
         }
 
@@ -97,6 +97,16 @@ class PageBottom extends \Ease\Html\FooterTag
         ]);
 
         return [$button, $drawer];
+    }
+
+    /**
+     * Whether the REST API (multiflexi-api package) is deployed alongside this
+     * web install. It's an optional companion package, not a hard dependency,
+     * so api-dependent UI must degrade gracefully when it's absent.
+     */
+    public static function apiAvailable(): bool
+    {
+        return is_file(($_SERVER['DOCUMENT_ROOT'] ?? \dirname(__DIR__, 3)).'/api/index.php');
     }
 
     public function apiLinks()

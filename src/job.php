@@ -85,7 +85,7 @@ $errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: blac
 $stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getOutput()))), ['style' => 'background:  black; font-family: monospace;']);
 
 // Connect SSE stream only while the job is still running (no exitcode yet)
-if ($jobber->getDataValue('exitcode') === null && $jobber->getDataValue('begin') !== null) {
+if (\MultiFlexi\Ui\PageBottom::apiAvailable() && $jobber->getDataValue('exitcode') === null && $jobber->getDataValue('begin') !== null) {
     WebPage::singleton()->addJavaScript(<<<EOD
 
 (function () {

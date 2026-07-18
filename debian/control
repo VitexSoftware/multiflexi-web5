@@ -26,6 +26,7 @@ Depends: ${misc:Depends},
  libjs-font-awesome,
  php-cli,
  php-mcrypt | php-sodium | php8.1-sodium | php8.2-sodium | php8.3-sodium | php8.4-sodium | libsodium23
+Recommends: multiflexi-api
 Description: MultiFlexi web interface core components
  Core PHP classes and web interface components for MultiFlexi.
  Contains the main application logic and web interface files including
