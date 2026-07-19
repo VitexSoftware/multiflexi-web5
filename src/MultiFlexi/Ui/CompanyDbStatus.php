@@ -56,19 +56,19 @@ class CompanyDbStatus extends \Ease\TWB5\Row
             ['class' => 'btn btn-default', 'type' => 'button'],
         ));
         $this->addColumn(2, new \Ease\TWB5\LinkButton(
-            'joblist.php?filter=success&company_id='.$companyId,
+            'jobs.php?filter=success&company_id='.$companyId,
             [_('Success Jobs').'&nbsp;', new \Ease\TWB5\Badge($jobsSuccess, 'success', ['class' => 'rounded-pill'])],
             'success',
             ['title' => _('View successful jobs'), 'id' => 'successjobscompanybutton'],
         ));
         $this->addColumn(2, new \Ease\TWB5\LinkButton(
-            'joblist.php?filter=failed&company_id='.$companyId,
+            'jobs.php?filter=failed&company_id='.$companyId,
             [_('Failed Jobs').'&nbsp;', new \Ease\TWB5\Badge($jobs - $jobsSuccess - $jobsUnfinished, 'danger', ['class' => 'rounded-pill'])],
             'danger',
             ['title' => _('View failed jobs'), 'id' => 'failedjobscompanybutton'],
         ));
         $this->addColumn(2, new \Ease\TWB5\LinkButton(
-            'joblist.php?filter=scheduled&company_id='.$companyId,
+            'jobs.php?filter=scheduled&company_id='.$companyId,
             [_('Unfinished Jobs').'&nbsp;', new \Ease\TWB5\Badge($jobsUnfinished, 'warning', ['class' => 'rounded-pill'])],
             'warning',
             ['title' => _('View unfinished jobs'), 'id' => 'unfinishedjobscompanybutton'],

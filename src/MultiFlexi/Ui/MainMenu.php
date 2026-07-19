@@ -266,7 +266,7 @@ class MainMenu extends \Ease\Html\DivTag
                 'admin-data-corrections.php' => '✏️&nbsp;'._('Data Corrections'),
                 '' => '',
                 'logs.php' => '📖&nbsp;'._('System log'),
-                'joblist.php' => '🏁&nbsp;'._('Jobs'),
+                'jobs.php' => '🏁&nbsp;'._('Jobs'),
                 'tasks.php' => '📋&nbsp;'._('Tasks'),
                 'queue.php' => '⏳&nbsp;'._('Job queue'),
                 'dashboard.php' => '📊&nbsp;'._('Dashboard'),

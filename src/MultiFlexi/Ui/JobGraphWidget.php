@@ -79,7 +79,7 @@ class JobGraphWidget extends \Ease\Html\DivTag
             _('Job History Graph'),
             [
                 'class' => 'img-fluid border',
-                'style' => 'max-width: 100%; height: auto;',
+                'style' => 'width: 100%; height: auto; image-rendering: pixelated;',
                 'title' => _('Visual representation of recent job executions. Each cell represents a job, colored by exit code.'),
             ],
         );

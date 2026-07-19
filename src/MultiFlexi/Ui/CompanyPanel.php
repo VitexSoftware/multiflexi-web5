@@ -56,7 +56,7 @@ class CompanyPanel extends \Ease\TWB5\Panel
             ['companyapps.php?company_id='.$cid, '📌 '._('Applications'), 'outline-secondary'],
             ['activation-wizard.php?company='.$cid, '🧙 '._('Wizard'), 'outline-primary'],
             ['companycreds.php?company_id='.$cid, '🔐 '._('Credentials'), 'outline-secondary'],
-            ['joblist.php?company_id='.$cid, '🏁 '._('Jobs'), 'outline-info'],
+            ['jobs.php?company_id='.$cid, '🏁 '._('Jobs'), 'outline-info'],
             ['companyuser.php?company_id='.$cid, '📌 '._('Access Rights'), 'outline-warning'],
         ] as [$url, $label, $style]) {
             $actionsRow->addItem(new \Ease\Html\DivTag(

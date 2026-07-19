@@ -37,7 +37,7 @@ $actions = [
     ['profile.php', new \Ease\TWB5\Widgets\BsIcon('person'), _('Edit Profile'), 'primary', 'editProfileButton'],
     ['data-export-page.php', new \Ease\TWB5\Widgets\BsIcon('download'), _('Export My Data'), 'info', 'exportDataButton'],
     ['consent-preferences.php', new \Ease\TWB5\Widgets\BsIcon('person-lock'), _('Privacy Settings'), 'secondary', 'privacySettingsButton'],
-    ['joblist.php', new \Ease\TWB5\Widgets\BsIcon('list'), _('All Jobs'), 'success', 'allJobsButton'],
+    ['jobs.php', new \Ease\TWB5\Widgets\BsIcon('list'), _('All Jobs'), 'success', 'allJobsButton'],
 ];
 
 foreach ($actions as [$url, $icon, $label, $style, $id]) {
