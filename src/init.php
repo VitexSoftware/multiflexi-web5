@@ -20,8 +20,16 @@ use MultiFlexi\Ui\WebPage;
 
 require_once '../vendor/autoload.php';
 
+// ENCRYPTION_MASTER_KEY is deliberately NOT in the required list: the web
+// UI must keep working even when encryption at rest isn't configured yet
+// (e.g. a fresh install where multiflexi-common's postinst key generation
+// hasn't run). Making it required here would exit(1) the entire
+// application before a single page could render, over a feature that
+// every downstream consumer (Credential::getEncryptor(), the
+// $GLOBALS['dataEncryption'] block below) already treats as optional and
+// degrades gracefully around.
 Shared::init(
-    ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD', 'ENCRYPTION_MASTER_KEY'],
+    ['DB_CONNECTION', 'DB_HOST', 'DB_PORT', 'DB_DATABASE', 'DB_USERNAME', 'DB_PASSWORD'],
     \dirname(__DIR__).'/.env',
 );
 
