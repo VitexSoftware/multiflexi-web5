@@ -93,13 +93,33 @@ CSS);
 
             $inputCaption = new \Ease\Html\StrongTag($fieldName);
             $isBool = $field->getType() === 'bool';
+            $isRedactable = $field->isRedactable();
+            $displayValue = $isRedactable ? '' : $field->getValue();
+            $maskedPlaceholder = $isRedactable ? \MultiFlexi\ConfigField::maskValue($field->getValue()) : null;
 
             if ($isBool) {
                 $input = new \Ease\TWB5\Widgets\Toggle($fieldName, $field->getValue() === 'true', 'true', ['data-size' => 'small']);
             } elseif ($field->isMultiLine()) {
-                $input = new \Ease\Html\TextareaTag($fieldName, $field->getValue(), ['class' => 'form-control form-control-sm', 'rows' => 4]);
+                $textareaAttrs = ['class' => 'form-control form-control-sm', 'rows' => 4];
+
+                if ($maskedPlaceholder !== null) {
+                    $textareaAttrs['placeholder'] = $maskedPlaceholder;
+                }
+
+                $input = new \Ease\Html\TextareaTag($fieldName, $displayValue, $textareaAttrs);
             } else {
-                $input = new \Ease\Html\InputTag($fieldName, $field->getValue(), ['type' => $field->getType(), 'class' => 'form-control form-control-sm']);
+                $inputAttrs = ['type' => $field->getType(), 'class' => 'form-control form-control-sm'];
+
+                if ($maskedPlaceholder !== null) {
+                    $inputAttrs['placeholder'] = $maskedPlaceholder;
+                }
+
+                $input = new \Ease\Html\InputTag($fieldName, $displayValue, $inputAttrs);
+            }
+
+            if ($isRedactable) {
+                $hint = $field->getHint();
+                $field->setHint(trim($hint.' '._('Leave blank to keep the existing value.')));
             }
 
             $runTemplateField = $runTemplateFields->getFieldByCode($fieldName);
@@ -127,7 +147,11 @@ CSS);
 
                         if (!$isBool) {
                             $input->setTagProperty('disabled', '1');
-                            $input->setValue($credential->getDataValue($fieldName));
+                            $input->setValue($isRedactable ? '' : $credential->getDataValue($fieldName));
+
+                            if ($isRedactable) {
+                                $input->setTagProperty('placeholder', \MultiFlexi\ConfigField::maskValue($credential->getDataValue($fieldName)));
+                            }
                         }
 
                         $field->setDescription($credentialType->getFields()->getField($fieldName)->getDescription());
@@ -140,7 +164,7 @@ CSS);
                         ['class' => 'mb-3'],
                     ));
                 } else {
-                    $formGroup = $bucket->addItem(new \Ease\TWB5\InputGroup($inputCaption, $input, (string) $runTemplateField->getValue()));
+                    $formGroup = $bucket->addItem(new \Ease\TWB5\InputGroup($inputCaption, $input, $isRedactable ? $maskedPlaceholder : (string) $runTemplateField->getValue()));
                 }
             } else { // Simple Fields
                 if ($isBool) {
@@ -149,7 +173,7 @@ CSS);
                         ['class' => 'mb-3'],
                     ));
                 } else {
-                    $formGroup = $bucket->addItem(new \Ease\TWB5\InputGroup($fieldName, $input, (string) $field->getDefaultValue()));
+                    $formGroup = $bucket->addItem(new \Ease\TWB5\InputGroup($fieldName, $input, $isRedactable ? \MultiFlexi\ConfigField::maskValue($field->getDefaultValue()) : (string) $field->getDefaultValue()));
                 }
             }
 
