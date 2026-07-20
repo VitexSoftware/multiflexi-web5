@@ -54,6 +54,14 @@ if (!WebPage::singleton()->isPosted()) {
     }
 }
 
+// No company exists at all yet: nothing can be activated until one is created
+if (!(new \MultiFlexi\Company())->listingQuery()->select(['id'])->limit(1)->fetch()) {
+    \Ease\Shared::user()->addStatusMessage(_('You need to create a company first before you can start planning.'), 'warning');
+    WebPage::singleton()->redirect('companysetup.php');
+
+    exit;
+}
+
 // Handle form submission and process wizard data
 if (WebPage::singleton()->isPosted()) {
     $postData = $_POST;

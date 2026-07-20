@@ -38,11 +38,7 @@ class ToDo extends \MultiFlexi\Action\ToDo
      */
     public function inputs(string $prefix): \Ease\Embedable
     {
-        $companyId = 0;
-
-        if (isset($_SESSION) && \array_key_exists('company', $_SESSION) && $_SESSION['company'] !== null) {
-            $companyId = (int) $_SESSION['company'];
-        }
+        $companyId = (int) $this->runtemplate->getDataValue('company_id');
 
         $container = new \Ease\Html\DivTag();
 
