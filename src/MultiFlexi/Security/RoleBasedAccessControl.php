@@ -734,7 +734,7 @@ EOD;
         $this->pdo->exec(<<<EOD
 
             CREATE TABLE IF NOT EXISTS `{$this->tables['roles']}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(50) NOT NULL,
                 `display_name` varchar(100) NOT NULL,
                 `description` text DEFAULT NULL,
@@ -754,7 +754,7 @@ EOD);
         $this->pdo->exec(<<<EOD
 
             CREATE TABLE IF NOT EXISTS `{$this->tables['permissions']}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
                 `name` varchar(100) NOT NULL,
                 `description` text DEFAULT NULL,
                 `resource` varchar(50) DEFAULT NULL,
@@ -774,10 +774,10 @@ EOD);
         $this->pdo->exec(<<<EOD
 
             CREATE TABLE IF NOT EXISTS `{$this->tables['role_permissions']}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `role_id` int(11) NOT NULL,
-                `permission_id` int(11) NOT NULL,
-                `granted_by` int(11) DEFAULT NULL,
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `role_id` int(11) unsigned NOT NULL,
+                `permission_id` int(11) unsigned NOT NULL,
+                `granted_by` int(11) unsigned DEFAULT NULL,
                 `granted_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `unique_role_permission` (`role_id`, `permission_id`),
@@ -794,10 +794,10 @@ EOD);
         $this->pdo->exec(<<<EOD
 
             CREATE TABLE IF NOT EXISTS `{$this->tables['user_roles']}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `user_id` int(11) NOT NULL,
-                `role_id` int(11) NOT NULL,
-                `assigned_by` int(11) DEFAULT NULL,
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `user_id` int(11) unsigned NOT NULL,
+                `role_id` int(11) unsigned NOT NULL,
+                `assigned_by` int(11) unsigned DEFAULT NULL,
                 `assigned_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 `expires_at` timestamp NULL DEFAULT NULL,
                 PRIMARY KEY (`id`),
@@ -815,9 +815,9 @@ EOD);
         $this->pdo->exec(<<<EOD
 
             CREATE TABLE IF NOT EXISTS `{$this->tables['role_hierarchy']}` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
-                `parent_role_id` int(11) NOT NULL,
-                `child_role_id` int(11) NOT NULL,
+                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+                `parent_role_id` int(11) unsigned NOT NULL,
+                `child_role_id` int(11) unsigned NOT NULL,
                 `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
                 PRIMARY KEY (`id`),
                 UNIQUE KEY `unique_hierarchy` (`parent_role_id`, `child_role_id`),
