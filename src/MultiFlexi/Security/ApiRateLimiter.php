@@ -56,7 +56,6 @@ class ApiRateLimiter
         $window = $this->getEndpointWindow($endpoint);
 
         $now = time();
-        $windowStart = $now - $window;
 
         // Get or create rate limit record
         $record = $this->getRateLimitRecord($identifier, $endpoint);
@@ -74,16 +73,19 @@ class ApiRateLimiter
             ];
         }
 
+        // PDO returns every column as a string under emulated prepares
+        // (the default here); cast the int columns and convert the DATETIME
+        // columns (`window_end`/`blocked_until`) to Unix timestamps so they
+        // satisfy the strict `int`/`?int` parameter types below.
+        $record['id'] = (int) $record['id'];
+        $record['requests'] = (int) $record['requests'];
+        $windowEndTs = strtotime((string) $record['window_end']);
+        $blockedUntilTs = $record['blocked_until'] !== null ? strtotime((string) $record['blocked_until']) : null;
+
         // Check if window has expired
-        if ($record['window_end'] <= $now) {
+        if ($windowEndTs <= $now) {
             // Reset the window
-            $this->updateRateLimitRecord(
-                $record['id'],
-                1,
-                $now,
-                $now + $window,
-                null,
-            );
+            $this->resetRateLimitWindow($record['id'], $now, $now + $window);
 
             return [
                 'allowed' => true,
@@ -95,13 +97,13 @@ class ApiRateLimiter
         }
 
         // Check if currently blocked
-        if ($record['blocked_until'] && $record['blocked_until'] > $now) {
+        if ($blockedUntilTs !== null && $blockedUntilTs > $now) {
             return [
                 'allowed' => false,
                 'limit' => $limit,
                 'remaining' => 0,
-                'reset_time' => $record['window_end'],
-                'retry_after' => $record['blocked_until'] - $now,
+                'reset_time' => $windowEndTs,
+                'retry_after' => $blockedUntilTs - $now,
                 'blocked' => true,
             ];
         }
@@ -109,13 +111,10 @@ class ApiRateLimiter
         // Check if limit exceeded
         if ($record['requests'] >= $limit) {
             // Block for remainder of window
-            $blockedUntil = $record['window_end'];
             $this->updateRateLimitRecord(
                 $record['id'],
                 $record['requests'],
-                $record['window_start'],
-                $record['window_end'],
-                $blockedUntil,
+                $windowEndTs,
             );
 
             // Log rate limit exceeded
@@ -138,8 +137,8 @@ class ApiRateLimiter
                 'allowed' => false,
                 'limit' => $limit,
                 'remaining' => 0,
-                'reset_time' => $record['window_end'],
-                'retry_after' => $blockedUntil - $now,
+                'reset_time' => $windowEndTs,
+                'retry_after' => $windowEndTs - $now,
                 'blocked' => true,
             ];
         }
@@ -149,8 +148,6 @@ class ApiRateLimiter
         $this->updateRateLimitRecord(
             $record['id'],
             $newRequests,
-            $record['window_start'],
-            $record['window_end'],
             null,
         );
 
@@ -158,7 +155,7 @@ class ApiRateLimiter
             'allowed' => true,
             'limit' => $limit,
             'remaining' => $limit - $newRequests,
-            'reset_time' => $record['window_end'],
+            'reset_time' => $windowEndTs,
             'retry_after' => null,
         ];
     }
@@ -436,8 +433,6 @@ EOD;
     private function updateRateLimitRecord(
         int $id,
         int $requests,
-        string $windowStart,
-        string $windowEnd,
         ?int $blockedUntil,
     ): void {
         $sql = <<<EOD
@@ -452,6 +447,22 @@ EOD;
             $blockedUntil ? date('Y-m-d H:i:s', $blockedUntil) : null,
             $id,
         ]);
+    }
+
+    /**
+     * Reset a rate limit record's window to a new bound, clearing the request
+     * count and any active block.
+     */
+    private function resetRateLimitWindow(int $id, int $windowStart, int $windowEnd): void
+    {
+        $sql = <<<EOD
+UPDATE `{$this->tableName}`
+                SET requests = 1, window_start = FROM_UNIXTIME(?), window_end = FROM_UNIXTIME(?), blocked_until = NULL
+                WHERE id = ?
+EOD;
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$windowStart, $windowEnd, $id]);
     }
 
     /**
