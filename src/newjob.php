@@ -68,7 +68,7 @@ foreach ($uploadEnv as $key => $config) {
     $uploadEnvFields->addField(new \MultiFlexi\ConfigField($key, $config['type'], $config['value']));
 }
 
-$jobber->prepareJob($runTemplate, $uploadEnvFields, new \DateTime(), WebPage::getRequestValue('executor'), 'adhoc');
+$jobber->prepareJob($runTemplate, $uploadEnvFields, new \DateTime(), WebPage::getRequestValue('executor'), \MultiFlexi\Job::SCHEDULE_TYPE_ADHOC_WEB);
 // scheduleJobRun() is now called automatically inside prepareJob()
 
 $appInfo = $runTemplate->getAppInfo();

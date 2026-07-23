@@ -96,7 +96,7 @@ try {
                 new \MultiFlexi\ConfigFields(), // No upload environment for bulk execute
                 $whenDateTime,
                 $executor,
-                'adhoc',
+                \MultiFlexi\Job::SCHEDULE_TYPE_ADHOC_WEB,
             );
 
             if ($prepared) {

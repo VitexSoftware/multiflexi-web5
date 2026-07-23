@@ -109,7 +109,7 @@ if (null === $runTemplate->getMyKey()) {
         $timezone = \MultiFlexi\DateTimeHelper::getConfiguredTimezone();
 
         if ($allFieldsFilled) {
-            $prepared = $jobber->prepareJob($runTemplate, $uploadEnv, new \DateTime($when, $timezone), \Ease\WebPage::getRequestValue('executor'), 'adhoc');
+            $prepared = $jobber->prepareJob($runTemplate, $uploadEnv, new \DateTime($when, $timezone), \Ease\WebPage::getRequestValue('executor'), \MultiFlexi\Job::SCHEDULE_TYPE_ADHOC_WEB);
 
             // Store files for job if needed (simulate)
             foreach ($uploadEnv as $field => $file) {
