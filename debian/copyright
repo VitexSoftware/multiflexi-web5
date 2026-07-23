@@ -323,7 +323,6 @@ License:   __UNKNOWN__
 #         src/home.php
 #         src/companydelete.php
 #         src/adhoc.php
-#         src/gdpr-article16-migration.php
 #         src/eventsource.php
 #         src/eventrule.php
 #         src/customers.php

@@ -81,18 +81,13 @@ CREATE TABLE `user_data_correction_requests` (
 
 ## Installation
 
-1. **Run the migration script:**
+1. **Run database migrations:**
    ```bash
-   cd /path/to/multiflexi/src
-   php gdpr-article16-migration.php
+   multiflexi-migrator
    ```
+   This creates the `user_data_audit` and `user_data_correction_requests` tables via Phinx.
 
-2. **Optional: Add sample data for testing:**
-   ```bash
-   php gdpr-article16-migration.php --with-sample-data
-   ```
-
-3. **Configure email settings** in your MultiFlexi configuration for notifications.
+2. **Configure email settings** in your MultiFlexi configuration for notifications.
 
 ## Usage
 
