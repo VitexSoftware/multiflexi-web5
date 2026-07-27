@@ -6437,6 +6437,53 @@ msgstr "missing login"
 msgid "missing password"
 msgstr "missing password"
 
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every minute."
+msgid_plural "Every %d minutes."
+msgstr[0] "Every minute."
+msgstr[1] "Every %d minutes."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every hour."
+msgid_plural "Every %d hours."
+msgstr[0] "Every hour."
+msgstr[1] "Every %d hours."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every day."
+msgstr "Every day."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every day at %2$02d:%3$02d."
+msgid_plural "Every %1$d days at %2$02d:%3$02d."
+msgstr[0] "Every day at %2$02d:%3$02d."
+msgstr[1] "Every %1$d days at %2$02d:%3$02d."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every week."
+msgstr "Every week."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every month."
+msgstr "Every month."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every year."
+msgstr "Every year."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every day at %02d:%02d."
+msgstr "Every day at %02d:%02d."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every hour at minute %d."
+msgstr "Every hour at minute %d."
+
 #~ msgid "password is too short"
 #~ msgstr "password is too short"
 

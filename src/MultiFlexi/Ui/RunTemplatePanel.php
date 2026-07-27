@@ -62,6 +62,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $crontabInput = new \MultiFlexi\Ui\CrontabInput($runtemplateId.'_cron', $crontab, $cronInputAttribs);
+        $cronDescription = \MultiFlexi\Ui\CronDescriber::describe($intervalChoosen, $crontab);
 
         $delayChooser = new \MultiFlexi\Ui\DelayChooser($runtemplateId.'_delay', $delayChoosen, ['id' => $runtemplateId.'_delay', 'checked' => 'true', 'data-runtemplate' => $runtemplateId]);
         $executorChooser = new AppExecutorSelect($runtemplate->getApplication(), [], (string) $runtemplate->getDataValue('executor'), ['id' => $runtemplateId.'_executor', 'data-runtemplate' => $runtemplateId]);
@@ -145,7 +146,9 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             new \Ease\Html\H5Tag(_('Interval & Persistence')),
             new \Ease\Html\DivTag([
                 new \Ease\Html\StrongTag(_('Interval')), $intervalChooser, '<br>',
-                new \Ease\Html\StrongTag(_('Cron Expression')), $crontabInput, '<br>',
+                new \Ease\Html\StrongTag(_('Cron Expression')), $crontabInput,
+                $cronDescription !== null ? new \Ease\Html\SmallTag($cronDescription, ['class' => 'text-muted d-block mt-1']) : '',
+                '<br>',
                 new \Ease\Html\StrongTag(_('Startup Delay')), $delayChooser,
             ], ['class' => 'card card-body bg-light']),
         ]);

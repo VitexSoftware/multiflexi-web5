@@ -6421,6 +6421,56 @@ msgstr "chybějící login"
 msgid "missing password"
 msgstr "chybějící heslo"
 
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every minute."
+msgid_plural "Every %d minutes."
+msgstr[0] "Každou minutu."
+msgstr[1] "Každé %d minuty."
+msgstr[2] "Každých %d minut."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every hour."
+msgid_plural "Every %d hours."
+msgstr[0] "Každou hodinu."
+msgstr[1] "Každé %d hodiny."
+msgstr[2] "Každých %d hodin."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every day."
+msgstr "Každý den."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every day at %2$02d:%3$02d."
+msgid_plural "Every %1$d days at %2$02d:%3$02d."
+msgstr[0] "Každý den v %2$02d:%3$02d."
+msgstr[1] "Každé %1$d dny v %2$02d:%3$02d."
+msgstr[2] "Každých %1$d dní v %2$02d:%3$02d."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every week."
+msgstr "Každý týden."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every month."
+msgstr "Každý měsíc."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+msgid "Every year."
+msgstr "Každý rok."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every day at %02d:%02d."
+msgstr "Každý den v %02d:%02d."
+
+#: src/MultiFlexi/Ui/CronDescriber.php
+#, php-format
+msgid "Every hour at minute %d."
+msgstr "Každou hodinu v minutě %d."
+
 #~ msgid "password is too short"
 #~ msgstr "heslo je příliš krátké"
 
