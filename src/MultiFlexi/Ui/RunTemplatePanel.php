@@ -62,7 +62,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $crontabInput = new \MultiFlexi\Ui\CrontabInput($runtemplateId.'_cron', $crontab, $cronInputAttribs);
-        $cronDescription = \MultiFlexi\Ui\CronDescriber::describe($intervalChoosen, $crontab);
+        $cronDescription = \MultiFlexi\CronDescriber::describe($intervalChoosen, $crontab);
 
         $delayChooser = new \MultiFlexi\Ui\DelayChooser($runtemplateId.'_delay', $delayChoosen, ['id' => $runtemplateId.'_delay', 'checked' => 'true', 'data-runtemplate' => $runtemplateId]);
         $executorChooser = new AppExecutorSelect($runtemplate->getApplication(), [], (string) $runtemplate->getDataValue('executor'), ['id' => $runtemplateId.'_executor', 'data-runtemplate' => $runtemplateId]);
