@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4.svg)](https://www.php.net/)
 [![Bootstrap 5](https://img.shields.io/badge/Bootstrap-5-7952B3.svg)](https://getbootstrap.com/)
+![Packaging: deb](https://img.shields.io/badge/packaging-.deb-red?logo=debian&logoColor=white)
 
 The web front-end for **[MultiFlexi](https://multiflexi.eu/)** — a launcher that
 runs a catalogue of tools and jobs against accounting/ERP servers such as
