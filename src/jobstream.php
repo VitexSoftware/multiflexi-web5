@@ -106,7 +106,13 @@ while (true) {
             ]);
         }
 
-        $emit('done', ['exitcode' => (int) $exitcode]);
+        $endValue = $jobber->getDataValue('end');
+
+        $emit('done', [
+            'exitcode' => (int) $exitcode,
+            'end' => $endValue,
+            'end_ts' => $endValue ? (new \DateTime($endValue))->getTimestamp() : time(),
+        ]);
 
         break;
     }
