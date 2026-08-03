@@ -159,6 +159,7 @@ if (empty($jobs)) {
         _('Begin'),
         _('End'),
         _('Duration'),
+        _('Blocked'),
     ]);
 
     $fulfilledByJobId = (int) $task->getDataValue('fulfilled_by_job_id');
@@ -175,6 +176,17 @@ if (empty($jobs)) {
         if (!empty($jobRow['begin']) && !empty($jobRow['end'])) {
             $duration = (new \DateTime((string) $jobRow['end']))->getTimestamp() - (new \DateTime((string) $jobRow['begin']))->getTimestamp();
             $tr->addItem(new \Ease\Html\TdTag($duration.' s'));
+        } else {
+            $tr->addItem(new \Ease\Html\TdTag('—'));
+        }
+
+        // A job never even reaching begin/end because a required credential
+        // failed its availability check would otherwise show as an empty row
+        // here forever — this is the "why didn't this attempt run" answer.
+        if (!empty($jobRow['block_reason']) && empty($jobRow['exitcode'])) {
+            $tr->addItem(new \Ease\Html\TdTag(
+                new \Ease\Html\SpanTag('🚫 '.$jobRow['block_reason'], ['class' => 'text-danger', 'style' => 'font-size: 0.85em;']),
+            ));
         } else {
             $tr->addItem(new \Ease\Html\TdTag('—'));
         }
