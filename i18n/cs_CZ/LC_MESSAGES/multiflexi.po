@@ -2249,10 +2249,8 @@ msgid "Yearly"
 msgstr "Ročně"
 
 #: src/MultiFlexi/Ui/IntervalChooser.php:42
-#, fuzzy
-#| msgid "Customer"
 msgid "Custom"
-msgstr "Zákazník"
+msgstr "Vlastní"
 
 #: src/MultiFlexi/Ui/JobChart.php:87
 msgid "Last 30 Days jobs"

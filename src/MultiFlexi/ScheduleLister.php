@@ -61,7 +61,7 @@ EOD;
     {
         $dataRow['after'] = $dataRowRaw['after'].'<br>'.(string) new \Ease\Html\SmallTag(new \Ease\Html\Widgets\LiveAge(new \DateTime($dataRowRaw['after'])));
         $dataRow['schedule_type'] = self::scheduleTypeLabel($dataRowRaw['schedule_type'] ?? null);
-        $dataRow['job'] = (string) new \Ease\Html\ATag('job.php?id='.$dataRowRaw['job'], '🏁&nbsp;'._('Detail'));
+        $dataRow['job'] = (string) new \Ease\Html\ATag('job.php?id='.$dataRowRaw['job'], '🏁&nbsp;'.$dataRowRaw['job']);
         $dataRow['app_name'] = (string) new \Ease\Html\ATag(
             'app.php?id='.$dataRowRaw['app_id'],
             [self::appIcon($dataRowRaw['app_uuid'] ?? null, $dataRowRaw['app_name']), '&nbsp;'.$dataRowRaw['app_name']],
@@ -125,9 +125,30 @@ EOD;
             return _('Unknown');
         }
 
-        $emoji = Scheduler::getIntervalEmoji(Scheduler::intervalToCode($scheduleType));
+        $code = Scheduler::intervalToCode($scheduleType);
+        $emoji = Scheduler::getIntervalEmoji($code);
+        $label = self::intervalLabel($code) ?? ucfirst($scheduleType);
 
-        return ($emoji === '' ? '' : $emoji.'&nbsp;').ucfirst($scheduleType);
+        return ($emoji === '' ? '' : $emoji.'&nbsp;').$label;
+    }
+
+    /**
+     * Localized label for a Scheduler interval code (see Scheduler::$intervalCode).
+     */
+    private static function intervalLabel(string $code): ?string
+    {
+        $labels = [
+            'c' => _('Custom'),
+            'y' => _('Yearly'),
+            'm' => _('Monthly'),
+            'w' => _('Weekly'),
+            'd' => _('Daily'),
+            'h' => _('Hourly'),
+            'i' => _('Minutely'),
+            'n' => _('Disabled'),
+        ];
+
+        return $labels[$code] ?? null;
     }
 
     public function listingQuery(): \Envms\FluentPDO\Queries\Select
