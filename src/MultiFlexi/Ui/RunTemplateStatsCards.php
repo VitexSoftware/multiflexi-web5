@@ -118,16 +118,12 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
 
         $this->addItem($infoRow);
 
-        // ── Job Visualization ──
-        $vizRow = new \Ease\TWB5\Row();
-        $vizRow->addTagClass('mb-3');
-        $vizRow->addColumn(12, new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate, 20, 10));
-        $this->addItem($vizRow);
-
-        // ── Chart ──
-        $chartRow = new \Ease\TWB5\Row();
-        $chartRow->addColumn(12, new \MultiFlexi\Ui\RunTemplateJobsLastMonthChart($this->runtemplate, ['style' => 'width: 100%;']));
-        $this->addItem($chartRow);
+        // ── Job Visualization + Chart ──
+        $chartsRow = new \Ease\TWB5\Row();
+        $chartsRow->addTagClass('mb-3');
+        $chartsRow->addColumn(8, new \MultiFlexi\Ui\RunTemplateJobsLastMonthChart($this->runtemplate, ['style' => 'width: 100%;']));
+        $chartsRow->addColumn(4, new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate, 20, 10));
+        $this->addItem($chartsRow);
     }
 
     private static function metricCard(string $label, string $value, string $context, string $icon): \Ease\Html\DivTag

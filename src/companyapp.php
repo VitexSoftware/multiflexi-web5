@@ -45,10 +45,11 @@ $companyApp = (new \MultiFlexi\CompanyApp($companer))->setApp($application);
 // RunTemplates section with header and button
 $runtemplatesDiv = new \Ease\Html\DivTag();
 
-// Add chart above RunTemplates table
-$runtemplatesDiv->addItem(new CompanyAppJobsLastMonthChart($companyApp));
-
-$runtemplatesDiv->addItem(new JobGraphWidget(null, (int) $companer->getMyKey(), (int) $application->getMyKey()));
+// Add charts side by side above RunTemplates table
+$chartsRow = new Row();
+$chartsRow->addColumn(8, new CompanyAppJobsLastMonthChart($companyApp));
+$chartsRow->addColumn(4, new JobGraphWidget(null, (int) $companer->getMyKey(), (int) $application->getMyKey()));
+$runtemplatesDiv->addItem($chartsRow);
 
 $runtemplatesHeader = new Row(null, 0, ['style' => 'margin-top: 20px;']);
 $runtemplatesHeader->addColumn(6, new H3Tag('⚗️ '._('RunTemplates for this Company')));
