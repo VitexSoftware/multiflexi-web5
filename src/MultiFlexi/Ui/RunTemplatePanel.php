@@ -77,12 +77,6 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statsCards = new \MultiFlexi\Ui\RunTemplateStatsCards($runtemplate);
 
-        if (WebPage::getRequestValue('delete', 'int') === 1) {
-            $deleteButton = new \Ease\TWB5\LinkButton('runtemplate.php?delete=2&id='.$runtemplateId, _('Delete !!!').'&nbsp;&nbsp;❌', 'danger btn-sm');
-        } else {
-            $deleteButton = new \Ease\TWB5\LinkButton('runtemplate.php?delete=1&id='.$runtemplateId, _('Delete ?').'&nbsp;&nbsp;❌', 'warning btn-sm');
-        }
-
         $runtemplateJobs = new \MultiFlexi\Ui\RuntemplateJobsListing($runtemplate);
         $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold; color: #fff;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
 
@@ -157,7 +151,6 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
             new \Ease\Html\DivTag([
                 new \Ease\Html\StrongTag(_('Executor')), $executorChooser,
             ], ['class' => 'card card-body bg-light']),
-            new \Ease\Html\DivTag($deleteButton, ['class' => 'mt-4 text-end']),
         ]);
 
         // ── Task SLA & Retry ────────────────────────────────────────────────────
@@ -237,9 +230,18 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         if ($runtemplate->getMyKey()) {
             $runtemplateBottom->addColumn(6, new RuntemplateCloneForm($runtemplate));
             $runtemplateBottom->addColumn(6, new RuntemplatePopulateForm($runtemplate));
+
+            $dangerZone = new \Ease\Html\DivTag([
+                new \Ease\Html\H5Tag('⚠️ '._('Danger Zone')),
+                new RuntemplateDeleteForm($runtemplate),
+            ], ['class' => 'danger-zone']);
+            $runtemplateBottom->addColumn(12, $dangerZone);
         }
 
         $this->addCSS(<<<'CSS'
+            .danger-zone { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #dc3545; border-radius: 8px; background: #fff5f5; }
+            .danger-zone h5 { color: #dc3545; margin-bottom: 0.75rem; }
+            .danger-zone .form-check { margin-bottom: 0.75rem; }
             .runtemplate-tabs .card-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
             .runtemplate-tabs .card-header, .runtemplate-tabs .card-header * { color: #212529 !important; }
             .runtemplate-tabs .card-header .text-muted { color: #6c757d !important; }
