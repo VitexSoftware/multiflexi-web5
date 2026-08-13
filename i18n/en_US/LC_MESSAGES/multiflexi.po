@@ -6670,3 +6670,107 @@ msgstr "Every hour at minute %d."
 
 #~ msgid "ℹ️ Custom Field"
 #~ msgstr "ℹ️ Custom Field"
+
+#: src/MultiFlexi/Ui/RuntemplateDeleteForm.php:48
+msgid "I understand this will permanently delete \"%s\", all its jobs, logs, artifacts, and settings. This cannot be undone."
+msgstr "I understand this will permanently delete \"%s\", all its jobs, logs, artifacts, and settings. This cannot be undone."
+
+#: src/MultiFlexi/Ui/RuntemplateDeleteForm.php:55
+msgid "Ready — clicking this button deletes the RunTemplate immediately."
+msgstr "Ready — clicking this button deletes the RunTemplate immediately."
+
+#: src/MultiFlexi/Ui/RuntemplateDeleteForm.php:56
+msgid "Check the box above to enable this button."
+msgstr "Check the box above to enable this button."
+
+#: src/MultiFlexi/Ui/RuntemplateDeleteForm.php:57
+msgid "Delete this RunTemplate"
+msgstr "Delete this RunTemplate"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:84
+msgid "Click to add notes..."
+msgstr "Click to add notes..."
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:91
+msgid "Update RunTemplate notes"
+msgstr "Update RunTemplate notes"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:140
+msgid "Interval & Persistence"
+msgstr "Interval & Persistence"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:143
+msgid "Cron Expression"
+msgstr "Cron Expression"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:146
+msgid "Startup Delay"
+msgstr "Startup Delay"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:150
+msgid "Execution Environment"
+msgstr "Execution Environment"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:235
+msgid "Danger Zone"
+msgstr "Danger Zone"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:277
+msgid "Scheduling"
+msgstr "Scheduling"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:161
+msgid "Deadline Offset"
+msgstr "Deadline Offset"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:163
+msgid "+3h or 08:00 — empty means window end"
+msgstr "+3h or 08:00 — empty means window end"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:169
+msgid "Max Attempts"
+msgstr "Max Attempts"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:171
+msgid "per task window"
+msgstr "per task window"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:177
+msgid "Retry Backoff"
+msgstr "Retry Backoff"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:179
+msgid "spacing strategy"
+msgstr "spacing strategy"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:185
+msgid "Retry Min Gap"
+msgstr "Retry Min Gap"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:187
+msgid "seconds between retries"
+msgstr "seconds between retries"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:193
+msgid "Allow Late"
+msgstr "Allow Late"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:195
+msgid "count post-deadline success"
+msgstr "count post-deadline success"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:224
+msgid "Task SLA & Retry"
+msgstr "Task SLA & Retry"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:294
+msgid "Fixed"
+msgstr "Fixed"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:295
+msgid "Linear"
+msgstr "Linear"
+
+#: src/MultiFlexi/Ui/RunTemplatePanel.php:296
+msgid "Exponential"
+msgstr "Exponential"
