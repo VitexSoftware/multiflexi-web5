@@ -49,10 +49,19 @@ class EnvironmentView extends \Ease\Html\TableTag
                 $origin = \Ease\Euri::toObject($source);
 
                 if (method_exists($origin, 'getObjectName')) {
-                    $source = $origin->getObjectName();
+                    $sourceName = $origin->getObjectName();
                 } else {
-                    $source = \Ease\Functions::baseClassName($origin);
+                    $sourceName = \Ease\Functions::baseClassName($origin);
                 }
+
+                if ($origin instanceof \MultiFlexi\Credential && $origin->getCredentialType()) {
+                    return new \Ease\Html\DivTag([
+                        new CredentialTypeLogo($origin->getCredentialType(), ['class' => 'credential-source-logo', 'height' => 16, 'width' => 16]),
+                        ' '.$sourceName,
+                    ]);
+                }
+
+                $source = $sourceName;
             } catch (\InvalidArgumentException $e) {
                 // Euri source has empty identifier — show raw source string
             }
