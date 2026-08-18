@@ -1087,16 +1087,11 @@ EOD,
 
         switch ($type) {
             case 'bool':
-            case 'boolean':
-                // Return the bare checkbox Input; the caller wraps it in a
+                // Return the bare Toggle Input; the caller wraps it in a
                 // FormGroup, which requires an Ease\Html\Input (not a DivTag).
-                $input = new \Ease\Html\InputTag($fieldName, '1', ['type' => 'checkbox', 'class' => 'form-check-input']);
+                $rawValue = \is_bool($value) ? ($value ? 'true' : 'false') : (string) $value;
 
-                if ($value) {
-                    $input->setTagProperty('checked', 'checked');
-                }
-
-                return $input;
+                return BoolFieldWidget::toggle($fieldName, $rawValue);
             case 'password':
                 return new \Ease\Html\InputTag($fieldName, $value, ['type' => 'password', 'class' => 'form-control']);
             case 'int':

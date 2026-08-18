@@ -98,7 +98,7 @@ CSS);
             $maskedPlaceholder = $isRedactable ? \MultiFlexi\ConfigField::maskValue($field->getValue()) : null;
 
             if ($isBool) {
-                $input = new \Ease\TWB5\Widgets\Toggle($fieldName, $field->getValue() === 'true', 'true', ['data-size' => 'small']);
+                $input = BoolFieldWidget::toggle($fieldName, $field->getValue());
             } elseif ($field->isMultiLine()) {
                 $textareaAttrs = ['class' => 'form-control form-control-sm', 'rows' => 4];
 
@@ -108,7 +108,7 @@ CSS);
 
                 $input = new \Ease\Html\TextareaTag($fieldName, $displayValue, $textareaAttrs);
             } else {
-                $inputAttrs = ['type' => $field->getType(), 'class' => 'form-control form-control-sm'];
+                $inputAttrs = self::inputAttrsForType($field->getType());
 
                 if ($maskedPlaceholder !== null) {
                     $inputAttrs['placeholder'] = $maskedPlaceholder;
@@ -313,5 +313,27 @@ JS);
         }
 
         return $categories;
+    }
+
+    /**
+     * HTML input attributes for a MultiFlexi ConfigField type that isn't
+     * bool/multiline/redactable (those are handled separately). Maps
+     * MultiFlexi's type vocabulary onto valid HTML5 input types instead of
+     * passing the raw type string straight through (e.g. 'integer'/'float'
+     * are not valid HTML5 input types).
+     *
+     * @return array<string, string>
+     */
+    private static function inputAttrsForType(string $type): array
+    {
+        $class = 'form-control form-control-sm';
+
+        return match ($type) {
+            'integer' => ['type' => 'number', 'step' => '1', 'class' => $class],
+            'float' => ['type' => 'number', 'step' => 'any', 'class' => $class],
+            'email' => ['type' => 'email', 'class' => $class],
+            'url' => ['type' => 'url', 'class' => $class],
+            default => ['type' => 'text', 'class' => $class],
+        };
     }
 }

@@ -109,8 +109,9 @@ CSS);
 
                         break;
                     case 'bool':
+                        $boolValue = WebPage::isPosted() ? WebPage::getRequestValue($code) : $field->getValue();
                         $formGroup = $this->addInput(
-                            new \Ease\TWB5\Widgets\Toggle($code, false, 'true', ['data-size' => 'small']),
+                            BoolFieldWidget::toggle($code, $boolValue),
                             $caption,
                         );
                         self::addFieldFlags($formGroup, $field);
