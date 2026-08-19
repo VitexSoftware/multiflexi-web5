@@ -73,6 +73,10 @@ $failedJobsCount = $jobEngine->getFluentPDO()->from($jobEngine->getMyTable())
 $logEngine = new \MultiFlexi\UserLogger();
 $totalLogsCount = $logEngine->listingQuery()->count();
 
+// Count user's structured audit actions (create/update/delete)
+$auditEngine = new \MultiFlexi\Security\UserAuditLog();
+$totalAuditCount = $auditEngine->listingQuery()->count();
+
 // Display statistics cards — col-6 col-md-3 = 2×2 on mobile, 4 across on desktop
 $statDefs = [
     [$totalJobsCount, _('Total Jobs in System'), 'text-center', ''],
@@ -155,6 +159,15 @@ WebPage::singleton()->includeJavascript('js/dismisLog.js');
 $dashboardAccordion->addAccordionItem(
     new \Ease\TWB5\Widgets\BsIcon('list-task').'&nbsp;'._('My Recent Activity Log'),
     new DBDataTable($logEngine, ['buttons' => false]),
+);
+
+// Recent actions section (structured create/update/delete audit trail).
+// UserAuditLog enforces the same server-side user_id filter as UserLogger.
+// This is what actually records deletions — the free-text log above only
+// contains whatever a call site explicitly chose to write.
+$dashboardAccordion->addAccordionItem(
+    new \Ease\TWB5\Widgets\BsIcon('shield-check').'&nbsp;'._('My Recent Actions'),
+    new DBDataTable($auditEngine, ['buttons' => false]),
 );
 
 // Account information section
