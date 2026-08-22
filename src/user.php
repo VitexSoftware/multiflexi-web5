@@ -111,6 +111,10 @@ if (WebPage::singleton()->getGetValue('delete', 'bool') === 'true') {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    ($user->getUserName() ?: _('User')) => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('User')));
 
 switch (WebPage::singleton()->getRequestValue('action')) {

@@ -21,6 +21,7 @@ if ((null === \Ease\Shared::user()->getUserID()) === false) {
     \Ease\Shared::user()->logout();
 }
 
+WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('Sign Off')));
 
 $logoutFace = new \Ease\Html\DivTag(null, ['id' => 'LogoutFace']);

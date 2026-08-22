@@ -80,6 +80,14 @@ if (!$runTemplate->getMyKey()) {
 $appInfo = $runTemplate->getAppInfo();
 $apps = new Application($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
+$company = new \MultiFlexi\Company($appInfo['company_id']);
+
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$company->getRecordName() => $company->getLink(),
+    _('Application').': '.$apps->getRecordName() => $apps->getLink(),
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+    _('Job').': '.$jobID => $jobber->getLink(),
+]);
 
 $errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getErrorOutput()))), ['style' => 'background: #330000; font-family: monospace;']);
 $stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getOutput()))), ['style' => 'background:  black; font-family: monospace;']);
@@ -388,7 +396,7 @@ $panelContent[] = $outputTabs;
 
 $appPanel = new ArchivedJobPanel($jobber, $panelContent, $jobFoot);
 
-WebPage::singleton()->container->addItem(new CompanyPanel(new \MultiFlexi\Company($appInfo['company_id']), $appPanel));
+WebPage::singleton()->container->addItem(new CompanyPanel($company, $appPanel));
 
 WebPage::singleton()->addItem(new PageBottom('job/'.$jobber->getMyKey()));
 WebPage::singleton()->addCss(<<<'EOD'

@@ -65,6 +65,10 @@ if (\strlen($instanceName)) {
     $instanceLink = null;
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Application').': '.$appliacation->getRecordName() => $appliacation->getLink(),
+    _('Config Fields') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Config Fields')));
 
 $instanceRow = new Row();

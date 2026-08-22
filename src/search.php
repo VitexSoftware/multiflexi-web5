@@ -135,7 +135,7 @@ if ($what === 'all' || $what === 'Job') {
 
                 if ($lineRow) {
                     $matchType = $lineRow['type'];
-                    $snippet   = mb_strimwidth((string) $lineRow['line'], 0, 120, '…');
+                    $snippet = mb_strimwidth((string) $lineRow['line'], 0, 120, '…');
                 }
             }
 
@@ -162,6 +162,9 @@ if (\count($foundItems) === 1) {
     exit;
 }
 
+WebPage::singleton()->setBreadcrumb([
+    (empty($searchTerm) ? _('Search Results') : sprintf(_('Search Results for "%s"'), $searchTerm)) => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Search Results')));
 
 $container = WebPage::singleton()->container;

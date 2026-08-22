@@ -28,9 +28,24 @@ use MultiFlexi\Configuration;
 
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
-WebPage::singleton()->addItem(new PageTop(_('App custom config Fields')));
 $appId = WebPage::getRequestValue('app_id', 'int');
 $companyId = WebPage::getRequestValue('company_id', 'int');
+
+$cscBreadcrumb = [];
+
+if ($companyId) {
+    $cscCompany = new \MultiFlexi\Company($companyId);
+    $cscBreadcrumb[_('Company').': '.$cscCompany->getRecordName()] = $cscCompany->getLink();
+}
+
+if ($appId) {
+    $cscApp = new \MultiFlexi\Application($appId);
+    $cscBreadcrumb[_('Application').': '.$cscApp->getRecordName()] = $cscApp->getLink();
+}
+
+$cscBreadcrumb[_('App custom config Fields')] = '';
+WebPage::singleton()->setBreadcrumb($cscBreadcrumb);
+WebPage::singleton()->addItem(new PageTop(_('App custom config Fields')));
 
 $configurator = new Configuration(['app_id' => $appId, 'company_id' => $companyId], ['autoload' => false]);
 $configurator->setDataValue('app_id', $appId);

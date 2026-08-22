@@ -23,6 +23,8 @@ WebPage::singleton()->onlyForLogged();
 // Get companies accessible to current user via RBAC
 $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
 
+WebPage::singleton()->setBreadcrumb([_('Companies') => '']);
+
 if (empty($accessibleCompanyIds)) {
     WebPage::singleton()->addItem(new PageTop(_('Company list')));
     WebPage::singleton()->container->addItem(new \Ease\TWB5\Alert(
@@ -59,11 +61,11 @@ if (empty($accessibleCompanyIds)) {
         }
 
         // Apply slide-in drawer filters
-        if ($filterName !== '' && stripos((string) $companyInfo['name'], $filterName) === false) {
+        if ($filterName !== '' && !str_contains(strtolower((string) $companyInfo['name']), strtolower($filterName))) {
             continue;
         }
 
-        if ($filterIc !== '' && stripos((string) $companyInfo['ic'], $filterIc) === false) {
+        if ($filterIc !== '' && !str_contains(strtolower((string) $companyInfo['ic']), strtolower($filterIc))) {
             continue;
         }
 

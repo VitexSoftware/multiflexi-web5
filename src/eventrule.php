@@ -54,6 +54,10 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Event Rules') => 'eventrules.php',
+    ($eventRule->getRecordName() ?: _('New Event Rule')) => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Event Rule')));
 
 WebPage::singleton()->container->addItem(new EventRuleForm($eventRule));

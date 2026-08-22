@@ -21,6 +21,7 @@ use MultiFlexi\Ui\WebPage;
 
 require_once 'init.php';
 
+WebPage::singleton()->setBreadcrumb([_('Cookie Policy') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Cookie Policy')));
 
 $container = WebPage::singleton()->container;

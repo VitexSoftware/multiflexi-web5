@@ -55,6 +55,10 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Data Corrections') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Data Correction Requests Administration')));
 
 $container = WebPage::singleton()->container;

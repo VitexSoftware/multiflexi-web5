@@ -34,6 +34,10 @@ $stateLabels = [
 ];
 $pageTitle = $stateLabels[$stateFilter] ?? _('Tasks Overview');
 
+$oPage->setBreadcrumb([
+    _('Administration') => 'users.php',
+    $pageTitle => '',
+]);
 $oPage->addItem(new PageTop($pageTitle));
 
 // ── Metric cards ──────────────────────────────────────────────────────────────
@@ -73,7 +77,8 @@ if ($runtemplateId) {
     $rt = new \MultiFlexi\RunTemplate($runtemplateId);
     $rtName = htmlspecialchars($rt->getRecordName() ?: '#'.$runtemplateId);
     $clearHref = 'tasks.php?state='.$stateFilter;
-    $oPage->container->addItem(new \Ease\TWB5\Alert('info',
+    $oPage->container->addItem(new \Ease\TWB5\Alert(
+        'info',
         sprintf(_('Filtered to RunTemplate: <strong>%s</strong>'), $rtName)
         .' &nbsp;<a href="'.$clearHref.'" class="alert-link">'._('Remove filter').'</a>',
     ));

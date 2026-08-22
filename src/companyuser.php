@@ -36,6 +36,10 @@ if (null === $company->getMyKey()) {
     sprintf(_('You do not have access to company "%s"'), $company->getRecordName()),
 );
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$company->getRecordName() => $company->getLink(),
+    _('Access Rights') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Access Rights for Company').': '.$company->getRecordName()));
 
 if (!$canManageAssignments) {
@@ -49,13 +53,13 @@ if (!$canManageAssignments) {
         '<strong>'._('Read-only mode').'</strong><br>'
             ._('You can view company assignments, but only administrators can change them.'),
         ['class' => 'mb-3'],
-    ),);
+    ), );
 }
 
 WebPage::singleton()->container->addItem(new CompanyPanel(
     $company,
     new CompanyUserAssignment($company, $canManageAssignments),
-),);
+), );
 
 WebPage::singleton()->addItem(new PageBottom('company/'.$company->getMyKey()));
 WebPage::singleton()->draw();

@@ -147,6 +147,7 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([_('Credential Creation Wizard') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Credential Creation Wizard')));
 
 // Add custom CSS for wizard (similar to activation wizard)

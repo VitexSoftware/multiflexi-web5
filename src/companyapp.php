@@ -37,6 +37,10 @@ $application = new Application(WebPage::getRequestValue('app_id', 'int'));
     sprintf(_('You do not have access to company "%s"'), $companer->getRecordName()),
 );
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companer->getRecordName() => $companer->getLink(),
+    _('Application').': '.$application->getRecordName() => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_($application->getRecordName()).'@'.$companer->getRecordName()));
 
 // Create CompanyApp object for chart

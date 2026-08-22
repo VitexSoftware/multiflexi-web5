@@ -267,6 +267,7 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([_('Application Activation Wizard') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Application Activation Wizard')));
 
 // Add custom CSS for wizard

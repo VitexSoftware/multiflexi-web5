@@ -30,6 +30,10 @@ $objectName = \Ease\Functions::baseClassName($engine);
 // Nastavení titulku podle filtru
 $pageTitle = JobFilterToolbar::getPageTitle($filter);
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    $pageTitle => '',
+]);
 WebPage::singleton()->addItem(new PageTop($pageTitle));
 
 // Add filter toolbar

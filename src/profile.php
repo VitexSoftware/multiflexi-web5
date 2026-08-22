@@ -62,6 +62,7 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([_('My Profile') => '']);
 WebPage::singleton()->addItem(new PageTop(_('My Profile')));
 
 // Create main container

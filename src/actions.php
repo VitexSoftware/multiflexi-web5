@@ -45,6 +45,14 @@ if (\Ease\WebPage::isPosted()) {
     $succesActions = $runTemplater->getDataValue('success') ? unserialize($runTemplater->getDataValue('success')) : [];
 }
 
+$actionsCompany = $runTemplater->getCompany();
+$actionsApp = $runTemplater->getApplication();
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$actionsCompany->getRecordName() => $actionsCompany->getLink(),
+    _('Application').': '.$actionsApp->getRecordName() => $actionsApp->getLink(),
+    _('RunTemplate').': '.$runTemplater->getRecordName() => $runTemplater->getLink(),
+    _('Actions') => '',
+]);
 WebPage::singleton()->addItem(new PageTop('🛠 '.$runTemplater->getRecordName()));
 
 $periodcalTaskInfo = $runTemplater->getData();

@@ -174,6 +174,10 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('New Administrator') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('New Administrator')));
 
 // Include password strength indicator JavaScript

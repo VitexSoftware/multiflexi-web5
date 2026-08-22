@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Audit Log') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Audit Log')));
 
 $auditEngine = new \MultiFlexi\Security\AuditLogEntry();

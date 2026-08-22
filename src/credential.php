@@ -75,6 +75,22 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+$credCompanyId = $kredenc->getDataValue('company_id');
+
+if ($credCompanyId) {
+    $credCompany = new \MultiFlexi\Company($credCompanyId);
+    WebPage::singleton()->setBreadcrumb([
+        _('Company').': '.$credCompany->getRecordName() => $credCompany->getLink(),
+        _('Credentials') => 'companycreds.php?company_id='.$credCompanyId,
+        ($kredenc->getRecordName() ?: _('New Credential')) => '',
+    ]);
+} else {
+    WebPage::singleton()->setBreadcrumb([
+        _('Credentials') => 'credentials.php',
+        ($kredenc->getRecordName() ?: _('New Credential')) => '',
+    ]);
+}
+
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
 
 WebPage::singleton()->container->addItem(new CredentialForm($kredenc));

@@ -39,6 +39,14 @@ if ($companyId && $appId) {
 $appInfo = $runTemplate->getAppInfo();
 $apps = new Application($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
+$launchCompany = new \MultiFlexi\Company($appInfo['company_id']);
+
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$launchCompany->getRecordName() => $launchCompany->getLink(),
+    _('Application').': '.$apps->getRecordName() => $apps->getLink(),
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+    _('Launch') => '',
+]);
 
 $instanceRow = new Row();
 $instanceRow->addColumn(2, new \Ease\Html\ImgTag(empty($appInfo['image']) ? 'images/apps.svg' : $appInfo['image'], 'Logo', ['class' => 'img-fluid', 'style' => 'height: 64px']));

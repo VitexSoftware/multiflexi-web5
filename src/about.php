@@ -17,6 +17,7 @@ namespace MultiFlexi\Ui;
 
 require_once './init.php';
 
+WebPage::singleton()->setBreadcrumb([_('About') => '']);
 WebPage::singleton()->addItem(new PageTop(_('About')));
 
 $infoBlock = WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(

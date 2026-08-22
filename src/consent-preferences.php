@@ -24,6 +24,10 @@ WebPage::singleton()->onlyForLogged();
 $consentManager = new ConsentManager();
 $currentConsent = $consentManager->getAllConsentStatuses();
 
+WebPage::singleton()->setBreadcrumb([
+    _('My Profile') => 'profile.php',
+    _('Privacy Preferences') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Privacy & Consent')));
 WebPage::singleton()->container->addItem(new \Ease\Html\H1Tag(_('Privacy & Consent Preferences')));
 

@@ -20,6 +20,10 @@ require_once './init.php';
 $oPage = WebPage::singleton();
 $oPage->onlyForLogged();
 
+$oPage->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Dashboard') => '',
+]);
 $oPage->addItem(new PageTop(_('Dashboard')));
 
 // Karty s metrikami

@@ -30,6 +30,10 @@ if (null === $companer->getMyKey()) {
 
 $companyApp = new \MultiFlexi\CompanyApp($companer);
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companer->getRecordName() => $companer->getLink(),
+    _('Applications used by Company') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Applications used by Company')));
 
 $addAppForm = new SecureForm();

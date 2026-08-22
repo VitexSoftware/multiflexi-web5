@@ -32,6 +32,7 @@ class BreadcrumbTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
+        unset($_SESSION['customer'], $_SESSION['company']);
         $this->object = new Breadcrumb();
     }
 
@@ -41,5 +42,17 @@ class BreadcrumbTest extends \PHPUnit\Framework\TestCase
      */
     protected function tearDown(): void
     {
+    }
+
+    public function testDrawWithoutSessionShowsChooseLinks(): void
+    {
+        ob_start();
+        $this->object->draw();
+        $html = ob_get_clean();
+
+        static::assertStringContainsString('customers.php', $html);
+        static::assertStringContainsString('choose Company', $html);
+        static::assertStringNotContainsString('servers.php', $html);
+        static::assertStringNotContainsString('Server', $html);
     }
 }

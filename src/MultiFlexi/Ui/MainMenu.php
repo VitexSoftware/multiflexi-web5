@@ -58,7 +58,7 @@ class MainMenu extends \Ease\Html\DivTag
                 \MultiFlexi\User::singleton()->addStatusMessage('🏭 '._('No company registered yet. Please register one.'), 'warning');
             }
 
-            if (empty($servers) && empty($customers) && empty($companies)) { // All empty yet
+            if (empty($customers) && empty($companies)) { // All empty yet
                 //                $this->customersMenuDisabled($nav);
                 $this->companiesMenuDisabled($nav);
             } else {
@@ -286,9 +286,6 @@ class MainMenu extends \Ease\Html\DivTag
      */
     public function finalize(): void
     {
-        //        if (\Ease\Shared::user()->isLogged()) { //Authenticated user
-        //            $this->addItem(new Breadcrumb());
-        //        }
         if (!empty(\Ease\Shared::logger()->getMessages())) {
             WebPage::singleton()->addCss(<<<'EOD'
 

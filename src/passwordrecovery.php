@@ -67,6 +67,7 @@ if (empty($emailTo)) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('Password Recovery')));
 
 $face = new \Ease\Html\DivTag(null, ['id' => 'LoginFace']);

@@ -47,6 +47,10 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Event Sources') => 'eventsources.php',
+    ($eventSource->getRecordName() ?: _('New Event Source')) => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Event Source')));
 
 if (WebPage::getRequestValue('test') && $sourceId) {

@@ -27,34 +27,57 @@ class Breadcrumb extends \Ease\TWB5\Breadcrumb
     /**
      * App Breadcrumb.
      *
-     * @param mixed                 $content
+     * Items are resolved in finalize() (called right before draw()) instead
+     * of here, so a page controller can call
+     * WebPage::singleton()->setBreadcrumb() any time after PageTop is
+     * instantiated to replace the default Customer/Company trail with a
+     * page-specific one (e.g. Company > Application > RunTemplate).
+     *
      * @param array<string, string> $properties
      */
-    public function __construct($content = null, $properties = [])
+    public function __construct($properties = [])
     {
-        parent::__construct($content, $properties);
+        $properties['class'] = trim('mf-breadcrumb container-fluid '.($properties['class'] ?? ''));
 
-        if (empty($_SESSION['customer'])) {
-            $this->addPage(_('choose Customer'), 'customers.php');
-        } else {
-            $customer = new \MultiFlexi\Customer($_SESSION['customer']);
-            $this->addPage(_('Customer').': '.$customer->getRecordName(), $customer->getLink());
+        parent::__construct([], 'breadcrumb', $properties);
+    }
+
+    public function finalize(): void
+    {
+        $items = WebPage::singleton()->breadcrumbItems;
+
+        if ($items === null) {
+            $items = [];
+
+            if (empty($_SESSION['customer'])) {
+                $items[_('choose Customer')] = 'customers.php';
+            } else {
+                $customer = new \MultiFlexi\Customer($_SESSION['customer']);
+                $items[_('Customer').': '.$customer->getRecordName()] = $customer->getLink();
+            }
+
+            if (empty($_SESSION['company'])) {
+                $items[_('choose Company')] = 'companies.php';
+            } else {
+                $company = new \MultiFlexi\Company($_SESSION['company']);
+                $items[_('Company').': '.$company->getRecordName()] = $company->getLink();
+            }
         }
 
-        if (empty($_SESSION['server'])) {
-            $this->addPage(_('choose Server'), 'servers.php');
+        if (empty($items)) {
+            // setBreadcrumb([]) means "no breadcrumb is meaningful here"
+            // (pre-login pages, root/landing pages, one-off utility scripts) —
+            // hide the bar entirely instead of showing an empty one.
+            $this->addTagClass('d-none');
         } else {
-            $server = new \MultiFlexi\Servers($_SESSION['server']);
-            $this->addPage(_('Server').': '.$server->getRecordName(), $server->getLink());
+            $keys = array_keys($items);
+            $lastKey = end($keys);
+
+            foreach ($items as $label => $url) {
+                $this->addCrumb((string) $label, (string) $url, $label === $lastKey);
+            }
         }
 
-        if (empty($_SESSION['company'])) {
-            $this->addPage(_('choose Company'), 'companies.php');
-        } else {
-            $company = new \MultiFlexi\Company($_SESSION['company']);
-            $this->addPage(_('Company').': '.$company->getRecordName(), $company->getLink());
-        }
-
-        //        $this->addCurrentPage('Service');
+        parent::finalize();
     }
 }

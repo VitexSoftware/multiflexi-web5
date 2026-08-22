@@ -51,6 +51,15 @@ class WebPage extends \Ease\TWB5\WebPage
     public ?\MultiFlexi\Customer $customer = null;
 
     /**
+     * Page-specific breadcrumb trail, set via setBreadcrumb().
+     *
+     * Overrides the default Customer/Company session-based chain when set.
+     *
+     * @var null|array<string, string> ['Label' => 'url', ...]
+     */
+    public ?array $breadcrumbItems = null;
+
+    /**
      * Saves object instance (singleton...).
      */
     private static $instance;
@@ -146,6 +155,17 @@ class WebPage extends \Ease\TWB5\WebPage
                the brand, doubling the navbar height). Also cancel the page
                content-area padding that the global .container-fluid rule adds. */
             .mf-navbar > .container-fluid { flex-wrap: nowrap; padding-top: 0; padding-bottom: 0; }
+            /* Breadcrumb sits between navbar and content; it only needs the
+               horizontal alignment from .container-fluid, not that rule's
+               1rem/2rem vertical padding meant for the main content area.
+               Font size, muted colors and the chevron divider keep it a
+               lightweight wayfinding hint per Bootstrap 5's own minimal
+               breadcrumb styling, rather than a second heavy nav bar. */
+            .mf-breadcrumb.container-fluid { padding-top: 0.4rem; padding-bottom: 0.4rem; margin-bottom: 0; --bs-breadcrumb-divider: '›'; }
+            .mf-breadcrumb .breadcrumb { font-size: 0.85rem; margin-bottom: 0; }
+            .mf-breadcrumb .breadcrumb-item, .mf-breadcrumb .breadcrumb-item a { color: #6c757d; text-decoration: none; }
+            .mf-breadcrumb .breadcrumb-item a:hover { color: #343a40; text-decoration: underline; }
+            .mf-breadcrumb .breadcrumb-item.active { color: #495057; }
             /* The search form is a direct child of <nav>; align it with the menu row */
             .mf-navbar > form { align-self: center; }
             .mf-navbar .navbar-brand { padding: 0; }
@@ -677,6 +697,17 @@ class WebPage extends \Ease\TWB5\WebPage
                 table.dataTable { min-width: 600px; }
             }
 CSS);
+    }
+
+    /**
+     * Replace the default breadcrumb with a page-specific trail.
+     *
+     * @param array<string, string> $items ['Label' => 'url', ...]; the last
+     *                                     entry is rendered as the current page
+     */
+    public function setBreadcrumb(array $items): void
+    {
+        $this->breadcrumbItems = $items;
     }
 
     public function onlyForLogged($loginPage = 'login.php', $message = null)

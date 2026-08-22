@@ -31,6 +31,7 @@ require_once './init.php';
 // Check if IP whitelist is enabled and user is not on whitelist
 if (isset($GLOBALS['ipWhitelist']) && !$GLOBALS['ipWhitelist']->isWhitelisted(\MultiFlexi\Security\RateLimitHelpers::getClientIpAddress())) {
     http_response_code(403);
+    WebPage::singleton()->setBreadcrumb([]);
     WebPage::singleton()->addItem(new PageTop(_('Access Denied')));
     WebPage::singleton()->container->addItem(new DivTag(_('Access denied from your IP address'), ['class' => 'alert alert-danger']));
     WebPage::singleton()->addItem(new PageBottom());
@@ -146,6 +147,7 @@ if ($login && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('Sign In')));
 
 $loginFace = new DivTag(null, ['id' => 'LoginFace']);

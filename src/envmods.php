@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Environment Modules') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi - Environment Modules')));
 
 WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(new \Ease\Html\H2Tag(_('Installed Environment Modules')), 'default', new EnvModulesListing()));

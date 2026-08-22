@@ -24,6 +24,7 @@ WebPage::singleton()->onlyForLogged();
 
 // \MultiFlexi\Engine::doThings($oPage);
 
+WebPage::singleton()->setBreadcrumb([_('Customers') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Customers')));
 
 WebPage::singleton()->addItem(new Container(new DBDataTable(new Customer())));

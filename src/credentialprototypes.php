@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Credential Prototypes') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Credential Prototypes')));
 
 WebPage::singleton()->container->addItem(new \MultiFlexi\Ui\CredentialProtoTypeLister());

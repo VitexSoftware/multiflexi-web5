@@ -18,6 +18,7 @@ namespace MultiFlexi\Ui;
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Credentials') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Credentials')));
 
 // Get companies accessible to current user via RBAC

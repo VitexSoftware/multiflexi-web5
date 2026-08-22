@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Administration') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Users')));
 
 $container = WebPage::singleton()->container;

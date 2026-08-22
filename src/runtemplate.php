@@ -168,6 +168,11 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companies->getRecordName() => $companies->getLink(),
+    _('Application').': '.$app->getRecordName() => $app->getLink(),
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+]);
 WebPage::singleton()->addItem(new PageTop($runTemplate->getRecordName().' '._('Configuration')));
 
 // Add panels

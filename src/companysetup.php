@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 use Ease\Html\ATag;
+use Ease\Shared;
 use Ease\TWB5\Row;
 use MultiFlexi\Company;
-use Ease\Shared;
 
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
@@ -33,6 +33,11 @@ $companies = new Company(WebPage::getRequestValue('id', 'int'), $companyConfig);
     sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
 );
 $_SESSION['company'] = $companies->getMyKey();
+
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companies->getRecordName() => $companies->getLink(),
+    _('Company Setup') => '',
+]);
 $companyEnver = new \MultiFlexi\CompanyEnv($companies);
 $isNewCompany = empty($companies->getMyKey());
 
@@ -87,7 +92,6 @@ if (empty($instanceName)) {
 
 $instanceRow = new Row();
 $instanceRow->addColumn(4, new CompanyEditorForm($companies, '', ['action' => 'companysetup.php']));
-// $instanceRow->addColumn(4, new ui\AbraFlexiInstanceStatus($companies));
 
 $instanceRow->addColumn(8, new EnvironmentEditor($companyEnver));
 WebPage::singleton()->container->addItem(new CompanyPanel($companies, $instanceRow, $companies->getMyKey() ? new \Ease\TWB5\LinkButton('companydelete.php?id='.$companies->getMyKey(), '☠️&nbsp;'._('Delete company'), 'danger') : ''));

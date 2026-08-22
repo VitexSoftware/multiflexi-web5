@@ -41,6 +41,7 @@ use MultiFlexi\CredentialType;
  */
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Credential Upgrade') => '']);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
 
 // Conversion logic

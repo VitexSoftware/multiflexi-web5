@@ -28,6 +28,10 @@ $companies = new Company(WebPage::getRequestValue('id', 'int'));
     sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
 );
 
+WebPage::singleton()->setBreadcrumb([
+    _('Companies') => 'companies.php',
+    _('Company').': '.$companies->getRecordName() => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Company').': '.$companies->getRecordName()));
 
 $_SESSION['company'] = $companies->getMyKey();

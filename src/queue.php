@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Job queue') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi Job Queue')));
 
 WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\ScheduleLister()));

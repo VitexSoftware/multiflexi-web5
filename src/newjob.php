@@ -74,7 +74,14 @@ $jobber->prepareJob($runTemplate, $uploadEnvFields, new \DateTime(), WebPage::ge
 $appInfo = $runTemplate->getAppInfo();
 $apps = new Application($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
+$newJobCompany = new \MultiFlexi\Company($appInfo['company_id']);
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$newJobCompany->getRecordName() => $newJobCompany->getLink(),
+    _('Application').': '.$apps->getRecordName() => $apps->getLink(),
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+    _('Schedule Job run') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Schedule Job run')));
 
 $runTemplateButton = new \Ease\TWB5\LinkButton('runtemplate.php?id='.$runTemplate->getMyKey(), '⚗️&nbsp;'._('Run Template'), 'dark btn-lg w-100');

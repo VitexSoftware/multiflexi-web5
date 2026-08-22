@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Applications') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Applications')));
 
 WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\ApplicationLister()));

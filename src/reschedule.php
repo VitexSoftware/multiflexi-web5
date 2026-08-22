@@ -31,7 +31,15 @@ if (!$jobber->getMyKey()) {
 
 $runTemplate = new \MultiFlexi\RunTemplate($jobber->getDataValue('runtemplate_id'));
 $appInfo = $runTemplate->getAppInfo();
+$rescheduleCompany = new \MultiFlexi\Company($appInfo['company_id']);
+$rescheduleApp = new \MultiFlexi\Application($appInfo['app_id']);
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$rescheduleCompany->getRecordName() => $rescheduleCompany->getLink(),
+    _('Application').': '.$rescheduleApp->getRecordName() => $rescheduleApp->getLink(),
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+    _('Re-schedule Job') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Re-schedule Orphaned Job')));
 
 // Check if job has already started

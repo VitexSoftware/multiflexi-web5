@@ -52,6 +52,10 @@ if (\Ease\WebPage::isPosted()) {
     WebPage::singleton()->addStatusMessage(_('Applications updated successfully'), 'success');
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companer->getRecordName() => $companer->getLink(),
+    _('Applications used by Company') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Applications used by Company')));
 
 // Get all applications and currently assigned ones with localized names and descriptions

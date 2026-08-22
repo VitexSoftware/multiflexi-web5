@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Runtemplates') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Runtemplates')));
 
 $buttonRow = new \Ease\TWB5\Row();

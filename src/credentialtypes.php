@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Credential Types') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Crednetial Types listing')));
 
 WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\FilteredCredentialTypeLister()));

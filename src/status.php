@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Status') => '']);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
 
 $jobber = new \MultiFlexi\Job();

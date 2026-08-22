@@ -25,6 +25,7 @@ $sourceId = WebPage::getRequestValue('id', 'int');
 $cloneName = WebPage::getRequestValue('clonename');
 
 if (empty($sourceId) || empty($cloneName)) {
+    WebPage::singleton()->setBreadcrumb([]);
     WebPage::singleton()->addItem(new PageTop(_('Runtemplate Clone')));
     WebPage::singleton()->addStatusMessage(_('Missing required parameters'), 'error');
     WebPage::singleton()->addItem(new PageBottom());
@@ -54,6 +55,7 @@ try {
         throw new \Exception(_('Failed to create new runtemplate'));
     }
 } catch (\Exception $exc) {
+    WebPage::singleton()->setBreadcrumb([]);
     WebPage::singleton()->addItem(new PageTop(_('Runtemplate Clone')));
     WebPage::singleton()->addStatusMessage(
         sprintf(_('Error cloning runtemplate: %s'), $exc->getMessage()),

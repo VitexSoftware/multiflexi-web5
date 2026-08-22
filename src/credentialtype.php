@@ -216,6 +216,10 @@ if ($addField) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Credential Types') => 'credentialtypes.php',
+    ($crtype->getRecordName() ?: _('New Credential Type')) => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Credential Type')));
 
 if (WebPage::getRequestValue('test')) {

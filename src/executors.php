@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Executors') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi - Executor Modules')));
 
 WebPage::singleton()->container->addItem(new \Ease\TWB5\Panel(new \Ease\Html\H2Tag(_('Installed Executor Modules')), 'default', new ExecutorsListing()));

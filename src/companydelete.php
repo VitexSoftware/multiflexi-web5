@@ -25,6 +25,12 @@ WebPage::singleton()->addItem(new PageTop(_('Company')));
 
 $companies = new Company(WebPage::getRequestValue('id', 'int'));
 
+WebPage::singleton()->setBreadcrumb([
+    _('Companies') => 'companies.php',
+    _('Company').': '.$companies->getRecordName() => $companies->getLink(),
+    _('Delete') => '',
+]);
+
 // Enforce access control
 \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess(
     (int) $companies->getMyKey(),

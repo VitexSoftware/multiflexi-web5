@@ -99,6 +99,10 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Deletion Requests') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('GDPR Deletion Request Management')));
 
 $container = WebPage::singleton()->container;

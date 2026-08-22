@@ -47,10 +47,14 @@ if (empty($instanceName)) {
     $instanceLink = new ATag($customers->getLink(), $customers->getUserName());
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('Customers') => 'customers.php',
+    _('Customer').': '.$instanceName => '',
+]);
+
 $instanceRow = new Row();
 $instanceRow->addColumn(8, new RegisterCustomerForm($customers));
 $instanceRow->addColumn(2, new \Ease\Html\ImgTag(\Ease\User::getGravatar((string) $customers->getDataValue('email'), 400, 'mm', 'g'), 'Gravatar', ['class' => 'img-fluid']));
-// $instanceRow->addColumn(4, new ui\AbraFlexiInstanceStatus($customers));
 
 WebPage::singleton()->container->addItem(new Panel(
     $instanceName,

@@ -40,6 +40,15 @@ class PageTop extends \Ease\Html\DivTag
             WebPage::singleton()->setPageTitle($pageTitle);
         }
 
-        WebPage::singleton()->body->addAsFirst(new MainMenu());
+        $body = WebPage::singleton()->body;
+        $existing = $body->pageParts;
+        $body->emptyContents();
+        $body->addItem(new MainMenu());
+
+        if (\Ease\Shared::user()->isLogged()) {
+            $body->addItem(new Breadcrumb());
+        }
+
+        $body->addItems($existing);
     }
 }

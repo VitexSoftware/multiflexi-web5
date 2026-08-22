@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
 
 WebPage::singleton()->container->addItem('put content here');

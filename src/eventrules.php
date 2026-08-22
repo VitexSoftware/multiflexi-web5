@@ -19,6 +19,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([_('Event Rules') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Event Rules')));
 
 WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\EventRuleLister()));

@@ -119,16 +119,14 @@ if (WebPage::singleton()->isPosted()) {
 }
 
 // Build page
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    $targetUser->getUserName() => 'user.php?id='.$targetUser->getId(),
+    _('Delete Account') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('GDPR User Deletion Request')));
 
 $container = WebPage::singleton()->container;
-
-// Add breadcrumb navigation
-$breadcrumb = new \Ease\TWB5\Breadcrumb();
-$breadcrumb->addItem(new \Ease\Html\ATag('users.php', _('Users')));
-$breadcrumb->addItem(new \Ease\Html\ATag('user.php?id='.$targetUser->getId(), $targetUser->getUserName()));
-$breadcrumb->addItem(_('Delete Account'));
-$container->addItem($breadcrumb);
 
 // Page title
 $pageTitle = ($currentUser->getId() === $targetUser->getId()) ?

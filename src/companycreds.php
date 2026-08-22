@@ -32,6 +32,10 @@ $companies = new Company(WebPage::getRequestValue('company_id', 'int'));
     sprintf(_('You do not have access to company "%s"'), $companies->getRecordName()),
 );
 
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$companies->getRecordName() => $companies->getLink(),
+    _('Credentials') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Company').': '.$companies->getRecordName()));
 
 $kredenc = new \MultiFlexi\Credential();

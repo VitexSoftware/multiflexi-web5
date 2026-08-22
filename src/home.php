@@ -22,6 +22,7 @@ WebPage::singleton()->onlyForLogged();
 $currentUser = \Ease\Shared::user();
 $currentUserId = $currentUser->getUserID();
 
+WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('Home')));
 
 $container = WebPage::singleton()->container;
@@ -219,12 +220,15 @@ try {
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Current Role'), ['class' => 'col-sm-3']));
     $roleLabel = _('(none)');
+
     if (isset($GLOBALS['rbac'])) {
         $userRoles = $GLOBALS['rbac']->getUserRoles($currentUserId);
+
         if (!empty($userRoles)) {
             $roleLabel = implode(', ', array_column($userRoles, 'name'));
         }
     }
+
     $rbacInfo->addItem(new \Ease\Html\DdTag($roleLabel, ['class' => 'col-sm-9']));
 
     $rbacInfo->addItem(new \Ease\Html\DtTag(_('Data Filtering'), ['class' => 'col-sm-3']));

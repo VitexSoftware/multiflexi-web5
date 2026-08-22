@@ -26,6 +26,10 @@ if (!$user || !$user->getUserID()) {
     exit;
 }
 
+WebPage::singleton()->setBreadcrumb([
+    _('My Profile') => 'profile.php',
+    _('Export My Data') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Personal Data Export')));
 
 // Add the main export widget

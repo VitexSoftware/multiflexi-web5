@@ -150,6 +150,11 @@ if (empty($instanceName) === false) {
 }
 
 $_SESSION['application'] = $apps->getMyKey();
+
+WebPage::singleton()->setBreadcrumb([
+    _('Applications') => 'apps.php',
+    _('Application').': '.$apps->getRecordName() => '',
+]);
 WebPage::singleton()->addItem(new PageTop('🧩 '.$apps->getRecordName() ? trim(_('Application').' '.$apps->getRecordName()) : $instanceName));
 $instanceRow = new Row();
 $instanceRow->addColumn(4, new AppEditorForm($apps));

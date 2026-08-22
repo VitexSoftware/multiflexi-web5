@@ -115,6 +115,14 @@ $addInfo($infoRows, _('RunTemplate'), new \Ease\Html\ATag('runtemplate.php?id='.
 $appInfo = $runTemplate->getAppInfo();
 $addInfo($infoRows, _('Application'), $appInfo['app_name'] ?? '—');
 
+$taskCompany = new \MultiFlexi\Company($runTemplate->getDataValue('company_id'));
+WebPage::singleton()->setBreadcrumb([
+    _('Company').': '.$taskCompany->getRecordName() => $taskCompany->getLink(),
+    _('Application').': '.($appInfo['app_name'] ?? '—') => empty($appInfo['app_id']) ? '' : 'app.php?id='.$appInfo['app_id'],
+    _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+    _('Task').': #'.$taskId => '',
+]);
+
 // ── Streak: consecutive tasks of this RunTemplate ending in the same state ────
 $streakRows = $task->getFluentPDO()
     ->from('task')
@@ -184,9 +192,7 @@ if (empty($jobs)) {
         // failed its availability check would otherwise show as an empty row
         // here forever — this is the "why didn't this attempt run" answer.
         if (!empty($jobRow['block_reason']) && empty($jobRow['exitcode'])) {
-            $tr->addItem(new \Ease\Html\TdTag(
-                new \Ease\Html\SpanTag('🚫 '.$jobRow['block_reason'], ['class' => 'text-danger', 'style' => 'font-size: 0.85em;']),
-            ));
+            $tr->addItem(new \Ease\Html\TdTag(new \Ease\Html\SpanTag('🚫 '.$jobRow['block_reason'], ['class' => 'text-danger', 'style' => 'font-size: 0.85em;'])));
         } else {
             $tr->addItem(new \Ease\Html\TdTag('—'));
         }

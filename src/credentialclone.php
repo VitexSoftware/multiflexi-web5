@@ -39,6 +39,7 @@ try {
 
     WebPage::singleton()->redirect('credential.php?id='.$cloneId);
 } catch (Exception $exc) {
+    WebPage::singleton()->setBreadcrumb([]);
     WebPage::singleton()->addItem(new PageTop(_('Credential Clone')));
     WebPage::singleton()->addStatusMessage(_('Error creating credential clone'), 'error');
     WebPage::singleton()->addItem(new PageBottom());

@@ -32,6 +32,14 @@ if (null === $runTemplate->getMyKey()) {
 } else {
     $app = $runTemplate->getApplication();
     $company = $runTemplate->getCompany();
+
+    WebPage::singleton()->setBreadcrumb([
+        _('Company').': '.$company->getRecordName() => $company->getLink(),
+        _('Application').': '.$app->getRecordName() => $app->getLink(),
+        _('RunTemplate').': '.$runTemplate->getRecordName() => $runTemplate->getLink(),
+        _('Schedule Job') => '',
+    ]);
+
     $when = WebPage::getRequestValue('when');
 
     if (WebPage::isPosted() || $when === 'now') {

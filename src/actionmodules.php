@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('Actions') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi - Action Modules')));
 
 $modConf = new \MultiFlexi\ModConfig();

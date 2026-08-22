@@ -19,6 +19,10 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
+WebPage::singleton()->setBreadcrumb([
+    _('Administration') => 'users.php',
+    _('System log') => '',
+]);
 WebPage::singleton()->addItem(new PageTop(_('Logs')));
 
 // WebPage::singleton()->addItem(new LogViewer());

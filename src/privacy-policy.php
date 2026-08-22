@@ -21,6 +21,7 @@ use MultiFlexi\Ui\WebPage;
 
 require_once 'init.php';
 
+WebPage::singleton()->setBreadcrumb([_('Privacy Policy') => '']);
 WebPage::singleton()->addItem(new PageTop(_('Privacy Policy')));
 
 $container = WebPage::singleton()->container;
