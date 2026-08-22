@@ -99,6 +99,8 @@ $allowedClasses = [
     \MultiFlexi\Customer::class,
     \MultiFlexi\EventSourceLister::class,
     \MultiFlexi\UserLister::class,
+    \MultiFlexi\Security\AuditLogEntry::class,
+    \MultiFlexi\Security\UserAuditLog::class,
 ];
 
 if (!\in_array($class, $allowedClasses, true)) {
