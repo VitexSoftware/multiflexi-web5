@@ -46,7 +46,7 @@ class DashboardMetricsCards extends \Ease\TWB5\Row
         $card1Body = new \Ease\Html\DivTag(null, ['class' => 'card-body text-center']);
         $card1Body->addItem(new \Ease\Html\H5Tag(_('Total Jobs'), ['class' => 'card-title']));
         $card1Body->addItem(new \Ease\Html\H2Tag($totalJobs, ['class' => 'display-4 mb-3']));
-        $card1Body->addItem(new \Ease\Html\ATag('jobs.php', '🔍 '._('View Jobs'), ['class' => 'btn btn-light btn-sm', 'title' => _('View all jobs'), 'id' => 'viewjobsbutton']));
+        $card1Body->addItem(new \Ease\Html\ATag('jobs.php', '<img height=14 src=images/jobs.svg> '._('View Jobs'), ['class' => 'btn btn-light btn-sm', 'title' => _('View all jobs'), 'id' => 'viewjobsbutton']));
         $card1->addItem($card1Body);
         $this->addColumn(3, $card1);
 

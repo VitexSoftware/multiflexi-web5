@@ -267,7 +267,7 @@ class MainMenu extends \Ease\Html\DivTag
                 '' => '',
                 'logs.php' => '📖&nbsp;'._('System log'),
                 'auditlog.php' => new \Ease\TWB5\Widgets\BsIcon('shield-check').'&nbsp;'._('Audit Log'),
-                'jobs.php' => '🏁&nbsp;'._('Jobs'),
+                'jobs.php' => '<img height=16 src=images/jobs.svg>&nbsp;'._('Jobs'),
                 'tasks.php' => '📋&nbsp;'._('Tasks'),
                 'queue.php' => '⏳&nbsp;'._('Job queue'),
                 'dashboard.php' => '📊&nbsp;'._('Dashboard'),
