@@ -278,10 +278,10 @@ EOD;
     /**
      * Log assignment of a user to a company.
      *
-     * @param int      $userId     Affected user ID
-     * @param int      $companyId  Company ID
-     * @param int      $assignedBy User ID who performed the assignment
-     * @param string   $role       Role granted within the company
+     * @param int    $userId     Affected user ID
+     * @param int    $companyId  Company ID
+     * @param int    $assignedBy User ID who performed the assignment
+     * @param string $role       Role granted within the company
      */
     public function logCompanyUserAssigned(int $userId, int $companyId, int $assignedBy, string $role = 'viewer'): bool
     {

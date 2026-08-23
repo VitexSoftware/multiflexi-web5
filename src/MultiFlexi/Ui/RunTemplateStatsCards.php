@@ -311,29 +311,29 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
             ->where('runtemplate_id', $rtId)
             ->fetch();
 
-        $totalJobs      = (int) ($row['total_jobs']     ?? 0);
+        $totalJobs = (int) ($row['total_jobs'] ?? 0);
         $successfulJobs = (int) ($row['successful_jobs'] ?? 0);
-        $failedJobs     = (int) ($row['failed_jobs']    ?? 0);
-        $runningJobs    = (int) ($row['running_jobs']   ?? 0);
-        $successRate    = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
-        $lastRun        = $row['last_run'] ?? null;
+        $failedJobs = (int) ($row['failed_jobs'] ?? 0);
+        $runningJobs = (int) ($row['running_jobs'] ?? 0);
+        $successRate = $totalJobs > 0 ? round(($successfulJobs / $totalJobs) * 100, 1) : 0;
+        $lastRun = $row['last_run'] ?? null;
 
         $taskCount = 0;
 
         try {
-            $tasker    = new \MultiFlexi\Task();
+            $tasker = new \MultiFlexi\Task();
             $taskCount = (int) $tasker->listingQuery()->where('runtemplate_id', $rtId)->count();
         } catch (\Exception) {
         }
 
         return [
-            'total_jobs'     => $totalJobs,
+            'total_jobs' => $totalJobs,
             'successful_jobs' => $successfulJobs,
-            'failed_jobs'    => $failedJobs,
-            'running_jobs'   => $runningJobs,
-            'success_rate'   => $successRate,
-            'last_run'       => $lastRun,
-            'task_count'     => $taskCount,
+            'failed_jobs' => $failedJobs,
+            'running_jobs' => $runningJobs,
+            'success_rate' => $successRate,
+            'last_run' => $lastRun,
+            'task_count' => $taskCount,
         ];
     }
 }

@@ -75,6 +75,16 @@ EOD;
         return $dataRow;
     }
 
+    public function listingQuery(): \Envms\FluentPDO\Queries\Select
+    {
+        return parent::listingQuery()
+            ->leftJoin('job ON job.id = schedule.job')->select(['job.schedule_type'])
+            ->leftJoin('user ON user.id = job.launched_by')
+            ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')->select(['runtemplate.name AS runtemplate_name', 'runtemplate.id AS runtemplate_id'])
+            ->leftJoin('apps ON apps.id = runtemplate.app_id')->select(['apps.name AS app_name', 'apps.id AS app_id', 'apps.uuid AS app_uuid'])
+            ->leftJoin('company ON company.id = runtemplate.company_id')->select(['company.name AS company_name', 'company.id AS company_id', 'company.logo AS company_logo']);
+    }
+
     /**
      * Small App icon for the listing table, same source as \MultiFlexi\Ui\AppLogo.
      */
@@ -149,15 +159,5 @@ EOD;
         ];
 
         return $labels[$code] ?? null;
-    }
-
-    public function listingQuery(): \Envms\FluentPDO\Queries\Select
-    {
-        return parent::listingQuery()
-            ->leftJoin('job ON job.id = schedule.job')->select(['job.schedule_type'])
-            ->leftJoin('user ON user.id = job.launched_by')
-            ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')->select(['runtemplate.name AS runtemplate_name', 'runtemplate.id AS runtemplate_id'])
-            ->leftJoin('apps ON apps.id = runtemplate.app_id')->select(['apps.name AS app_name', 'apps.id AS app_id', 'apps.uuid AS app_uuid'])
-            ->leftJoin('company ON company.id = runtemplate.company_id')->select(['company.name AS company_name', 'company.id AS company_id', 'company.logo AS company_logo']);
     }
 }

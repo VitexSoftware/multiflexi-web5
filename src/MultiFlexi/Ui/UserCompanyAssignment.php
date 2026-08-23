@@ -21,7 +21,6 @@ use Ease\TWB5\Table;
 use Ease\TWB5\Widgets\Toggle;
 use MultiFlexi\Company;
 use MultiFlexi\CompanyUser;
-use MultiFlexi\Ui\CompanyLogo;
 use MultiFlexi\User;
 
 /**

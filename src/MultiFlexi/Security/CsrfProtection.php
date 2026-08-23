@@ -139,6 +139,7 @@ class CsrfProtection
                 'session_expired' => true,
                 'redirect' => $loginRedirect,
             ]);
+
             exit;
         }
 

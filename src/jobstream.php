@@ -48,7 +48,7 @@ while (ob_get_level() > 0) {
     ob_end_flush();
 }
 
-if (function_exists('set_time_limit')) {
+if (\function_exists('set_time_limit')) {
     set_time_limit(0);
 }
 
@@ -79,10 +79,10 @@ while (true) {
 
     foreach ($rows as $row) {
         $emit('output', [
-            'id'         => (int) $row['id'],
-            'seq'        => (int) $row['seq'],
-            'type'       => $row['type'],
-            'line'       => $row['line'],
+            'id' => (int) $row['id'],
+            'seq' => (int) $row['seq'],
+            'type' => $row['type'],
+            'line' => $row['line'],
             'created_at' => $row['created_at'],
         ]);
         $lastId = (int) $row['id'];
@@ -98,10 +98,10 @@ while (true) {
 
         foreach ($remaining as $row) {
             $emit('output', [
-                'id'         => (int) $row['id'],
-                'seq'        => (int) $row['seq'],
-                'type'       => $row['type'],
-                'line'       => $row['line'],
+                'id' => (int) $row['id'],
+                'seq' => (int) $row['seq'],
+                'type' => $row['type'],
+                'line' => $row['line'],
                 'created_at' => $row['created_at'],
             ]);
         }

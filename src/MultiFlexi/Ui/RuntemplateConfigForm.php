@@ -68,7 +68,7 @@ CSS);
         // Configuration option categories as defined by the application schema
         // (multiflexi-core schema/application.json: environment.*.category).
         $categoryOrder = ['API', 'Database', 'Behavior', 'Security', 'Other'];
-        $categoryOf = $this->readFieldCategories($engine->getApplication());
+        $categoryOf = self::readFieldCategories($engine->getApplication());
 
         $categoryBuckets = [];
 
@@ -291,7 +291,7 @@ JS);
      *
      * @return array<string, string>
      */
-    private function readFieldCategories(\MultiFlexi\Application $application): array
+    private static function readFieldCategories(\MultiFlexi\Application $application): array
     {
         $categories = [];
         $deffile = (string) $application->getDataValue('deffile');

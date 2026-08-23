@@ -173,6 +173,7 @@ CSS);
             if (method_exists($formGroup, 'addTagClass')) {
                 $formGroup->addTagClass('expiring-field');
             }
+
             $flags->addItem(new \Ease\TWB5\Badge('⏳ '._('expiring'), 'warning'));
         }
 

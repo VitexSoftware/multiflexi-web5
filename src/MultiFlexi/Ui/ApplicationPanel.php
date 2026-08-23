@@ -33,7 +33,6 @@ class ApplicationPanel extends Panel
      * Cap on how many "used by" companies are rendered directly on this panel.
      */
     private const USED_BY_LIMIT = 20;
-
     public Row $headRow;
     private Application $application;
 

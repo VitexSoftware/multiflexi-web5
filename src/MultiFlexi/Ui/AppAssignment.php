@@ -22,7 +22,6 @@ use Ease\TWB5\Widgets\Toggle;
 use MultiFlexi\Application;
 use MultiFlexi\Company;
 use MultiFlexi\CompanyApp;
-use MultiFlexi\Ui\CompanyLogo;
 
 /**
  * MultiFlexi - Application Launch Form.
