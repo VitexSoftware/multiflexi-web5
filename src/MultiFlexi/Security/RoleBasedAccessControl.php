@@ -16,33 +16,38 @@ declare(strict_types=1);
 namespace MultiFlexi\Security;
 
 /**
- * Role-Based Access Control (RBAC) implementation with hierarchical roles and permissions.
+ * Role-Based Access Control (RBAC) — web5-facing facade.
+ *
+ * The DB-backed role/permission primitives (querying and writing
+ * rbac_roles / rbac_permissions / rbac_role_permissions / rbac_user_roles)
+ * live in MultiFlexi\Rbac (multiflexi-core) — the same class multiflexi-cli
+ * and multiflexi-server use, so all three interfaces share one
+ * implementation instead of three hand-rolled copies of this SQL.
+ *
+ * What stays here, because it is web5-specific and doesn't belong in a
+ * portable core library:
+ *  - per-request result caching
+ *  - security audit logging ($GLOBALS['securityAuditLogger'])
+ *  - session-based "current user" resolution
+ *  - default role/permission/mapping seed data for this application
+ *
+ * Table schema (rbac_roles, rbac_permissions, rbac_role_permissions,
+ * rbac_user_roles, rbac_role_hierarchy) is owned by multiflexi-database
+ * migrations (20260715015632_rbac_roles.php,
+ * 20260824192005_rbac_permissions.php) — this class no longer creates
+ * those tables itself.
  */
 class RoleBasedAccessControl
 {
-    /**
-     * Database connection.
-     */
-    private \PDO $pdo;
+    private \MultiFlexi\Rbac $rbac;
 
     /**
-     * Tables configuration.
-     */
-    private array $tables = [
-        'roles' => 'rbac_roles',
-        'permissions' => 'rbac_permissions',
-        'role_permissions' => 'rbac_role_permissions',
-        'user_roles' => 'rbac_user_roles',
-        'role_hierarchy' => 'rbac_role_hierarchy',
-    ];
-
-    /**
-     * Cache for roles, permissions, and relationships.
+     * Cache for roles/permissions checks within one request.
      */
     private array $cache = [];
 
     /**
-     * Default system roles and permissions.
+     * Default system roles and permissions, seeded on first construction.
      */
     private array $defaultRoles = [
         'super_admin' => [
@@ -117,56 +122,29 @@ class RoleBasedAccessControl
     /**
      * Constructor.
      *
-     * @param \PDO       $pdo    Database connection
-     * @param null|array $tables Optional custom table names
+     * @param \PDO       $pdo    Database connection (kept for API compatibility; MultiFlexi\Rbac connects via multiflexi-core's own config)
+     * @param null|array $tables unused — table names are fixed in MultiFlexi\Rbac, kept for API compatibility
      */
     public function __construct(\PDO $pdo, ?array $tables = null)
     {
-        $this->pdo = $pdo;
+        $this->rbac = new \MultiFlexi\Rbac();
 
-        if ($tables !== null) {
-            $this->tables = array_merge($this->tables, $tables);
-        }
-
-        $this->initializeTables();
         $this->initializeDefaultData();
     }
 
     /**
      * Create a new role.
      *
-     * @param string      $name        Role name (unique identifier)
-     * @param string      $displayName Human-readable role name
-     * @param null|string $description Role description
-     * @param bool        $isSystem    Whether this is a system role
-     *
      * @return null|int Role ID or null on failure
      */
     public function createRole(string $name, string $displayName, ?string $description = null, bool $isSystem = false): ?int
     {
         try {
-            $sql = <<<EOD
+            $roleId = $this->rbac->createRole($name, $displayName, $description, $isSystem);
 
-                INSERT INTO `{$this->tables['roles']}`
-                (name, display_name, description, is_system, is_active)
-                VALUES (?, ?, ?, ?, 1)
-                ON DUPLICATE KEY UPDATE
-                display_name = VALUES(display_name),
-                description = VALUES(description),
-                updated_at = CURRENT_TIMESTAMP
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$name, $displayName, $description, $isSystem ? 1 : 0]);
-
-            $roleId = $this->pdo->lastInsertId();
-
-            // Clear cache
             $this->clearCache();
 
-            // Log role creation
-            if (isset($GLOBALS['securityAuditLogger'])) {
+            if ($roleId !== null && isset($GLOBALS['securityAuditLogger'])) {
                 $GLOBALS['securityAuditLogger']->logEvent(
                     'role_created',
                     "Role '{$name}' created with ID {$roleId}",
@@ -176,7 +154,7 @@ EOD;
                 );
             }
 
-            return (int) $roleId;
+            return $roleId;
         } catch (\Exception $e) {
             error_log('Failed to create role: '.$e->getMessage());
 
@@ -187,36 +165,12 @@ EOD;
     /**
      * Create a new permission.
      *
-     * @param string      $name        Permission name (unique identifier)
-     * @param null|string $description Permission description
-     * @param null|string $resource    Resource name
-     * @param null|string $action      Action name
-     * @param bool        $isSystem    Whether this is a system permission
-     *
      * @return null|int Permission ID or null on failure
      */
     public function createPermission(string $name, ?string $description = null, ?string $resource = null, ?string $action = null, bool $isSystem = false): ?int
     {
         try {
-            $sql = <<<EOD
-
-                INSERT INTO `{$this->tables['permissions']}`
-                (name, description, resource, action, is_system)
-                VALUES (?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                description = VALUES(description),
-                resource = VALUES(resource),
-                action = VALUES(action),
-                updated_at = CURRENT_TIMESTAMP
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$name, $description, $resource, $action, $isSystem ? 1 : 0]);
-
-            $lastId = $this->pdo->lastInsertId();
-
-            return $lastId ? (int) $lastId : null;
+            return $this->rbac->createPermission($name, $description, $resource, $action, $isSystem);
         } catch (\Exception $e) {
             error_log('Failed to create permission: '.$e->getMessage());
 
@@ -226,33 +180,11 @@ EOD;
 
     /**
      * Assign a permission to a role.
-     *
-     * @param int      $roleId         Role ID
-     * @param string   $permissionName Permission name
-     * @param null|int $grantedBy      User ID who granted this permission
-     *
-     * @return bool Success status
      */
     public function assignPermissionToRole(int $roleId, string $permissionName, ?int $grantedBy = null): bool
     {
         try {
-            $permissionId = $this->getPermissionIdByName($permissionName);
-
-            if (!$permissionId) {
-                return false;
-            }
-
-            $sql = <<<EOD
-
-                INSERT INTO `{$this->tables['role_permissions']}`
-                (role_id, permission_id, granted_by)
-                VALUES (?, ?, ?)
-                ON DUPLICATE KEY UPDATE granted_at = CURRENT_TIMESTAMP
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $success = $stmt->execute([$roleId, $permissionId, $grantedBy]);
+            $success = $this->rbac->assignPermissionToRole($roleId, $permissionName, $grantedBy);
 
             if ($success) {
                 $this->clearCache();
@@ -268,36 +200,15 @@ EOD;
 
     /**
      * Assign a role to a user.
-     *
-     * @param int         $userId     User ID
-     * @param int         $roleId     Role ID
-     * @param null|int    $assignedBy User ID who assigned this role
-     * @param null|string $expiresAt  Expiration date (Y-m-d H:i:s format)
-     *
-     * @return bool Success status
      */
     public function assignRoleToUser(int $userId, int $roleId, ?int $assignedBy = null, ?string $expiresAt = null): bool
     {
         try {
-            $sql = <<<EOD
-
-                INSERT INTO `{$this->tables['user_roles']}`
-                (user_id, role_id, assigned_by, expires_at)
-                VALUES (?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE
-                assigned_by = VALUES(assigned_by),
-                assigned_at = CURRENT_TIMESTAMP,
-                expires_at = VALUES(expires_at)
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $success = $stmt->execute([$userId, $roleId, $assignedBy, $expiresAt]);
+            $success = $this->rbac->assignRoleToUser($userId, $roleId, $assignedBy, $expiresAt);
 
             if ($success) {
                 $this->clearCache();
 
-                // Log role assignment
                 if (isset($GLOBALS['securityAuditLogger'])) {
                     $roleName = $this->getRoleById($roleId)['name'] ?? "ID:{$roleId}";
                     $GLOBALS['securityAuditLogger']->logEvent(
@@ -320,11 +231,6 @@ EOD;
 
     /**
      * Check if a user has a specific permission.
-     *
-     * @param int    $userId         User ID
-     * @param string $permissionName Permission name
-     *
-     * @return bool Whether user has the permission
      */
     public function userHasPermission(int $userId, string $permissionName): bool
     {
@@ -335,26 +241,7 @@ EOD;
         }
 
         try {
-            $sql = <<<EOD
-
-                SELECT COUNT(*) as count
-                FROM `{$this->tables['user_roles']}` ur
-                JOIN `{$this->tables['role_permissions']}` rp ON ur.role_id = rp.role_id
-                JOIN `{$this->tables['permissions']}` p ON rp.permission_id = p.id
-                WHERE ur.user_id = ?
-                AND p.name = ?
-                AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$userId, $permissionName]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            $hasPermission = $result && $result['count'] > 0;
-            $this->cache[$cacheKey] = $hasPermission;
-
-            return $hasPermission;
+            return $this->cache[$cacheKey] = $this->rbac->userHasPermission($userId, $permissionName);
         } catch (\Exception $e) {
             error_log('Failed to check user permission: '.$e->getMessage());
 
@@ -364,11 +251,6 @@ EOD;
 
     /**
      * Check if a user has a specific role.
-     *
-     * @param int    $userId   User ID
-     * @param string $roleName Role name
-     *
-     * @return bool Whether user has the role
      */
     public function userHasRole(int $userId, string $roleName): bool
     {
@@ -379,26 +261,7 @@ EOD;
         }
 
         try {
-            $sql = <<<EOD
-
-                SELECT COUNT(*) as count
-                FROM `{$this->tables['user_roles']}` ur
-                JOIN `{$this->tables['roles']}` r ON ur.role_id = r.id
-                WHERE ur.user_id = ?
-                AND r.name = ?
-                AND r.is_active = 1
-                AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$userId, $roleName]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            $hasRole = $result && $result['count'] > 0;
-            $this->cache[$cacheKey] = $hasRole;
-
-            return $hasRole;
+            return $this->cache[$cacheKey] = $this->rbac->userHasRole($userId, [$roleName]);
         } catch (\Exception $e) {
             error_log('Failed to check user role: '.$e->getMessage());
 
@@ -409,29 +272,12 @@ EOD;
     /**
      * Get all roles assigned to a user.
      *
-     * @param int $userId User ID
-     *
      * @return array Array of role data
      */
     public function getUserRoles(int $userId): array
     {
         try {
-            $sql = <<<EOD
-
-                SELECT r.*, ur.assigned_at, ur.expires_at
-                FROM `{$this->tables['roles']}` r
-                JOIN `{$this->tables['user_roles']}` ur ON r.id = ur.role_id
-                WHERE ur.user_id = ?
-                AND r.is_active = 1
-                AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-                ORDER BY r.name
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$userId]);
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $this->rbac->getUserRoleDetails($userId);
         } catch (\Exception $e) {
             error_log('Failed to get user roles: '.$e->getMessage());
 
@@ -442,29 +288,12 @@ EOD;
     /**
      * Get all permissions for a user (including inherited from roles).
      *
-     * @param int $userId User ID
-     *
      * @return array Array of permission data
      */
     public function getUserPermissions(int $userId): array
     {
         try {
-            $sql = <<<EOD
-
-                SELECT DISTINCT p.name, p.description, p.resource, p.action
-                FROM `{$this->tables['permissions']}` p
-                JOIN `{$this->tables['role_permissions']}` rp ON p.id = rp.permission_id
-                JOIN `{$this->tables['user_roles']}` ur ON rp.role_id = ur.role_id
-                WHERE ur.user_id = ?
-                AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-                ORDER BY p.resource, p.action, p.name
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$userId]);
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $this->rbac->getUserPermissions($userId);
         } catch (\Exception $e) {
             error_log('Failed to get user permissions: '.$e->getMessage());
 
@@ -474,23 +303,15 @@ EOD;
 
     /**
      * Remove a role from a user.
-     *
-     * @param int $userId User ID
-     * @param int $roleId Role ID
-     *
-     * @return bool Success status
      */
     public function removeRoleFromUser(int $userId, int $roleId): bool
     {
         try {
-            $sql = "DELETE FROM `{$this->tables['user_roles']}` WHERE user_id = ? AND role_id = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $success = $stmt->execute([$userId, $roleId]);
+            $success = $this->rbac->removeRoleFromUser($userId, $roleId);
 
             if ($success) {
                 $this->clearCache();
 
-                // Log role removal
                 if (isset($GLOBALS['securityAuditLogger'])) {
                     $roleName = $this->getRoleById($roleId)['name'] ?? "ID:{$roleId}";
                     $GLOBALS['securityAuditLogger']->logEvent(
@@ -514,25 +335,12 @@ EOD;
     /**
      * Get all available roles.
      *
-     * @param bool $includeInactive Include inactive roles
-     *
      * @return array Array of role data
      */
     public function getAllRoles(bool $includeInactive = false): array
     {
         try {
-            $sql = "SELECT * FROM `{$this->tables['roles']}`";
-
-            if (!$includeInactive) {
-                $sql .= ' WHERE is_active = 1';
-            }
-
-            $sql .= ' ORDER BY name';
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $this->rbac->getAllRoles($includeInactive);
         } catch (\Exception $e) {
             error_log('Failed to get all roles: '.$e->getMessage());
 
@@ -548,11 +356,7 @@ EOD;
     public function getAllPermissions(): array
     {
         try {
-            $sql = "SELECT * FROM `{$this->tables['permissions']}` ORDER BY resource, action, name";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute();
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $this->rbac->getAllPermissions();
         } catch (\Exception $e) {
             error_log('Failed to get all permissions: '.$e->getMessage());
 
@@ -563,27 +367,12 @@ EOD;
     /**
      * Get permissions for a specific role.
      *
-     * @param int $roleId Role ID
-     *
      * @return array Array of permission data
      */
     public function getRolePermissions(int $roleId): array
     {
         try {
-            $sql = <<<EOD
-
-                SELECT p.*
-                FROM `{$this->tables['permissions']}` p
-                JOIN `{$this->tables['role_permissions']}` rp ON p.id = rp.permission_id
-                WHERE rp.role_id = ?
-                ORDER BY p.resource, p.action, p.name
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$roleId]);
-
-            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            return $this->rbac->getRolePermissions($roleId);
         } catch (\Exception $e) {
             error_log('Failed to get role permissions: '.$e->getMessage());
 
@@ -599,35 +388,7 @@ EOD;
     public function getStatistics(): array
     {
         try {
-            $stats = [];
-
-            // Total roles
-            $stmt = $this->pdo->query("SELECT COUNT(*) as count FROM `{$this->tables['roles']}` WHERE is_active = 1");
-            $stats['total_roles'] = $stmt->fetch(\PDO::FETCH_ASSOC)['count'];
-
-            // Total permissions
-            $stmt = $this->pdo->query("SELECT COUNT(*) as count FROM `{$this->tables['permissions']}`");
-            $stats['total_permissions'] = $stmt->fetch(\PDO::FETCH_ASSOC)['count'];
-
-            // Users with roles assigned
-            $stmt = $this->pdo->query("SELECT COUNT(DISTINCT user_id) as count FROM `{$this->tables['user_roles']}`");
-            $stats['users_with_roles'] = $stmt->fetch(\PDO::FETCH_ASSOC)['count'];
-
-            // Most common roles
-            $stmt = $this->pdo->query(<<<EOD
-
-                SELECT r.name, r.display_name, COUNT(ur.user_id) as user_count
-                FROM `{$this->tables['roles']}` r
-                LEFT JOIN `{$this->tables['user_roles']}` ur ON r.id = ur.role_id
-                WHERE r.is_active = 1
-                GROUP BY r.id, r.name, r.display_name
-                ORDER BY user_count DESC
-                LIMIT 10
-
-EOD);
-            $stats['popular_roles'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-
-            return $stats;
+            return $this->rbac->getStatistics();
         } catch (\Exception $e) {
             error_log('Failed to get RBAC statistics: '.$e->getMessage());
 
@@ -638,10 +399,6 @@ EOD);
     /**
      * Enforce permission check - throws exception if user lacks permission.
      *
-     * @param int         $userId         User ID
-     * @param string      $permissionName Permission name
-     * @param null|string $errorMessage   Custom error message
-     *
      * @throws \Exception If user lacks permission
      */
     public function enforcePermission(int $userId, string $permissionName, ?string $errorMessage = null): void
@@ -649,7 +406,6 @@ EOD);
         if (!$this->userHasPermission($userId, $permissionName)) {
             $message = $errorMessage ?: "Access denied: Missing permission '{$permissionName}'";
 
-            // Log access denied
             if (isset($GLOBALS['securityAuditLogger'])) {
                 $GLOBALS['securityAuditLogger']->logEvent(
                     'access_denied',
@@ -666,10 +422,6 @@ EOD);
 
     /**
      * Check if current user (from session) has permission.
-     *
-     * @param string $permissionName Permission name
-     *
-     * @return bool Whether current user has permission
      */
     public function currentUserHasPermission(string $permissionName): bool
     {
@@ -677,12 +429,9 @@ EOD);
 
         return $userId ? $this->userHasPermission($userId, $permissionName) : false;
     }
+
     /**
      * Check if the current user has a specific role.
-     *
-     * @param string $roleName Role name
-     *
-     * @return bool Whether current user has the role
      */
     public function hasRole(string $roleName): bool
     {
@@ -694,30 +443,11 @@ EOD);
     /**
      * Check if a specific role is assigned to ANY user in the system.
      * This is useful for first-run detection or system-wide checks.
-     *
-     * @param string $roleName Role name
-     *
-     * @return bool Whether any user has the role
      */
     public function isRoleAssigned(string $roleName): bool
     {
         try {
-            $sql = <<<EOD
-
-                SELECT COUNT(*) as count
-                FROM `{$this->tables['user_roles']}` ur
-                JOIN `{$this->tables['roles']}` r ON ur.role_id = r.id
-                WHERE r.name = ?
-                AND r.is_active = 1
-                AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-
-EOD;
-
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$roleName]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            return $result && (int) $result['count'] > 0;
+            return $this->rbac->isRoleAssigned($roleName);
         } catch (\Exception $e) {
             error_log('Failed to check if role is assigned: '.$e->getMessage());
 
@@ -726,122 +456,15 @@ EOD;
     }
 
     /**
-     * Initialize RBAC tables.
-     */
-    private function initializeTables(): void
-    {
-        // Roles table
-        $this->pdo->exec(<<<EOD
-
-            CREATE TABLE IF NOT EXISTS `{$this->tables['roles']}` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `name` varchar(50) NOT NULL,
-                `display_name` varchar(100) NOT NULL,
-                `description` text DEFAULT NULL,
-                `is_system` tinyint(1) NOT NULL DEFAULT 0,
-                `is_active` tinyint(1) NOT NULL DEFAULT 1,
-                `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `unique_name` (`name`),
-                KEY `idx_active` (`is_active`),
-                KEY `idx_system` (`is_system`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-
-EOD);
-
-        // Permissions table
-        $this->pdo->exec(<<<EOD
-
-            CREATE TABLE IF NOT EXISTS `{$this->tables['permissions']}` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `name` varchar(100) NOT NULL,
-                `description` text DEFAULT NULL,
-                `resource` varchar(50) DEFAULT NULL,
-                `action` varchar(50) DEFAULT NULL,
-                `is_system` tinyint(1) NOT NULL DEFAULT 0,
-                `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `unique_name` (`name`),
-                KEY `idx_resource_action` (`resource`, `action`),
-                KEY `idx_system` (`is_system`)
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-
-EOD);
-
-        // Role-Permission mapping table
-        $this->pdo->exec(<<<EOD
-
-            CREATE TABLE IF NOT EXISTS `{$this->tables['role_permissions']}` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `role_id` int(11) unsigned NOT NULL,
-                `permission_id` int(11) unsigned NOT NULL,
-                `granted_by` int(11) unsigned DEFAULT NULL,
-                `granted_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `unique_role_permission` (`role_id`, `permission_id`),
-                KEY `idx_role_id` (`role_id`),
-                KEY `idx_permission_id` (`permission_id`),
-                KEY `idx_granted_by` (`granted_by`),
-                FOREIGN KEY (`role_id`) REFERENCES `{$this->tables['roles']}` (`id`) ON DELETE CASCADE,
-                FOREIGN KEY (`permission_id`) REFERENCES `{$this->tables['permissions']}` (`id`) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-
-EOD);
-
-        // User-Role mapping table
-        $this->pdo->exec(<<<EOD
-
-            CREATE TABLE IF NOT EXISTS `{$this->tables['user_roles']}` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `user_id` int(11) unsigned NOT NULL,
-                `role_id` int(11) unsigned NOT NULL,
-                `assigned_by` int(11) unsigned DEFAULT NULL,
-                `assigned_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                `expires_at` timestamp NULL DEFAULT NULL,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `unique_user_role` (`user_id`, `role_id`),
-                KEY `idx_user_id` (`user_id`),
-                KEY `idx_role_id` (`role_id`),
-                KEY `idx_assigned_by` (`assigned_by`),
-                KEY `idx_expires_at` (`expires_at`),
-                FOREIGN KEY (`role_id`) REFERENCES `{$this->tables['roles']}` (`id`) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-
-EOD);
-
-        // Role hierarchy table (for role inheritance)
-        $this->pdo->exec(<<<EOD
-
-            CREATE TABLE IF NOT EXISTS `{$this->tables['role_hierarchy']}` (
-                `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-                `parent_role_id` int(11) unsigned NOT NULL,
-                `child_role_id` int(11) unsigned NOT NULL,
-                `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-                PRIMARY KEY (`id`),
-                UNIQUE KEY `unique_hierarchy` (`parent_role_id`, `child_role_id`),
-                KEY `idx_parent_role` (`parent_role_id`),
-                KEY `idx_child_role` (`child_role_id`),
-                FOREIGN KEY (`parent_role_id`) REFERENCES `{$this->tables['roles']}` (`id`) ON DELETE CASCADE,
-                FOREIGN KEY (`child_role_id`) REFERENCES `{$this->tables['roles']}` (`id`) ON DELETE CASCADE
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-
-EOD);
-    }
-
-    /**
      * Initialize default roles and permissions.
      */
     private function initializeDefaultData(): void
     {
-        // Create default permissions
         foreach ($this->defaultPermissions as $name => $description) {
             [$resource, $action] = explode('.', $name, 2);
             $this->createPermission($name, $description, $resource, $action, true);
         }
 
-        // Create default roles
         foreach ($this->defaultRoles as $roleName => $roleData) {
             $this->createRole(
                 $roleName,
@@ -851,7 +474,6 @@ EOD);
             );
         }
 
-        // Assign default permissions to roles
         $this->assignDefaultPermissions();
     }
 
@@ -905,67 +527,24 @@ EOD);
 
     /**
      * Get role ID by name.
-     *
-     * @param string $name Role name
-     *
-     * @return null|int Role ID or null if not found
      */
     private function getRoleIdByName(string $name): ?int
     {
-        try {
-            $stmt = $this->pdo->prepare("SELECT id FROM `{$this->tables['roles']}` WHERE name = ? LIMIT 1");
-            $stmt->execute([$name]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            return $result ? (int) $result['id'] : null;
-        } catch (\Exception $e) {
-            error_log('Failed to get role ID: '.$e->getMessage());
-
-            return null;
-        }
+        return $this->rbac->getAvailableRoles()[$name] ?? null;
     }
 
     /**
      * Get role by ID.
-     *
-     * @param int $id Role ID
-     *
-     * @return null|array Role data or null if not found
      */
     private function getRoleById(int $id): ?array
     {
-        try {
-            $stmt = $this->pdo->prepare("SELECT * FROM `{$this->tables['roles']}` WHERE id = ? LIMIT 1");
-            $stmt->execute([$id]);
-
-            return $stmt->fetch(\PDO::FETCH_ASSOC) ?: null;
-        } catch (\Exception $e) {
-            error_log('Failed to get role by ID: '.$e->getMessage());
-
-            return null;
+        foreach ($this->rbac->getAllRoles(true) as $role) {
+            if ((int) $role['id'] === $id) {
+                return $role;
+            }
         }
-    }
 
-    /**
-     * Get permission ID by name.
-     *
-     * @param string $name Permission name
-     *
-     * @return null|int Permission ID or null if not found
-     */
-    private function getPermissionIdByName(string $name): ?int
-    {
-        try {
-            $stmt = $this->pdo->prepare("SELECT id FROM `{$this->tables['permissions']}` WHERE name = ? LIMIT 1");
-            $stmt->execute([$name]);
-            $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-            return $result ? (int) $result['id'] : null;
-        } catch (\Exception $e) {
-            error_log('Failed to get permission ID: '.$e->getMessage());
-
-            return null;
-        }
+        return null;
     }
 
     /**
@@ -978,12 +557,9 @@ EOD);
 
     /**
      * Get current user ID from session.
-     *
-     * @return null|int Current user ID or null
      */
     private static function getCurrentUserId(): ?int
     {
-        // Try various methods to get current user ID
         if (isset($_SESSION['user_id']) && is_numeric($_SESSION['user_id'])) {
             return (int) $_SESSION['user_id'];
         }
@@ -992,7 +568,6 @@ EOD);
             return (int) $_SESSION['USER_ID'];
         }
 
-        // Check if using Ease framework user system
         if (class_exists('\\Ease\\User') && method_exists('\\Ease\\User', 'singleton')) {
             $user = \Ease\User::singleton();
 

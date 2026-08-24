@@ -7274,12 +7274,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/VitexSoftware/php-vitexsoftware-multiflexi-core.git",
-                "reference": "331bac1e4ca163d48a26820ab41862ddb675e2cf"
+                "reference": "6bd4cbfd00a7557fd3ef26b5ef21868622c4daa6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VitexSoftware/php-vitexsoftware-multiflexi-core/zipball/331bac1e4ca163d48a26820ab41862ddb675e2cf",
-                "reference": "331bac1e4ca163d48a26820ab41862ddb675e2cf",
+                "url": "https://api.github.com/repos/VitexSoftware/php-vitexsoftware-multiflexi-core/zipball/6bd4cbfd00a7557fd3ef26b5ef21868622c4daa6",
+                "reference": "6bd4cbfd00a7557fd3ef26b5ef21868622c4daa6",
                 "shasum": ""
             },
             "require": {
@@ -7326,7 +7326,7 @@
                 "issues": "https://github.com/VitexSoftware/php-vitexsoftware-multiflexi-core/issues",
                 "source": "https://github.com/VitexSoftware/php-vitexsoftware-multiflexi-core/tree/main"
             },
-            "time": "2026-08-12T11:14:35+00:00"
+            "time": "2026-08-24T17:38:51+00:00"
         },
         {
             "name": "vitexsoftware/multiflexi-database-connection",
