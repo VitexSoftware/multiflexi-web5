@@ -92,13 +92,45 @@ WebPage::singleton()->setBreadcrumb([
 $errorTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getErrorOutput()))), ['style' => 'background: #330000; font-family: monospace;']);
 $stdTerminal = new \Ease\Html\DivTag(nl2br(str_replace('background-color: black; ', '', (new \SensioLabs\AnsiConverter\AnsiToHtmlConverter())->convert($jobber->getOutput()))), ['style' => 'background:  black; font-family: monospace;']);
 
-// Connect SSE stream only while the job is still running (no exitcode yet)
-if (\MultiFlexi\Ui\PageBottom::apiAvailable() && $jobber->getDataValue('exitcode') === null && $jobber->getDataValue('begin') !== null) {
+// Determine whether this job has a realistic chance of starting on its own
+// (queued in the schedule table, or already claimed by the executor within
+// the grace window) so we know whether to show the "waiting" spinner and
+// open a live stream, as opposed to a truly orphaned job that needs manual
+// re-scheduling.
+$jobBegin = $jobber->getDataValue('begin');
+$jobExitcode = $jobber->getDataValue('exitcode');
+$withinGrace = false;
+
+if ($jobBegin === null && $jobber->isScheduled() === false) {
+    $scheduleTime = $jobber->getDataValue('schedule');
+    $gracePeriodSeconds = 300; // 5 minutes — covers slow executor startup
+
+    if ($scheduleTime) {
+        $timezone = \MultiFlexi\DateTimeHelper::getConfiguredTimezone();
+        $scheduledAt = new \DateTime($scheduleTime, $timezone);
+        $now = new \DateTime('now', $timezone);
+        $secondsSinceSchedule = $now->getTimestamp() - $scheduledAt->getTimestamp();
+        $withinGrace = $secondsSinceSchedule >= 0 && $secondsSinceSchedule < $gracePeriodSeconds;
+    }
+}
+
+$expectingStart = $jobBegin === null && $jobExitcode === null && ($jobber->isScheduled() || $withinGrace);
+$jobAlreadyRunning = $jobBegin !== null && $jobExitcode === null;
+
+// Connect SSE stream while the job is still running, or is expected to
+// start shortly (queued / just claimed by the executor) — the "waiting"
+// spinner below stays visible until a 'started' or 'output' event arrives.
+if (\MultiFlexi\Ui\PageBottom::apiAvailable() && ($jobAlreadyRunning || $expectingStart)) {
     WebPage::singleton()->addJavaScript(<<<EOD
 
 (function () {
     var liveOut = document.getElementById('live-output');
     if (!liveOut) { return; }
+
+    var waitSpinner = document.getElementById('job-wait-spinner');
+    var hideSpinner = function () {
+        if (waitSpinner) { waitSpinner.style.display = 'none'; }
+    };
 
     var ansiColors = {
         30: '#000000', 31: '#e74c3c', 32: '#2ecc71', 33: '#f1c40f',
@@ -155,12 +187,18 @@ if (\MultiFlexi\Ui\PageBottom::apiAvailable() && $jobber->getDataValue('exitcode
     }
 
     var es = new EventSource('jobstream.php?id={$jobID}');
+    es.addEventListener('started', function () {
+        hideSpinner();
+    });
     es.addEventListener('output', function (e) {
+        hideSpinner();
+
         var d = JSON.parse(e.data);
         liveOut.innerHTML += ansiToHtml(d.line);
         liveOut.scrollTop = liveOut.scrollHeight;
     });
     es.addEventListener('done', function (e) {
+        hideSpinner();
         es.close();
 
         var d = JSON.parse(e.data);
@@ -184,8 +222,8 @@ if (\MultiFlexi\Ui\PageBottom::apiAvailable() && $jobber->getDataValue('exitcode
             }
         }
     });
-    es.addEventListener('timeout', function () { es.close(); });
-    es.onerror = function () { es.close(); };
+    es.addEventListener('timeout', function () { hideSpinner(); es.close(); });
+    es.onerror = function () { hideSpinner(); es.close(); };
 })();
 
 EOD);
@@ -205,29 +243,16 @@ if (!empty($jobber->getDataValue('block_reason')) && !$jobber->getDataValue('exi
 }
 
 // Check if job is orphaned and show warning
+// (uses $jobBegin / $withinGrace computed above, next to the SSE decision)
 $orphanedWarning = null;
 
-if (!$jobber->getDataValue('begin') && !$jobber->isScheduled()) {
-    // The daemon removes the schedule entry before the executor subprocess sets begin.
-    // Allow a grace window before declaring the job truly orphaned.
-    $scheduleTime = $jobber->getDataValue('schedule');
-    $gracePeriodSeconds = 300; // 5 minutes — covers slow executor startup
-    $withinGrace = false;
-
-    if ($scheduleTime) {
-        $timezone = \MultiFlexi\DateTimeHelper::getConfiguredTimezone();
-        $scheduledAt = new \DateTime($scheduleTime, $timezone);
-        $now = new \DateTime('now', $timezone);
-        $secondsSinceSchedule = $now->getTimestamp() - $scheduledAt->getTimestamp();
-        $withinGrace = $secondsSinceSchedule >= 0 && $secondsSinceSchedule < $gracePeriodSeconds;
-    }
-
+if ($jobBegin === null && $jobber->isScheduled() === false) {
     if ($withinGrace) {
-        // Executor claimed the job and is starting it — auto-refresh to show progress
-        WebPage::singleton()->addJavaScript('setTimeout(function(){ window.location.reload(); }, 5000);');
+        // Executor claimed the job and is starting it shortly — the spinner
+        // above (fed by the live stream's 'started' event) reflects this.
         $orphanedWarning = new \Ease\TWB5\Alert('info', [
             new \Ease\Html\H4Tag(['⏳ ', _('Job Starting')]),
-            new \Ease\Html\PTag(_('The executor has claimed this job and will start it shortly. This page will refresh automatically.')),
+            new \Ease\Html\PTag(_('The executor has claimed this job and will start it shortly.')),
         ]);
     } else {
         // Job not started and not in schedule queue - it's orphaned
@@ -389,6 +414,13 @@ if ($blockedWarning) {
 
 if ($orphanedWarning) {
     $panelContent[] = $orphanedWarning;
+}
+
+if ($expectingStart) {
+    $panelContent[] = new \Ease\Html\DivTag([
+        new \Ease\Html\DivTag('', ['class' => 'spinner-border text-primary', 'role' => 'status']),
+        new \Ease\Html\DivTag(_('Waiting for the job to start…'), ['class' => 'mt-2']),
+    ], ['id' => 'job-wait-spinner', 'class' => 'text-center my-4']);
 }
 
 $panelContent[] = new JobInfo($jobber);

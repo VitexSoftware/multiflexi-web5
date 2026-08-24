@@ -56,6 +56,7 @@ $outputLines = new \MultiFlexi\JobOutputLine();
 $lastId = 0;
 $startTime = time();
 $maxRuntime = 1800; // 30 minutes
+$beginNotified = $jobber->getDataValue('begin') !== null;
 
 /**
  * Emit a single SSE event.
@@ -88,8 +89,18 @@ while (true) {
         $lastId = (int) $row['id'];
     }
 
-    // Reload job to check if it has finished
+    // Reload job to check if it has started/finished
     $jobber->loadFromSQL($jobId);
+
+    if (!$beginNotified) {
+        $begin = $jobber->getDataValue('begin');
+
+        if ($begin !== null) {
+            $emit('started', ['begin' => $begin]);
+            $beginNotified = true;
+        }
+    }
+
     $exitcode = $jobber->getDataValue('exitcode');
 
     if ($exitcode !== null) {
