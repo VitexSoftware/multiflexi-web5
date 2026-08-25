@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace MultiFlexi\Ui;
 
-use MultiFlexi\Application;
+use MultiFlexi\LocalizedApplication;
 
 require_once './init.php';
 
@@ -72,7 +72,7 @@ $jobber->prepareJob($runTemplate, $uploadEnvFields, new \DateTime(), WebPage::ge
 // scheduleJobRun() is now called automatically inside prepareJob()
 
 $appInfo = $runTemplate->getAppInfo();
-$apps = new Application($appInfo['app_id']);
+$apps = new LocalizedApplication($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
 $newJobCompany = new \MultiFlexi\Company($appInfo['company_id']);
 

@@ -77,11 +77,14 @@ EOD;
 
     public function listingQuery(): \Envms\FluentPDO\Queries\Select
     {
+        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+
         return parent::listingQuery()
             ->leftJoin('job ON job.id = schedule.job')->select(['job.schedule_type'])
             ->leftJoin('user ON user.id = job.launched_by')
             ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')->select(['runtemplate.name AS runtemplate_name', 'runtemplate.id AS runtemplate_id'])
-            ->leftJoin('apps ON apps.id = runtemplate.app_id')->select(['apps.name AS app_name', 'apps.id AS app_id', 'apps.uuid AS app_uuid'])
+            ->leftJoin('apps ON apps.id = runtemplate.app_id')->select(['apps.id AS app_id', 'apps.uuid AS app_uuid'])
+            ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)->select(['COALESCE(app_translations.name, apps.name) AS app_name'])
             ->leftJoin('company ON company.id = runtemplate.company_id')->select(['company.name AS company_name', 'company.id AS company_id', 'company.logo AS company_logo']);
     }
 

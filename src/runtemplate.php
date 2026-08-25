@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 use Ease\WebPage;
-use MultiFlexi\Application;
 use MultiFlexi\Company;
+use MultiFlexi\LocalizedApplication;
 use MultiFlexi\RunTemplate;
 
 require_once './init.php';
@@ -28,11 +28,11 @@ $runTemplate = new RunTemplate(WebPage::getRequestValue('id', 'int'));
 $actions = new \MultiFlexi\ActionConfig();
 
 if (WebPage::getRequestValue('new', 'int') === 1) {
-    $app = new Application(WebPage::getRequestValue('app_id', 'int'));
+    $app = new LocalizedApplication(WebPage::getRequestValue('app_id', 'int'));
     $runTemplate->setDataValue('app_id', WebPage::getRequestValue('app_id', 'int'));
     $runTemplate->setDataValue('company_id', WebPage::getRequestValue('company_id', 'int'));
     $runTemplate->setDataValue('interv', 'n');
-    $runTemplate->setDataValue('name', _($app->getRecordName()));
+    $runTemplate->setDataValue('name', $app->getRecordName());
 
     $runTemplate->takeData([]);
 
@@ -67,7 +67,7 @@ if (WebPage::getRequestValue('action') === 'delete' && WebPage::isPosted()) {
 }
 
 $companies = new Company($runTemplate->getDataValue('company_id'));
-$app = new Application($runTemplate->getDataValue('app_id'));
+$app = new LocalizedApplication($runTemplate->getDataValue('app_id'));
 
 $app->setDataValue('company_id', $companies->getMyKey());
 $app->setDataValue('app_id', $app->getMyKey());

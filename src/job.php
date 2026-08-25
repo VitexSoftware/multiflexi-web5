@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace MultiFlexi\Ui;
 
-use MultiFlexi\Application;
+use MultiFlexi\LocalizedApplication;
 
 require_once './init.php';
 WebPage::singleton()->onlyForLogged();
@@ -78,7 +78,7 @@ if (!$runTemplate->getMyKey()) {
 }
 
 $appInfo = $runTemplate->getAppInfo();
-$apps = new Application($appInfo['app_id']);
+$apps = new LocalizedApplication($appInfo['app_id']);
 $instanceName = $appInfo['app_name'];
 $company = new \MultiFlexi\Company($appInfo['company_id']);
 

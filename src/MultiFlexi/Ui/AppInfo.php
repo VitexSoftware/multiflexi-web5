@@ -38,9 +38,11 @@ class AppInfo extends \Ease\Html\DivTag
     {
         parent::__construct(new \Ease\Html\H2Tag($app->getRecordName()));
 
+        $description = method_exists($app, 'getLocalizedDescription') ? ($app->getLocalizedDescription() ?? $app->getDataValue('description')) : $app->getDataValue('description');
+
         $mainRow = new \Ease\TWB5\Row();
         $mainRow->addColumn(2, [
-            new \Ease\Html\DivTag($app->getDataValue('description'), ['style' => 'color: white;']),
+            new \Ease\Html\DivTag($description, ['style' => 'color: white;']),
             new \Ease\Html\DivTag(new \Ease\Html\ATag($app->getDataValue('homepage'), $app->getDataValue('homepage'))),
             new \Ease\Html\DivTag(new AppLogo($app), ['style' => 'margin: auto;  width: 90%;  padding: 10px;']),
             new Label($app->getDataValue('enabled') ? 'success' : 'danger', $app->getDataValue('enabled') ? _('Enabled') : _('Disabled'), ['style' => 'text-align: center; text-shadow: 1px 1px 2px white;']),

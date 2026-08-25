@@ -25,24 +25,10 @@ class LocalizedApplication extends Application
     use ApplicationTranslation;
 
     /**
-     * Override the base method to check if method exists
-     * This allows compatibility with existing code.
-     *
-     * @param mixed $method
-     * @param mixed $args
+     * Localized record name, falling back to the raw name when no translation exists.
      */
-    public function __call($method, $args)
+    public function getRecordName(): string
     {
-        // Check if it's a localization method
-        if (method_exists($this, $method)) {
-            return \call_user_func_array([$this, $method], $args);
-        }
-
-        // Fall back to parent
-        if (method_exists(parent::class, '__call')) {
-            return parent::__call($method, $args);
-        }
-
-        throw new \BadMethodCallException("Method {$method} does not exist");
+        return $this->getLocalizedName() ?? parent::getRecordName();
     }
 }

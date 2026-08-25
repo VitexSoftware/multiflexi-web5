@@ -31,7 +31,7 @@ class AppLinkButton extends \Ease\TWB5\LinkButton
 
         parent::__construct(
             'app.php?id='.$app->getMyKey(),
-            [new AppLogo($app, ['style' => 'height: 40px']), '&nbsp;', _($app->getRecordName())],
+            [new AppLogo($app, ['style' => 'height: 40px']), '&nbsp;', $app->getRecordName()],
             'light',
             $properties,
         );

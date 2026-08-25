@@ -39,7 +39,7 @@ if ($companyId) {
 }
 
 if ($appId) {
-    $cscApp = new \MultiFlexi\Application($appId);
+    $cscApp = new \MultiFlexi\LocalizedApplication($appId);
     $cscBreadcrumb[_('Application').': '.$cscApp->getRecordName()] = $cscApp->getLink();
 }
 
@@ -61,7 +61,7 @@ if (WebPage::singleton()->isPosted()) {
     }
 }
 
-$app = new \MultiFlexi\Application($appId);
+$app = new \MultiFlexi\LocalizedApplication($appId);
 $company = new \MultiFlexi\Company($companyId);
 $runTemplater = new \MultiFlexi\RunTemplate();
 $runTemplater->loadFromSQL($runTemplater->runTemplateID($appId, $companyId));

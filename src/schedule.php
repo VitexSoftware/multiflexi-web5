@@ -30,7 +30,7 @@ if (null === $runTemplate->getMyKey()) {
     WebPage::singleton()->container->addItem(new \Ease\TWB5\Alert('error', _('RunTemplate id not specified')));
     $runTemplate->addStatusMessage(_('RunTemplate id not specified'), 'error');
 } else {
-    $app = $runTemplate->getApplication();
+    $app = new \MultiFlexi\LocalizedApplication($runTemplate->getApplication()->getMyKey());
     $company = $runTemplate->getCompany();
 
     WebPage::singleton()->setBreadcrumb([

@@ -26,7 +26,13 @@ class RuntemplateCloneForm extends SecureForm
 {
     public function __construct(\MultiFlexi\RunTemplate $runtemplate)
     {
-        $clonename = _($runtemplate->getDataValue('name') ?: $runtemplate->getAppInfo()['app_name']).' '._('Clone');
+        $fallbackName = $runtemplate->getDataValue('name');
+
+        if (empty($fallbackName)) {
+            $fallbackName = (new \MultiFlexi\LocalizedApplication($runtemplate->getDataValue('app_id')))->getRecordName();
+        }
+
+        $clonename = $fallbackName.' '._('Clone');
         parent::__construct(['action' => 'runtemplateclone.php?id='.(string) $runtemplate->getMyKey(), 'class' => 'form-inline']);
         $this->addInput(new \Ease\Html\InputTextTag('clonename', $clonename), _('Save as copy').'&nbsp;', $clonename);
         $this->addItem(new \Ease\TWB5\SubmitButton('💕 '._('Clone'), 'success mb-2', ['type' => 'submit']));

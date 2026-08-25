@@ -43,9 +43,18 @@ class ApplicationLister extends Application
         ]);
     }
 
+    public function listingQuery(): \Envms\FluentPDO\Queries\Select
+    {
+        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+
+        return parent::listingQuery()
+            ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)
+            ->select(['COALESCE(app_translations.name, apps.name) AS name', 'COALESCE(app_translations.description, apps.description) AS description']);
+    }
+
     public function completeDataRow(array $dataRowRaw)
     {
-        $dataRow = current(Ui\AppsSelector::translateColumns([$dataRowRaw], ['name', 'description']));
+        $dataRow = $dataRowRaw;
         $dataRow['name'] = '<a title="'.$dataRowRaw['name'].'" href="app.php?id='.$dataRowRaw['id'].'">'.$dataRowRaw['name'].'</a>';
         $dataRow['icon'] = '<a title="'.$dataRowRaw['name'].'" href="app.php?id='.$dataRowRaw['id'].'"><img src="appimage.php?uuid='.$dataRowRaw['uuid'].'" width="50" height="50" style="object-fit: contain;">';
 

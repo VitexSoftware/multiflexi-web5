@@ -40,29 +40,29 @@ class AppsSelector extends \Ease\Html\InputTextTag
         $properties['render']['option'] = 'function (item, escape) { return "<div><img height=40 align=right src=\"appimage.php?uuid=" + escape(item.uuid) + "\">" + escape(item.name) + "<br><small>" + escape(item.description) + "</small></div>" }';
         $properties['plugins'] = ['remove_button'];
 
-        $this->selectize($properties, self::translateColumns($this->availbleApps(), ['name', 'description'], true));
+        $this->selectize($properties, self::addslashesColumns($this->availbleApps(), ['name', 'description']));
     }
 
     public function availbleApps()
     {
         $apper = new \MultiFlexi\Application();
+        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
 
-        return $apper->listingQuery()->select(['id', 'name', 'description', 'homepage', 'uuid'], true)->fetchAll();
+        return $apper->listingQuery()
+            ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)
+            ->select(['id', 'COALESCE(app_translations.name, apps.name) AS name', 'COALESCE(app_translations.description, apps.description) AS description', 'homepage', 'uuid'], true)
+            ->fetchAll();
     }
 
     /**
-     * Translate strings in specified column using GetText.
-     *
-     * @param mixed $addslashes
+     * Escape strings in specified columns for safe embedding into JS.
      */
-    public static function translateColumns(array $data, array $columns, $addslashes = false): array
+    public static function addslashesColumns(array $data, array $columns): array
     {
         foreach ($data as $rowId => $record) {
             foreach ($columns as $transcol) {
-                if (\array_key_exists($transcol, $record)) {
-                    if (\strlen($record[$transcol])) {
-                        $data[$rowId][$transcol] = $addslashes ? addslashes(_($data[$rowId][$transcol])) : _($data[$rowId][$transcol]);
-                    }
+                if (\array_key_exists($transcol, $record) && \strlen((string) $record[$transcol])) {
+                    $data[$rowId][$transcol] = addslashes($data[$rowId][$transcol]);
                 }
             }
         }

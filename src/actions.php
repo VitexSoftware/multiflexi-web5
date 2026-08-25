@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 use Ease\TWB5\WebPage;
-use MultiFlexi\Application;
+use MultiFlexi\LocalizedApplication;
 use MultiFlexi\RunTemplate;
 
 require_once './init.php';
@@ -46,7 +46,7 @@ if (\Ease\WebPage::isPosted()) {
 }
 
 $actionsCompany = $runTemplater->getCompany();
-$actionsApp = $runTemplater->getApplication();
+$actionsApp = new LocalizedApplication($runTemplater->getApplication()->getMyKey());
 WebPage::singleton()->setBreadcrumb([
     _('Company').': '.$actionsCompany->getRecordName() => $actionsCompany->getLink(),
     _('Application').': '.$actionsApp->getRecordName() => $actionsApp->getLink(),
@@ -57,7 +57,7 @@ WebPage::singleton()->addItem(new PageTop('🛠 '.$runTemplater->getRecordName()
 
 $periodcalTaskInfo = $runTemplater->getData();
 
-$app = new Application($periodcalTaskInfo['app_id']);
+$app = new LocalizedApplication($periodcalTaskInfo['app_id']);
 
 $interval = new \Ease\Html\DivTag(_(\MultiFlexi\Scheduler::codeToInterval($periodcalTaskInfo['interv'])).' '._('interval'));
 $appPanel = new ApplicationPanel($app, $interval);

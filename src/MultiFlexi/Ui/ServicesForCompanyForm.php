@@ -51,6 +51,9 @@ class ServicesForCompanyForm extends SecureForm
         $platformApps = $apper->getAvailbleApps($serverCompanyInfo['type'] ?? null)->orderBy('name');
         // (new Application())->listingQuery()->select('id AS app_id')->select('name AS app_name')->where('enabled', 1)->fetchAll();
 
+        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+        $localizedApps = $apper->getFluentPDO()->from('app_translations')->where('lang', $currentLang)->select(['app_id', 'name', 'description'])->fetchAll('app_id');
+
         $glue = new RunTemplate();
         $assigned = $glue->getActiveRunTemplatesForCompany($companyID)->fetchAll('app_id');
         parent::__construct($tagProperties);
@@ -58,6 +61,14 @@ class ServicesForCompanyForm extends SecureForm
         $appTabs = new \Ease\TWB5\Tabs();
 
         foreach ($platformApps as $appData) {
+            if (!empty($localizedApps[$appData['id']]['name'])) {
+                $appData['name'] = $localizedApps[$appData['id']]['name'];
+            }
+
+            if (!empty($localizedApps[$appData['id']]['description'])) {
+                $appData['description'] = $localizedApps[$appData['id']]['description'];
+            }
+
             $apper->setData($appData);
             $appData['company_id'] = $companyID;
             $appData['app_id'] = $appData['id'];
@@ -68,7 +79,7 @@ class ServicesForCompanyForm extends SecureForm
                 $appData['runtemplateid'] = $assigned[$appData['id']]['id'];
             }
 
-            $appTabs->addTab(new AppLogo($apper, ['style' => 'height: 20px']).'&nbsp;'._($apper->getRecordName()), new AppRow($appData));
+            $appTabs->addTab(new AppLogo($apper, ['style' => 'height: 20px']).'&nbsp;'.$apper->getRecordName(), new AppRow($appData));
         }
 
         $this->addItem($appTabs);

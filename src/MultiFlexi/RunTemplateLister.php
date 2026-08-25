@@ -60,7 +60,7 @@ class RunTemplateLister extends RunTemplate
         $dataRowRaw['id'] = (string) new \Ease\Html\ATag('runtemplate.php?id='.$dataRowRaw['id'], '⚗️ #'.$dataRowRaw['id']);
 
         $dataRowRaw['executor'] = (string) new Ui\ExecutorImage($dataRowRaw['executor'], ['style' => 'height: 40px;']);
-        $dataRowRaw['app_id'] = (string) new Ui\AppLinkButton(new Application((int) $dataRowRaw['app_id']), ['style' => 'height: 40px;']);
+        $dataRowRaw['app_id'] = (string) new Ui\AppLinkButton(new LocalizedApplication((int) $dataRowRaw['app_id']), ['style' => 'height: 40px;']);
         $dataRowRaw['company_id'] = (string) new Ui\CompanyLinkButton(new Company((int) $dataRowRaw['company_id']), ['style' => 'height: 40px;']);
 
         return $dataRowRaw;

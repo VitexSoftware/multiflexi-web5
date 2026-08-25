@@ -34,8 +34,9 @@ class ArchivedJobPanel extends Panel
     public function __construct(\MultiFlexi\Job $job, $content = null, $footer = null)
     {
         $cid = $job->getApplication()->getMyKey();
+        $localizedApp = new \MultiFlexi\LocalizedApplication($cid);
         $this->headRow = new Row();
-        $this->headRow->addColumn(4, [new \Ease\Html\ATag('app.php?id='.$cid, new AppLogo($job->getApplication(), ['style' => 'height: 120px'])), '&nbsp;', $job->getApplication()->getRecordName()]);
+        $this->headRow->addColumn(4, [new \Ease\Html\ATag('app.php?id='.$cid, new AppLogo($localizedApp, ['style' => 'height: 120px'])), '&nbsp;', $localizedApp->getRecordName()]);
         //            new LinkButton('jobs.php?app_id='.$cid, '🧑‍💻&nbsp;'._('Jobs history'), 'secondary btn-lg')]);
 
         $ca = new \MultiFlexi\CompanyApp(null);
@@ -47,8 +48,8 @@ class ArchivedJobPanel extends Panel
             foreach ($usedIncompanies as $companyInfo) {
                 $companyInfo['id'] = $companyInfo['company_id'];
                 $kumpan = new \MultiFlexi\Company($companyInfo, ['autoload' => false]);
-                $calb = new CompanyAppLink($kumpan, $job->getApplication(), ['class' => 'card-img-top']);
-                $crls = new \MultiFlexi\Ui\CompanyRuntemplatesLinks($kumpan, $job->getApplication(), [], ['class' => 'btn btn-outline-secondary btn-sm']);
+                $calb = new CompanyAppLink($kumpan, $localizedApp, ['class' => 'card-img-top']);
+                $crls = new \MultiFlexi\Ui\CompanyRuntemplatesLinks($kumpan, $localizedApp, [], ['class' => 'btn btn-outline-secondary btn-sm']);
 
                 $usedByCompany->addItem(new \Ease\TWB5\Card([new \Ease\Html\DivTag([new \Ease\Html\H5Tag($calb, ['class' => 'card-title']), $crls], ['class' => 'card-body'])], ['style' => 'width: 6rem;']));
             }

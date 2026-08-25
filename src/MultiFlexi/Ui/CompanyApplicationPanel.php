@@ -41,7 +41,7 @@ class CompanyApplicationPanel extends Panel
     public function __construct(\MultiFlexi\CompanyApp $companyApp, $content = null, $footer = null)
     {
         $company = $companyApp->getCompany();
-        $this->application = $companyApp->getApplication();
+        $this->application = new \MultiFlexi\LocalizedApplication($companyApp->getApplication()->getMyKey());
         $this->headRow = new Row();
 
         $logoCol = $this->headRow->addColumn(2, new \Ease\Html\ATag('app.php?id='.$this->application->getMyKey(), [new AppLogo($this->application, ['style' => 'height: 80px', 'class' => 'img-thumbnail shadow-sm'])]));

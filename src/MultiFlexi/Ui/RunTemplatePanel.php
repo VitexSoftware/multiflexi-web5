@@ -95,12 +95,13 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         // Actions Header
         $headerRow = new \Ease\TWB5\Row();
+        $localizedApp = new \MultiFlexi\LocalizedApplication($this->runtemplate->getApplication()->getMyKey());
 
-        $logoCol = $headerRow->addColumn(1, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), '⚗️', ['style' => 'font-size: 3rem; text-decoration: none;', 'title' => $this->runtemplate->getApplication()->getRecordName()]));
+        $logoCol = $headerRow->addColumn(1, new \Ease\Html\ATag('app.php?id='.$this->runtemplate->getDataValue('app_id'), '⚗️', ['style' => 'font-size: 3rem; text-decoration: none;', 'title' => $localizedApp->getRecordName()]));
         $logoCol->addTagClass('text-center my-auto');
 
         $titleCol = $headerRow->addColumn(5, [
-            new \Ease\Html\SmallTag($this->runtemplate->getApplication()->getRecordName(), ['class' => 'd-block fw-bold text-uppercase small', 'style' => 'color: rgba(255,255,255,0.6);']),
+            new \Ease\Html\SmallTag($localizedApp->getRecordName(), ['class' => 'd-block fw-bold text-uppercase small', 'style' => 'color: rgba(255,255,255,0.6);']),
             $nameInput,
             $noteInput,
         ]);
