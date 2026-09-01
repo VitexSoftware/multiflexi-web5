@@ -64,9 +64,13 @@ EOD;
     public function completeDataRow(array $dataRowRaw)
     {
         $helper = new CredentialType($dataRowRaw['credential_type_id']);
+        $logo = (string) $helper->getDataValue('logo');
+        // Bare filenames (dev tree or deb-installed credential-prototype logos under
+        // /usr/share/multiflexi/images) are served through logoimage.php.
+        $logoSrc = str_starts_with($logo, 'data:') ? $logo : 'logoimage.php?file='.rawurlencode($logo);
         $dataRow['id'] = $dataRowRaw['id'];
         $dataRow['name'] = '<a title="'.$dataRowRaw['name'].'" href="credential.php?id='.$dataRowRaw['id'].'">'.$dataRowRaw['name'].'</a>';
-        $dataRow['formType'] = $dataRowRaw['formType'].'<br><a title="'.$dataRowRaw['formType'].'" href="credentialtype.php?id='.$dataRowRaw['credential_type_id'].'"><img src="images/'.$helper->getDataValue('logo').'" height="50">';
+        $dataRow['formType'] = $dataRowRaw['formType'].'<br><a title="'.$dataRowRaw['formType'].'" href="credentialtype.php?id='.$dataRowRaw['credential_type_id'].'"><img src="'.$logoSrc.'" height="50">';
         $dataRow['company_id'] = (string) new Ui\CompanyLinkButton(new Company($dataRowRaw['company_id']), ['style' => 'height: 50px;']).' '.$dataRowRaw['company_id_value'];
 
         return parent::completeDataRow($dataRow);

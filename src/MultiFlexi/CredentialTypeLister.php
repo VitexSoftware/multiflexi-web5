@@ -47,14 +47,20 @@ class CredentialTypeLister extends CredentialType
         $helper = $this->getPrototype();
 
         if (empty($data['logo'])) {
-            $data['logo'] = 'images/'.$helper->logo();
+            $data['logo'] = $helper->logo();
         }
 
         if (empty($data['name'])) {
             $data['name'] = $helper->name();
         }
 
-        $data['logo'] = (string) new \Ease\Html\ATag('credentialtype.php?id='.$this->getMyKey(), new \Ease\Html\ImgTag($data['logo'], $data['name'], ['title' => $data['name'], 'style' => 'height: 50px;']));
+        // Bare filenames (dev tree or deb-installed credential-prototype logos under
+        // /usr/share/multiflexi/images) are served through logoimage.php.
+        $logoSrc = str_starts_with((string) $data['logo'], 'data:')
+            ? $data['logo']
+            : 'logoimage.php?file='.rawurlencode((string) $data['logo']);
+
+        $data['logo'] = (string) new \Ease\Html\ATag('credentialtype.php?id='.$this->getMyKey(), new \Ease\Html\ImgTag($logoSrc, $data['name'], ['title' => $data['name'], 'style' => 'height: 50px;']));
 
         $data['company_id'] = (string) new Ui\CompanyLinkButton(new Company($dataRowRaw['company_id']), ['style' => 'height: 50px;']);
 
