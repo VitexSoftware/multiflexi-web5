@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9fbe630557888dffa74aedd85ea3144a",
+    "content-hash": "c9a4aade85ea985aaf09c2208366e6c6",
     "packages": [
         {
             "name": "brick/math",
@@ -6985,16 +6985,16 @@
         },
         {
             "name": "vitexsoftware/ease-html-widgets",
-            "version": "dev-main",
+            "version": "1.1.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/VitexSoftware/php-vitexsoftware-ease-html-widgets.git",
-                "reference": "1e4cc64bcaec1f0820db69a945375b12697202f4"
+                "reference": "9e4512f7cb7ced1650c9c67bbb2644fb83205959"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VitexSoftware/php-vitexsoftware-ease-html-widgets/zipball/1e4cc64bcaec1f0820db69a945375b12697202f4",
-                "reference": "1e4cc64bcaec1f0820db69a945375b12697202f4",
+                "url": "https://api.github.com/repos/VitexSoftware/php-vitexsoftware-ease-html-widgets/zipball/9e4512f7cb7ced1650c9c67bbb2644fb83205959",
+                "reference": "9e4512f7cb7ced1650c9c67bbb2644fb83205959",
                 "shasum": ""
             },
             "require": {
@@ -7010,7 +7010,6 @@
                 "phpstan/phpstan": "*",
                 "phpunit/phpunit": "*"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -7032,9 +7031,9 @@
             "homepage": "https://github.com/VitexSoftware/php-vitexsoftware-ease-html-widgets",
             "support": {
                 "issues": "https://github.com/VitexSoftware/php-vitexsoftware-ease-html-widgets/issues",
-                "source": "https://github.com/VitexSoftware/php-vitexsoftware-ease-html-widgets/tree/main"
+                "source": "https://github.com/VitexSoftware/php-vitexsoftware-ease-html-widgets/tree/1.1.2"
             },
-            "time": "2026-08-19T12:42:06+00:00"
+            "time": "2026-09-20T22:11:48+00:00"
         },
         {
             "name": "vitexsoftware/ease-twbootstrap5",
@@ -11431,7 +11430,6 @@
     "stability-flags": {
         "textalk/websocket": 20,
         "vitexsoftware/ease-fluentpdo": 20,
-        "vitexsoftware/ease-html-widgets": 20,
         "vitexsoftware/multiflexi-abraflexi": 20,
         "vitexsoftware/multiflexi-api-server": 20,
         "vitexsoftware/multiflexi-core": 20,
