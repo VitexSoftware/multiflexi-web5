@@ -98,6 +98,7 @@ $allowedClasses = [
     \MultiFlexi\UserLogger::class,
     \MultiFlexi\Customer::class,
     \MultiFlexi\EventSourceLister::class,
+    \MultiFlexi\EventRuleLister::class,
     \MultiFlexi\UserLister::class,
     \MultiFlexi\Security\AuditLogEntry::class,
     \MultiFlexi\Security\UserAuditLog::class,
