@@ -2,10 +2,12 @@
 
 // Current version of this Pipeline https://github.com/VitexSoftware/BuildImages/blob/main/Test/Jenkinsfile
 
+// debian:forky disabled: Forky is still unstable/research-only.
+// The full Debian package ecosystem is not yet available for Forky.
+// Re-enable once the stack builds cleanly for Forky.
 String[] distributions = [
 			'debian:bookworm', 
 			'debian:trixie', 
-			'debian:forky',
 			'ubuntu:jammy', 
 			'ubuntu:noble',
 			'ubuntu:resolute',
@@ -53,6 +55,8 @@ distributions.each { distro ->
             ansiColor('xterm') {
                 stage('Checkout ' + distroName) {
                     sh 'sudo chown -R jenkins:jenkins . 2>/dev/null || true'
+                    // git writes objects read-only; unstash cannot overwrite them in a reused workspace
+                    sh 'chmod -R u+w .git 2>/dev/null || true'
                     unstash 'src'
                     def imageName = vendor + '/' + distro
                     buildImage = docker.image(imageName)
