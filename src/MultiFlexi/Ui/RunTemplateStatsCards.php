@@ -122,7 +122,7 @@ class RunTemplateStatsCards extends \Ease\Html\DivTag
         $chartsRow = new \Ease\TWB5\Row();
         $chartsRow->addTagClass('mb-3');
         $chartsRow->addColumn(8, new \MultiFlexi\Ui\RunTemplateJobsLastMonthChart($this->runtemplate, ['style' => 'width: 100%;']));
-        $chartsRow->addColumn(4, new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate, 20, 10));
+        $chartsRow->addColumn(4, new \MultiFlexi\Ui\JobGraphWidget($this->runtemplate));
         $this->addItem($chartsRow);
     }
 

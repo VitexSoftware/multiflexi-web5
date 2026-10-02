@@ -22,8 +22,8 @@ WebPage::singleton()->onlyForLogged();
 $companyId = WebPage::getRequestValue('company_id', 'int');
 $runtemplateId = WebPage::getRequestValue('runtemplate_id', 'int');
 $appId = WebPage::getRequestValue('app_id', 'int');
-$width = WebPage::getRequestValue('width', 'int');
-$height = WebPage::getRequestValue('height', 'int');
+$width = WebPage::getRequestValue('width', 'int') ?: 20;
+$height = WebPage::getRequestValue('height', 'int') ?: 10;
 
 $accessibleCompanies = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
 
@@ -56,7 +56,7 @@ if ($runtemplateId) {
 $todaysJobs = $query->fetchAll();
 
 $jobGraph = new JobGraph($width, $height, $todaysJobs);
-$base64Image = $jobGraph->generateImage();
+$jobGraph->generateImage();
 
 header('Content-Type: image/png');
 
