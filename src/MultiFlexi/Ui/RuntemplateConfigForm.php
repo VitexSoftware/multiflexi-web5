@@ -69,6 +69,7 @@ CSS);
         // (multiflexi-core schema/application.json: environment.*.category).
         $categoryOrder = ['API', 'Database', 'Behavior', 'Security', 'Other'];
         $categoryOf = self::readFieldCategories($engine->getApplication());
+        $optionsOf = self::readFieldOptions($engine->getApplication());
 
         $categoryBuckets = [];
 
@@ -91,6 +92,14 @@ CSS);
 
             $bucket = $categoryBuckets[$fieldCategory];
 
+            // Allowed values of a "set" field; fall back to the definition file
+            // for applications imported before the conffield options column existed.
+            if ($field->getType() === 'set' && $field->getOptions() === [] && !empty($optionsOf[$fieldName])) {
+                $field->setOptions($optionsOf[$fieldName]);
+            }
+
+            $isSelect = $field->getType() === 'set' && $field->getOptions() !== [];
+
             $inputCaption = new \Ease\Html\StrongTag($fieldName);
             $isBool = $field->getType() === 'bool';
             $isRedactable = $field->isRedactable();
@@ -99,6 +108,24 @@ CSS);
 
             if ($isBool) {
                 $input = BoolFieldWidget::toggle($fieldName, $field->getValue());
+            } elseif ($isSelect) {
+                $selected = (string) ($field->getValue() ?? '');
+
+                if ($selected === '') {
+                    $selected = (string) ($field->getDefaultValue() ?? '');
+                }
+
+                $choices = $field->getOptions();
+
+                if ($selected !== '' && !\array_key_exists($selected, $choices)) {
+                    $choices[$selected] = $selected;
+                }
+
+                if ($selected === '') {
+                    $choices = ['' => ''] + $choices;
+                }
+
+                $input = new \Ease\Html\SelectTag($fieldName, $choices, $selected, ['class' => 'form-select form-select-sm']);
             } elseif ($field->isMultiLine()) {
                 $textareaAttrs = ['class' => 'form-control form-control-sm', 'rows' => 4];
 
@@ -313,6 +340,37 @@ JS);
         }
 
         return $categories;
+    }
+
+    /**
+     * Build a field-name → allowed values map from the application definition file.
+     *
+     * Fallback for applications imported before the conffield options column existed.
+     *
+     * @return array<string, array<int|string, string>>
+     */
+    private static function readFieldOptions(\MultiFlexi\Application $application): array
+    {
+        $options = [];
+        $deffile = (string) $application->getDataValue('deffile');
+
+        if ($deffile === '' || !is_file($deffile)) {
+            return $options;
+        }
+
+        $appDef = json_decode((string) file_get_contents($deffile), true);
+
+        if (!\is_array($appDef) || empty($appDef['environment']) || !\is_array($appDef['environment'])) {
+            return $options;
+        }
+
+        foreach ($appDef['environment'] as $envKey => $envCfg) {
+            if (\is_array($envCfg) && !empty($envCfg['options']) && \is_array($envCfg['options'])) {
+                $options[$envKey] = $envCfg['options'];
+            }
+        }
+
+        return $options;
     }
 
     /**
