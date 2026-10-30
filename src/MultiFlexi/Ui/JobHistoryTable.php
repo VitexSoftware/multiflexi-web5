@@ -60,7 +60,7 @@ class JobHistoryTable extends \Ease\TWB5\Table
     public function getJobs()
     {
         return $this->jobber->listingQuery()->
-                        select(['apps.name AS appname', 'apps.uuid', 'job.id', 'begin', 'exitcode', 'launched_by', 'user.login', 'user.enabled AS user_enabled', 'user.firstname', 'user.lastname', 'job.app_id AS app_id', 'job.executor', 'job.company_id', 'company.name', 'company.logo', 'schedule', 'schedule_type'], true)
+                        select(['apps.name AS appname', 'apps.uuid', 'job.id', 'begin', 'exitcode', 'launched_by', 'user.login', 'user.enabled AS user_enabled', 'user.firstname', 'user.lastname', 'job.app_id AS app_id', 'job.executor', 'job.company_id', 'company.name', 'schedule', 'schedule_type'], true)
                             ->leftJoin('apps ON apps.id = job.app_id')
                             ->leftJoin('user ON user.id = job.launched_by')
                             ->limit($this->limit)
@@ -69,12 +69,8 @@ class JobHistoryTable extends \Ease\TWB5\Table
 
     public function finalize(): void
     {
-        $company = new \MultiFlexi\Company();
-
         foreach ($this->getJobs() as $job) {
             $exitCode = $job['exitcode'];
-            $company->setDataValue('logo', $job['logo']);
-            $company->setDataValue('name', $job['name']);
 
             if ($this->showIcon) {
                 $job['uuid'] = new \Ease\Html\ATag('app.php?id='.$job['app_id'], [new \Ease\TWB5\Badge([new \Ease\Html\ImgTag(empty($job['appimage']) ? 'appimage.php?uuid='.$job['uuid'] : $job['appimage'], _($job['appname']), ['width' => 60, 'height' => 60, 'style' => 'object-fit: contain;', 'title' => $job['appname']]), '&nbsp;', _($job['appname'])], 'light')]);
@@ -113,12 +109,12 @@ class JobHistoryTable extends \Ease\TWB5\Table
             unset($job['executor'], $job['login'], $job['user_enabled'], $job['firstname'], $job['lastname'], $job['schedule']);
 
             if ($this->showCompany) {
-                $job['company_id'] = [new \Ease\Html\ATag('company.php?id='.$job['company_id'], new CompanyLogo($company, ['height' => '60px', 'align' => 'right'])), new \Ease\Html\ATag('company.php?id='.$job['company_id'], $job['name'])];
+                $job['company_id'] = [new \Ease\Html\ATag('company.php?id='.$job['company_id'], new \Ease\Html\ImgTag('companylogo.php?id='.$job['company_id'], $job['name'] ?? '', ['height' => '60px', 'align' => 'right', 'loading' => 'lazy'])), new \Ease\Html\ATag('company.php?id='.$job['company_id'], $job['name'])];
             } else {
                 unset($job['company_id']);
             }
 
-            unset($job['name'], $job['logo'], $job['schedule_type']);
+            unset($job['name'], $job['schedule_type']);
 
             $this->addRowColumns($job);
         }
