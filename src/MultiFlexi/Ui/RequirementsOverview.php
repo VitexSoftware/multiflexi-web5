@@ -38,7 +38,7 @@ class RequirementsOverview extends \Ease\Html\DivTag
                 if (class_exists($formClass, true)) {
                     $instance = new $formClass();
                     $reqCard = new \Ease\TWB5\Card(null, ['style' => 'width: 18rem;']);
-                    $reqCard->addItem(new \Ease\Html\ImgTag('images/'.$formClass::logo(), $req, ['title' => $req, 'height' => 40, 'class' => 'card-img-top']));
+                    $reqCard->addItem(new \Ease\Html\ImgTag('logoimage.php?file='.rawurlencode((string) $formClass::logo()), $req, ['title' => $req, 'height' => 40, 'class' => 'card-img-top']));
                     $reqCard->addItem(new \Ease\Html\DivTag(new \Ease\Html\H5Tag($formClass::name()), ['class' => 'card-title']));
                     $reqCard->addItem(new \Ease\Html\DivTag(new \Ease\Html\PTag($formClass::description()), ['class' => 'card-text']));
                 }
@@ -54,7 +54,10 @@ class RequirementsOverview extends \Ease\Html\DivTag
 
                 if ($credentialType->getMyKey()) {
                     // CredentialType found in database - use its data
-                    $logo = $credentialType->getDataValue('logo') ?: 'images/default-credential.svg';
+                    $logoFile = (string) ($credentialType->getDataValue('logo') ?: '');
+                    $logo = $logoFile !== ''
+                        ? (str_starts_with($logoFile, 'data:') ? $logoFile : 'logoimage.php?file='.rawurlencode($logoFile))
+                        : 'images/CommonCredentialType.svg';
                     $name = $credentialType->getDataValue('name') ?: $req;
                     $description = $credentialType->getDataValue('description') ?: '';
 

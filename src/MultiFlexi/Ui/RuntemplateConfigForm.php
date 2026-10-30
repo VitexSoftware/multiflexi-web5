@@ -178,7 +178,13 @@ CSS);
 
                         $credentialLink = new \Ease\Html\ATag('credential.php?id='.$credential->getMyKey(), new \Ease\Html\SmallTag($credential->getRecordName()));
 
-                        $formIcon = new \Ease\Html\ImgTag('images/'.$runTemplateField->getLogo(), (string) $credentialType->getRecordName(), ['height' => 20, 'title' => $credentialType->getRecordName()]);
+                        // Credential-prototype SVGs live in /usr/share/multiflexi/images/,
+                        // not under the web DocumentRoot — serve via logoimage.php
+                        // (same as CredentialTypeLogo / CredentialLister).
+                        $formIcon = new CredentialTypeLogo($credentialType, [
+                            'height' => 20,
+                            'title' => (string) $credentialType->getRecordName(),
+                        ]);
 
                         $credentialTypeLink = new \Ease\Html\ATag('credentialtype.php?id='.$credentialType->getMyKey(), $formIcon);
 

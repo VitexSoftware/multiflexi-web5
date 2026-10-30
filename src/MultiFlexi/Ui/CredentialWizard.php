@@ -315,7 +315,7 @@ EOD,
 
             // Show prototype icon
             if ($prototypeData['logo']) {
-                $cardBody->addItem(new \Ease\Html\DivTag(new \Ease\Html\ImgTag('images/'.$prototypeData['logo'], $prototypeData['name'], ['height' => '40px']), ['style' => 'font-size: 40px; margin-bottom: 1rem;']));
+                $cardBody->addItem(new \Ease\Html\DivTag(new \Ease\Html\ImgTag('logoimage.php?file='.rawurlencode((string) $prototypeData['logo']), $prototypeData['name'], ['height' => '40px']), ['style' => 'font-size: 40px; margin-bottom: 1rem;']));
             } else {
                 $cardBody->addItem(new \Ease\Html\DivTag('🔐', ['style' => 'font-size: 40px; margin-bottom: 1rem;']));
             }
@@ -405,7 +405,7 @@ EOD,
                 $cardBody = $card->addItem(new \Ease\Html\DivTag(null, ['class' => 'card-body']));
 
                 if (!empty($typeData['logo'])) {
-                    $cardBody->addItem(new \Ease\Html\ImgTag('images/'.$typeData['logo'], $typeData['name'], ['height' => '40', 'class' => 'mb-2']));
+                    $cardBody->addItem(new \Ease\Html\ImgTag('logoimage.php?file='.rawurlencode((string) $typeData['logo']), $typeData['name'], ['height' => '40', 'class' => 'mb-2']));
                 }
 
                 $cardBody->addItem(new \Ease\Html\H5Tag($typeData['name'], ['class' => 'card-title']));
