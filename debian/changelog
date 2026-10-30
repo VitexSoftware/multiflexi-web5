@@ -1,4 +1,4 @@
-multiflexi-web (2.5.0) UNRELEASED; urgency=medium
+multiflexi-web (2.5.0) unstable; urgency=medium
 
   * Add tasks.php — task overview with metric cards, daily fulfilment chart,
     state distribution pie chart, and DataTables-powered task listing
@@ -17,7 +17,13 @@ multiflexi-web (2.5.0) UNRELEASED; urgency=medium
   * ExitCode: map exit code 75 (EX_TEMPFAIL / credential blocked) → 'warning'
   * CompanyJobLister: add job-credential-blocked row class for exit code 75
 
- -- vitex <info@vitexsoftware.cz>  Sat, 14 Jun 2026 14:00:00 +0200
+  * Job artifact "Rendered" tab and the app run console are no longer blocked by
+    frame protection (same-origin framing is allowed)
+  * Job history no longer embeds the company logo into every row, which exhausted
+    memory on the run template page for companies with a large logo
+  * Saving the RunTemplate configuration no longer erases stored secret (password)
+    values that were left empty in the form
+ -- vitex <info@vitexsoftware.cz>  Fri, 30 Oct 2026 14:12:41 +0100
 
 multiflexi-web (2.4.1) unstable; urgency=medium
 
