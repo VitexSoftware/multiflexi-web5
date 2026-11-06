@@ -79,6 +79,7 @@ class AppRow extends \Ease\TWB5\Row
 
         $appConfColumn->addItem(new \Ease\TWB5\LinkButton('custserviceconfig.php?app_id='.$appId.'&amp;company_id='.$appData['company_id'], _('Configure App Environment').' '.new \Ease\Html\ImgTag('images/set.svg', _('Set'), ['height' => '30px']), 'success btn-sm  w-100'));
 
+        $app = new \MultiFlexi\Application($appId);
         $jobs = (new \MultiFlexi\Job())->listingQuery()->select(['job.id', 'begin', 'exitcode', 'launched_by', 'login'], true)->leftJoin('user ON user.id = job.launched_by')->where('company_id', $appData['company_id'])->where('app_id', $appId)->limit(10)->orderBy('job.id DESC')->fetchAll();
         $jobList = new \Ease\TWB5\Table();
         $jobList->addRowHeaderColumns([_('Job ID'), _('Launch time'), _('Exit Code'), _('Launcher')]);
@@ -92,7 +93,7 @@ class AppRow extends \Ease\TWB5\Row
                 $job['begin'] = [$job['begin'], ' ', new \Ease\Html\SmallTag(new \Ease\Html\Widgets\LiveAge(new \DateTime($job['begin'])))];
             }
 
-            $job['exitcode'] = new \MultiFlexi\Ui\ExitCode($job['exitcode']);
+            $job['exitcode'] = new \MultiFlexi\Ui\ExitCode($job['exitcode'], [], null !== $job['exitcode'] ? $app->exitCodeDescription((int) $job['exitcode']) : null);
             $job['launched_by'] = $job['launched_by'] ? new ATag('user.php?id='.$job['launched_by'], $job['login']) : _('Timer');
             unset($job['login']);
             $jobList->addRowColumns($job);

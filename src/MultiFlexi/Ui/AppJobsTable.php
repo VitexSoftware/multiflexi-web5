@@ -32,6 +32,7 @@ class AppJobsTable extends \Ease\TWB5\Table
     public function __construct(int $appId, int $companyId, $properties = [])
     {
         parent::__construct(null, $properties);
+        $app = new \MultiFlexi\Application($appId);
         $jobs = (new \MultiFlexi\Job())->listingQuery()->select(['job.id', 'begin', 'exitcode', 'launched_by', 'login'], true)->leftJoin('user ON user.id = job.launched_by')->where('company_id', $companyId)->where('app_id', $appId)->limit(10)->orderBy('job.id DESC')->fetchAll();
         $this->addRowHeaderColumns([_('Job ID'), _('Launch time'), _('Exit Code'), _('Launcher')]);
 
@@ -44,7 +45,7 @@ class AppJobsTable extends \Ease\TWB5\Table
                 $job['begin'] = [$job['begin'], ' ', new \Ease\Html\SmallTag(new \Ease\Html\Widgets\LiveAge(new \DateTime($job['begin'])))];
             }
 
-            $job['exitcode'] = new \MultiFlexi\Ui\ExitCode($job['exitcode']);
+            $job['exitcode'] = new \MultiFlexi\Ui\ExitCode($job['exitcode'], [], null !== $job['exitcode'] ? $app->exitCodeDescription((int) $job['exitcode']) : null);
             $job['launched_by'] = $job['launched_by'] ? new \Ease\Html\ATag('user.php?id='.$job['launched_by'], $job['login']) : _('Timer');
             unset($job['login']);
             $this->addRowColumns($job);

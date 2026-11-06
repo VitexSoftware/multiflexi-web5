@@ -24,6 +24,29 @@ namespace MultiFlexi\Ui;
 class DashboardRecentJobsTable extends \Ease\Html\DivTag
 {
     /**
+     * Cache of Application objects used to resolve exit code descriptions.
+     *
+     * @var array<int, \MultiFlexi\Application>
+     */
+    private array $appCache = [];
+
+    /**
+     * Localized description of a job exit code as declared by the given application.
+     */
+    private function exitCodeDescription(int $appId, $exitCode): string
+    {
+        if ($exitCode === null || $appId <= 0) {
+            return '';
+        }
+
+        if (!isset($this->appCache[$appId])) {
+            $this->appCache[$appId] = new \MultiFlexi\Application($appId);
+        }
+
+        return $this->appCache[$appId]->exitCodeDescription((int) $exitCode);
+    }
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -85,7 +108,8 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
                     } elseif ((int) $job['exitcode'] === 0) {
                         $statusBadge = new \Ease\TWB5\Badge('✓ '._('Success'), 'success');
                     } else {
-                        $statusBadge = new \Ease\TWB5\Badge('✗ '._('Failed').' ('.$job['exitcode'].')', 'danger');
+                        $exitCodeDescription = $this->exitCodeDescription((int) $job['app_id'], $job['exitcode']);
+                        $statusBadge = new \Ease\TWB5\Badge('✗ '._('Failed').' ('.$job['exitcode'].')', 'danger', '' !== $exitCodeDescription ? ['title' => $exitCodeDescription] : []);
                     }
 
                     // Create links with emoticons

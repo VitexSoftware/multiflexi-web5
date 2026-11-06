@@ -28,7 +28,13 @@ namespace MultiFlexi\Ui;
  */
 class ExitCode extends \Ease\Html\SpanTag
 {
-    public function __construct($exitcode = null, $properties = [])
+    /**
+     * @param null|int    $exitcode    Exit code value (null = pending)
+     * @param array       $properties  HTML tag properties
+     * @param null|string $description Localized meaning of the exit code (from app_exit_codes);
+     *                                 shown as tooltip when set
+     */
+    public function __construct($exitcode = null, $properties = [], ?string $description = null)
     {
         $status = self::status($exitcode);
         $label = null === $exitcode ? '⏳' : (string) $exitcode;
@@ -36,7 +42,13 @@ class ExitCode extends \Ease\Html\SpanTag
         $properties['class'] = trim('mf-exit mf-exit-'.$status.' '.($properties['class'] ?? ''));
 
         if (!isset($properties['title'])) {
-            $properties['title'] = null === $exitcode ? _('Pending') : $status;
+            if (null === $exitcode) {
+                $properties['title'] = _('Pending');
+            } elseif (null !== $description && '' !== $description) {
+                $properties['title'] = $description;
+            } else {
+                $properties['title'] = $status;
+            }
         }
 
         parent::__construct('&nbsp;'.$label.'&nbsp;', $properties);

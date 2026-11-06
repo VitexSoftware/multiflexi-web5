@@ -212,8 +212,14 @@ if (\MultiFlexi\Ui\PageBottom::apiAvailable() && ($jobAlreadyRunning || $expecti
         if (badge) {
             var status = exitCodeStatus(d.exitcode);
             badge.className = 'mf-exit mf-exit-' + status;
-            badge.title = status;
+            badge.title = d.exitcode_description || status;
             badge.innerHTML = '&nbsp;' + d.exitcode + '&nbsp;';
+        }
+
+        var descEl = document.getElementById('live-exitcode-desc');
+
+        if (descEl && d.exitcode_description) {
+            descEl.innerHTML = escapeHtml(d.exitcode_description);
         }
 
         var endEl = document.getElementById('live-end');
