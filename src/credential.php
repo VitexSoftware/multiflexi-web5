@@ -51,7 +51,7 @@ if (null !== $delete) {
     WebPage::singleton()->redirect('companycreds.php?company_id='.$kredenc->getDataValue('company_id'));
 }
 
-if (WebPage::singleton()->isPosted()) {
+if (WebPage::singleton()->isPosted() && null === WebPage::getRequestValue('checkavailability')) {
     try {
         if ($kredenc->takeData($_POST) && null !== $kredenc->dbsync()) {
             $kredenc->addStatusMessage(_('Credential field Saved'), 'success');
@@ -94,6 +94,11 @@ if ($credCompanyId) {
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
 
 WebPage::singleton()->container->addItem(new CredentialForm($kredenc));
+$availabilityCheck = CredentialForm::availabilityCheck($kredenc);
+
+if (null !== $availabilityCheck) {
+    WebPage::singleton()->container->addItem($availabilityCheck);
+}
 
 if ($kredenc->getMyKey() !== null) {
     WebPage::singleton()->container->addItem(new CredentialCloneForm($kredenc));
