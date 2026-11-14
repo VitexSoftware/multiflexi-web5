@@ -65,6 +65,13 @@ EOD;
     {
         $helper = new CredentialType($dataRowRaw['credential_type_id']);
         $logo = (string) $helper->getDataValue('logo');
+
+        if ($logo === '') {
+            // Credential type without own logo: use the one of its prototype
+            $prototype = $helper->getPrototype();
+            $logo = $prototype ? (string) $prototype->logo() : '';
+        }
+
         // Bare filenames (dev tree or deb-installed credential-prototype logos under
         // /usr/share/multiflexi/images) are served through logoimage.php.
         $logoSrc = str_starts_with($logo, 'data:') ? $logo : 'logoimage.php?file='.rawurlencode($logo);

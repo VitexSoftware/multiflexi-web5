@@ -113,26 +113,28 @@ class CredentialForm extends SecureForm
             $runtlUsing = $rtplcr->getRuntemplatesForCredential($kredenc->getMyKey())->select(['runtemplate.name', 'company_id', 'app_id'])->leftJoin('runtemplate ON runtemplate.id = runtplcreds.runtemplate_id')->fetchAll();
 
             if ($runtlUsing) {
-                $usedByRuntemplates = new DivTag(_('Used by').'('.\count($runtlUsing).')');
+                $usedByRuntemplates = new DivTag(new \Ease\Html\StrongTag(_('Used by').' ('.\count($runtlUsing).')'));
 
                 $jobber = new Job();
 
-                $runtemplatesDiv = new DivTag();
+                $runtemplatesList = new \Ease\Html\UlTag(null, ['class' => 'list-unstyled mb-0 mt-1']);
 
                 foreach ($runtlUsing as $runtemplateData) {
-                    $linkProperties['title'] = $runtemplateData['name'];
                     $lastJobInfo = $jobber->listingQuery()->select(['id', 'exitcode'], true)->where(['company_id' => $runtemplateData['company_id'], 'app_id' => $runtemplateData['app_id']])->order('id DESC')->limit(1)->fetchAll();
 
                     if ($lastJobInfo) {
-                        $companyAppStatus = new ATag('job.php?id='.$lastJobInfo[0]['id'], new ExitCode($lastJobInfo[0]['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), ['class' => 'btn btn-inverse btn-sm']);
+                        $companyAppStatus = new ATag('job.php?id='.$lastJobInfo[0]['id'], new ExitCode($lastJobInfo[0]['exitcode'], ['style' => 'font-size: 1.0em; font-family: monospace;']), ['title' => _('Last job')]);
                     } else {
-                        $companyAppStatus = new Badge('🪤', 'disabled', ['style' => 'font-size: 1.0em; font-family: monospace;']);
+                        $companyAppStatus = new Badge('🪤', 'secondary', ['title' => _('No job yet')]);
                     }
 
-                    $runtemplatesDiv->addItem(new DivTag([new ATag('runtemplate.php?id='.$runtemplateData['runtemplate_id'], '⚗ ️#'.$runtemplateData['runtemplate_id'].'&nbsp;'.$runtemplateData['name'], ['class' => 'btn-sm', 'title' => $runtemplateData['name']]), $companyAppStatus], ['class' => 'btn-group', 'role' => 'group']));
+                    $runtemplatesList->addItem(new \Ease\Html\LiTag([
+                        new ATag('runtemplate.php?id='.$runtemplateData['runtemplate_id'], '⚗️ #'.$runtemplateData['runtemplate_id'].' '.$runtemplateData['name'], ['title' => $runtemplateData['name'], 'class' => 'text-truncate']),
+                        $companyAppStatus,
+                    ], ['class' => 'd-flex align-items-center justify-content-between gap-2 py-1']));
                 }
 
-                $usedByRuntemplates->addItem($runtemplatesDiv);
+                $usedByRuntemplates->addItem($runtemplatesList);
 
                 $submitRow->addColumn(4, $usedByRuntemplates);
             } else {
@@ -154,7 +156,7 @@ class CredentialForm extends SecureForm
 
         $formContents[] = $submitRow;
 
-        parent::__construct(['action' => 'credential.php'], ['method' => 'POST'], $formContents);
+        parent::__construct(['action' => 'credential.php', 'method' => 'POST'], $formContents);
     }
 
     #[\Override]
@@ -192,7 +194,7 @@ class CredentialForm extends SecureForm
         }
 
         $box = new DivTag(null, ['class' => 'mt-3']);
-        $box->addItem(new SecureForm(['action' => 'credential.php'], ['method' => 'POST'], [
+        $box->addItem(new SecureForm(['action' => 'credential.php', 'method' => 'POST'], [
             new InputHiddenTag('id', (string) $kredenc->getMyKey()),
             new InputHiddenTag('checkavailability', '1'),
             new SubmitButton('🩺 '._('Check availability'), 'secondary btn-sm', ['title' => _('Contact the service and verify the credential')]),
