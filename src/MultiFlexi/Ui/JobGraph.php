@@ -58,45 +58,51 @@ class JobGraph
     {
         $this->image = imagecreatetruecolor($this->width, $this->height);
 
-        // Allocate colors
-        $white = imagecolorallocate($this->image, 255, 255, 255);
-        imagefill($this->image, 0, 0, $white);
+        // Nocturne palette (same RGB as the dashboard legend); ground = neutral-900
+        $ground = imagecolorallocate($this->image, 41, 43, 49);
+        imagefill($this->image, 0, 0, $ground);
+
+        $palette = [
+            'success' => [110, 183, 135],
+            'failure' => [214, 104, 98],
+            'noexec' => [214, 190, 110],
+            'exception' => [145, 132, 217],
+            'waiting' => [147, 151, 171],
+        ];
 
         $centerX = $this->width / 2;
         $centerY = $this->height / 2;
-        $x = $centerX;
-        $y = $centerY;
+        $x = (int) $centerX;
+        $y = (int) $centerY;
         $dx = 1;
         $dy = 0;
         $segment_length = 1;
         $segment_passed = 0;
-        $totalJobs = \count($this->todaysJobs);
+        $totalJobs = max(1, \count($this->todaysJobs));
 
         foreach ($this->todaysJobs as $index => $job) {
-            // Calculate color intensity based on the age of the data
-            $intensity = 128 + (int) (127 * ($index / $totalJobs)); // Make older data pixels darker
-            $green = imagecolorallocate($this->image, 0, $intensity, 0);
-            $red = imagecolorallocate($this->image, $intensity, 0, 0);
-            $yellow = imagecolorallocate($this->image, $intensity, $intensity, 0);
-            $black = imagecolorallocate($this->image, 0, 0, 0);
-            $blue = imagecolorallocate($this->image, 0, 0, $intensity);
+            // Newest job (index 0) is brightest, older ones fade towards 45 %
+            $fade = 1 - 0.55 * ($index / $totalJobs);
 
             if ($job['exitcode'] === 0) {
-                $color = $green;
+                $key = 'success';
                 ++$this->successCount;
             } elseif ($job['exitcode'] === 127) {
-                $color = $yellow;
+                $key = 'noexec';
                 ++$this->noExecutableCount;
             } elseif ($job['exitcode'] === 255) {
-                $color = $black;
+                $key = 'exception';
                 ++$this->exceptionCount;
             } elseif (null === $job['exitcode']) {
-                $color = $blue;
+                $key = 'waiting';
                 ++$this->waitingCount;
             } else {
-                $color = $red;
+                $key = 'failure';
                 ++$this->failureCount;
             }
+
+            $rgb = $palette[$key];
+            $color = imagecolorallocate($this->image, (int) ($rgb[0] * $fade), (int) ($rgb[1] * $fade), (int) ($rgb[2] * $fade));
 
             imagesetpixel($this->image, $x, $y, $color);
 

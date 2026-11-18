@@ -84,7 +84,7 @@ class JobGraphWidget extends \Ease\Html\DivTag
             $graphUrl,
             _('Job History Graph'),
             [
-                'class' => 'border',
+                'class' => 'rounded',
                 'style' => 'height: 212px; width: auto; max-width: 100%; image-rendering: pixelated;',
                 'title' => _('Visual representation of recent job executions. Each cell represents a job, colored by exit code.'),
             ],
@@ -101,12 +101,17 @@ class JobGraphWidget extends \Ease\Html\DivTag
      */
     private static function createLegend(): \Ease\Html\DivTag
     {
-        $legend = new \Ease\Html\DivTag(null, ['class' => 'mt-2 small text-muted']);
+        $legend = new \Ease\Html\DivTag(null, ['class' => 'mt-2 small text-body-secondary']);
 
-        $legend->addItem(new \Ease\Html\StrongTag(_('Legend').': '));
-        $legend->addItem(new \Ease\Html\SpanTag('🟩 '._('Success (0)'), ['class' => 'me-2']));
-        $legend->addItem(new \Ease\Html\SpanTag('🟥 '._('Failed'), ['class' => 'me-2']));
-        $legend->addItem(new \Ease\Html\SpanTag('⬜ '._('Not executed'), ['class' => 'me-2']));
+        foreach ([
+            ['rgb(110,183,135)', _('Success (0)')],
+            ['rgb(214,104,98)', _('Failed')],
+            ['rgb(214,190,110)', _('Not runnable (127)')],
+            ['rgb(145,132,217)', _('Exception (255)')],
+            ['rgb(147,151,171)', _('Waiting')],
+        ] as [$color, $label]) {
+            $legend->addItem(new \Ease\Html\SpanTag('<i style="display:inline-block;width:8px;height:8px;border-radius:2px;background:'.$color.';margin-right:5px;"></i>'.htmlspecialchars((string) $label), ['class' => 'me-3']));
+        }
 
         return $legend;
     }

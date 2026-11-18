@@ -21,9 +21,17 @@ namespace MultiFlexi\Ui;
 class BootstrapMenu extends \Ease\TWB5\Navbar
 {
     /**
+     * Search form shown right after the logo (null = none, e.g. logged out).
+     *
+     * @var null|\Ease\Html\Tag|\Ease\TWB5\Form
+     */
+    public $searchForm;
+
+    /**
      * Navigation.
      */
     public ?\Ease\Html\UlTag $nav = null;
+    private string $menuName = 'main-menu';
 
     /**
      * Application Main Menu.
@@ -38,6 +46,7 @@ class BootstrapMenu extends \Ease\TWB5\Navbar
         $properties = [],
     ) {
         $this->mainpage = 'main.php';
+        $this->menuName = (string) ($name ?? 'main-menu');
         parent::__construct(new \Ease\Html\ImgTag('images/project-logo.svg', $name, ['width' => 50, 'height' => 50, 'class' => 'img-rounded d-inline-block align-top']), 'main-menu', ['class' => 'sticky-top '.(\array_key_exists('class', $properties) ? $properties['class'] : '')]);
 
         // Render the collapsible menu as a left slide-in Offcanvas drawer on
@@ -67,5 +76,41 @@ class BootstrapMenu extends \Ease\TWB5\Navbar
             $this->addMenuItem($loginForm);
             $this->addItem($content);
         }
+    }
+
+    /**
+     * Collapsible area: logo | search | menu (left) ... right-hand items (sign off, language).
+     *
+     * Overrides the parent drawer so that the search box sits right after the logo and
+     * the right-hand items are rendered at all (the parent only outputs the left list).
+     */
+    #[\Override]
+    public function navBarOffcanvas()
+    {
+        $ocId = 'offcanvas'.$this->menuName;
+
+        $header = new \Ease\Html\DivTag([
+            new \Ease\Html\H5Tag(_('Menu'), ['class' => 'offcanvas-title', 'id' => $ocId.'Label']),
+            new \Ease\Html\ButtonTag('', ['class' => 'btn-close', 'data-bs-dismiss' => 'offcanvas', 'aria-label' => _('Close')]),
+        ], ['class' => 'offcanvas-header']);
+
+        $body = new \Ease\Html\DivTag([$this->leftContent, $this->rightContent], ['class' => 'offcanvas-body']);
+
+        $drawer = new \Ease\Html\DivTag([$header, $body], [
+            'class' => 'offcanvas offcanvas-'.$this->offcanvasPlacement,
+            'tabindex' => '-1',
+            'id' => $ocId,
+            'aria-labelledby' => $ocId.'Label',
+        ]);
+
+        if ($this->searchForm === null) {
+            return $drawer;
+        }
+
+        // display: contents lets the search box and the drawer lay out as direct flex items of the navbar container
+        return new \Ease\Html\DivTag(
+            [new \Ease\Html\DivTag($this->searchForm, ['class' => 'mf-search-wrap']), $drawer],
+            ['style' => 'display: contents;'],
+        );
     }
 }

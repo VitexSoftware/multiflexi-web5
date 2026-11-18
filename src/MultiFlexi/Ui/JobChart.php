@@ -95,30 +95,39 @@ class JobChart extends \Ease\Html\DivTag
 
         // Legend colours matching the graph (same order: waiting, fail, success, exception)
         $legendItems = [
-            ['color' => '#B3E5FC', 'label' => _('waiting')],
-            ['color' => '#FFCDD2', 'label' => _('fail')],
-            ['color' => '#C8E6C9', 'label' => _('success')],
-            ['color' => '#E0E0E0', 'label' => _('exception')],
+            ['color' => '#75798c', 'label' => _('waiting')],
+            ['color' => '#d66862', 'label' => _('fail')],
+            ['color' => '#6eb787', 'label' => _('success')],
+            ['color' => '#d6be6e', 'label' => _('exception')],
         ];
 
         $settings = [
             'auto_fit' => true,
             'graph_title' => _('Jobs in the last 30 days'),
+            // Nocturne dark palette (see css/nocturne.css)
+            'back_colour' => '#232532',
             'back_stroke_width' => 0,
-            'back_stroke_colour' => '#eee',
+            'back_stroke_colour' => '#232532',
+            'graph_title_colour' => '#e9e9ed',
+            'graph_title_font_weight' => 'normal',
+            'axis_colour' => '#75798c',
+            'axis_text_colour' => '#b2b6ca',
+            'label_colour' => '#b2b6ca',
+            'grid_colour' => '#3f424d',
+            'bar_outline_colour' => 'none',
+            'bar_stroke_width' => 0,
             'structured_data' => true,
             'legend_type' => 'none',
             'data_label_popfront' => true,
             'link_base' => './',
             'link_target' => '_top',
             'data_label_font_size' => 5,
-            'data_label_back_colour_outside' => '123',
             'axis_text_angle_h' => -90,
             'subdivision_size' => 5,
             'minimum_grid_spacing' => 20,
             'show_subdivisions' => true,
             'show_grid_subdivisions' => true,
-            'grid_subdivision_colour' => '#ccc',
+            'grid_subdivision_colour' => '#2f323c',
             'show_data_labels' => true,
             'data_label_type' => [
                 'box', 'linebox',
@@ -126,8 +135,13 @@ class JobChart extends \Ease\Html\DivTag
             'data_label_space' => 5,
             'data_label_min_space' => 15, // Minimum space between labels to prevent overlap
             'data_label_font_adjust' => 0.8, // Slightly smaller font for better fit
+            'data_label_colour' => '#e9e9ed',
+            'data_label_fill' => '#2f323c',
+            'data_label_colour_outside' => '#e9e9ed',
+            'data_label_back_colour_outside' => '#2f323c',
+            'data_label_outline_colour' => '#75798c',
             'data_label_back_colour' => [
-                '#E8F4F8', '#FFE5E5', '#E8F5E9', '#F5F5F5', 'white', 'white', 'white', 'white', 'white', 'white',
+                '#2f323c', '#3a2c30', '#2a3a31', '#3a382a', '#2f323c', '#2f323c', '#2f323c', '#2f323c', '#2f323c', '#2f323c',
             ],
             'marker_size' => 3,
             'structure' => [
@@ -141,10 +155,10 @@ class JobChart extends \Ease\Html\DivTag
 
         // Pastel colors: waiting (light blue), fail (light red), success (light green), exception (light gray)
         $colours = [
-            ['#B3E5FC', '#81D4FA'], // waiting - pastel light blue
-            ['#FFCDD2', '#EF9A9A'], // fail - pastel light red
-            ['#C8E6C9', '#A5D6A7'], // success - pastel light green
-            ['#E0E0E0', '#BDBDBD'],  // exception - pastel gray
+            ['#75798c', '#595d6c'], // waiting - neutral
+            ['#d66862', '#b9524d'], // fail - red
+            ['#6eb787', '#559a6e'], // success - green
+            ['#d6be6e', '#b8a152'], // exception - amber
         ];
 
         $graph = new \Goat1000\SVGGraph\SVGGraph('100%', 212, $settings);
@@ -158,8 +172,8 @@ class JobChart extends \Ease\Html\DivTag
         foreach ($legendItems as $item) {
             $legendHtml .= sprintf(
                 '<div class="d-flex align-items-center mb-1">'.
-                '<span style="display:inline-block;width:14px;height:14px;background:%s;border:1px solid #aaa;border-radius:2px;margin-right:6px;flex-shrink:0"></span>'.
-                '<small class="text-muted">%s</small>'.
+                '<span style="display:inline-block;width:14px;height:14px;background:%s;border-radius:2px;margin-right:6px;flex-shrink:0"></span>'.
+                '<small class="text-body-secondary">%s</small>'.
                 '</div>',
                 $item['color'],
                 htmlspecialchars($item['label']),

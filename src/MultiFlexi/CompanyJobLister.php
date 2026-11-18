@@ -39,22 +39,6 @@ class CompanyJobLister extends CompanyJob
      */
     private array $appCache = [];
 
-    /**
-     * Localized description of a job exit code as declared by the given application.
-     */
-    private function exitCodeDescription(int $appId, $exitCode): string
-    {
-        if ($exitCode === null || $appId <= 0) {
-            return '';
-        }
-
-        if (!isset($this->appCache[$appId])) {
-            $this->appCache[$appId] = new \MultiFlexi\Application($appId);
-        }
-
-        return $this->appCache[$appId]->exitCodeDescription((int) $exitCode);
-    }
-
     public function __construct($init = null, $filter = [])
     {
         parent::__construct($init, $filter);
@@ -247,7 +231,7 @@ class CompanyJobLister extends CompanyJob
             $dataRowRaw['DT_RowClass'] = 'job-scheduled';
         } elseif (empty($dataRowRaw['begin']) && !empty($dataRowRaw['schedule'])) {
             // Orphaned job - scheduled but no schedule entry
-            $dataRowRaw['DT_RowClass'] = 'job-orphaned bg-warning';
+            $dataRowRaw['DT_RowClass'] = 'job-orphaned';
         } else {
             // Set row background color based on exit code for executed jobs
             switch ($exitCode) {
@@ -256,28 +240,28 @@ class CompanyJobLister extends CompanyJob
 
                     break;
                 case '75':
-                    $dataRowRaw['DT_RowClass'] = 'job-credential-blocked bg-warning text-dark';
+                    $dataRowRaw['DT_RowClass'] = 'job-credential-blocked';
 
                     break;
                 case '1':
-                    $dataRowRaw['DT_RowClass'] = 'bg-warning text-dark';
+                    $dataRowRaw['DT_RowClass'] = 'job-failed';
 
                     break;
                 case '255':
-                    $dataRowRaw['DT_RowClass'] = 'bg-danger text-dark';
+                    $dataRowRaw['DT_RowClass'] = 'job-exception';
 
                     break;
                 case '127':
-                    $dataRowRaw['DT_RowClass'] = 'bg-primary text-white';
+                    $dataRowRaw['DT_RowClass'] = 'job-noexec';
 
                     break;
                 case '-1':
-                    $dataRowRaw['DT_RowClass'] = 'bg-info text-white';
+                    $dataRowRaw['DT_RowClass'] = 'job-pending';
 
                     break;
 
                 default:
-                    $dataRowRaw['DT_RowClass'] = 'text-dark';
+                    $dataRowRaw['DT_RowClass'] = 'job-failed';
 
                     break;
             }
@@ -588,9 +572,9 @@ class CompanyJobLister extends CompanyJob
     {
         return <<<'EOD'
 
- "order": [[ 0, "desc" ]],
+             "order": [[ 0, "desc" ]],
 
-EOD;
+            EOD;
     }
 
     /**
@@ -640,5 +624,23 @@ EOD;
         }
 
         return _('just now');
+    }
+
+    /**
+     * Localized description of a job exit code as declared by the given application.
+     *
+     * @param mixed $exitCode
+     */
+    private function exitCodeDescription(int $appId, $exitCode): string
+    {
+        if ($exitCode === null || $appId <= 0) {
+            return '';
+        }
+
+        if (!isset($this->appCache[$appId])) {
+            $this->appCache[$appId] = new \MultiFlexi\Application($appId);
+        }
+
+        return $this->appCache[$appId]->exitCodeDescription((int) $exitCode);
     }
 }

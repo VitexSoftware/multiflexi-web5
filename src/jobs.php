@@ -44,42 +44,7 @@ $companyIdInt = $companyId ? (int) $companyId : null;
 $appIdInt = $appId ? (int) $appId : null;
 WebPage::singleton()->container->addItem(new JobGraphWidget(null, $companyIdInt, $appIdInt));
 
-// Add custom success row styling
-WebPage::singleton()->addCSS(<<<CSS
-    /* Custom success row styling - lighter green with better contrast */
-    #{$objectName}_wrapper table.dataTable tbody tr.job-success {
-        background-color: #d4edda !important;
-        color: #155724 !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-success:hover {
-        background-color: #c3e6cb !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-success a {
-        color: #0c5460 !important;
-    }
-    /* Custom scheduled row styling - light blue for waiting jobs */
-    #{$objectName}_wrapper table.dataTable tbody tr.job-scheduled {
-        background-color: #d1ecf1 !important;
-        color: #0c5460 !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-scheduled:hover {
-        background-color: #bee5eb !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-scheduled a {
-        color: #004085 !important;
-    }
-    /* Custom orphaned row styling - yellow warning for jobs without schedule entry */
-    #{$objectName}_wrapper table.dataTable tbody tr.job-orphaned {
-        background-color: #fff3cd !important;
-        color: #856404 !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-orphaned:hover {
-        background-color: #ffe8a1 !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr.job-orphaned a {
-        color: #533f03 !important;
-    }
-CSS);
+// Row colours of job states (job-success, job-failed, ...) live in css/nocturne.css
 
 $engine->setCompany($companyId);
 $engine->setApp($appId);
@@ -90,43 +55,43 @@ if (!empty($filter)) {
 }
 
 WebPage::singleton()->addJavaScript(<<<'EOD'
-$.fn.dataTable.ext.buttons.dismisAll = {
-    text: '
-EOD._('Dismis All').<<<'EOD'
-',
-    action: function ( e, dt, node, config ) {
-        $( ".dismis" ).each(function() {
-            $( this ).click();
-        });
-        dt.ajax.reload();
-    }
-};
-EOD);
+    $.fn.dataTable.ext.buttons.dismisAll = {
+        text: '
+    EOD._('Dismis All').<<<'EOD'
+    ',
+        action: function ( e, dt, node, config ) {
+            $( ".dismis" ).each(function() {
+                $( this ).click();
+            });
+            dt.ajax.reload();
+        }
+    };
+    EOD);
 WebPage::singleton()->includeJavascript('js/dismisLog.js');
 WebPage::singleton()->container->addItem(new DBDataTable($engine, ['buttons' => ['dismisAll']]));
 WebPage::singleton()->addItem(new PageBottom('jobs'));
 WebPage::singleton()->addJavaScript(<<<'EOD'
 
-    // Initialize Bootstrap 5 popovers (native API) — data-bs-* attributes are read automatically
-    function mfInitPopovers() {
-        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
-            if (!bootstrap.Popover.getInstance(el)) {
-                new bootstrap.Popover(el, { container: 'body' });
-            }
-        });
-    }
-    document.addEventListener('DOMContentLoaded', mfInitPopovers);
-    mfInitPopovers();
-
-    // Reinitialize popovers after every DataTable redraw
-    $('#Molecule').on('draw.dt', function () {
+        // Initialize Bootstrap 5 popovers (native API) — data-bs-* attributes are read automatically
+        function mfInitPopovers() {
+            document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
+                if (!bootstrap.Popover.getInstance(el)) {
+                    new bootstrap.Popover(el, { container: 'body' });
+                }
+            });
+        }
+        document.addEventListener('DOMContentLoaded', mfInitPopovers);
         mfInitPopovers();
-    });
 
-    setInterval(function () {
-      Molecule.ajax.reload();
-}, 300000);
+        // Reinitialize popovers after every DataTable redraw
+        $('#Molecule').on('draw.dt', function () {
+            mfInitPopovers();
+        });
 
-EOD);
+        setInterval(function () {
+          Molecule.ajax.reload();
+    }, 300000);
+
+    EOD);
 
 WebPage::singleton()->draw();

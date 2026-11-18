@@ -70,7 +70,7 @@ class MainMenu extends \Ease\Html\DivTag
                     if (\count($customers) && empty($companies)) {
                         \MultiFlexi\User::singleton()->addStatusMessage(_('No company registered yet. Please register one.'), 'warning');
                         $this->customersMenuEnabled($nav, $customers);
-                        $nav->addMenuItem(new \Ease\TWB5\LinkButton('companysetup.php', '🏭 '._('Companies'), 'warning'), 'right');
+                        $nav->addMenuItem(new \Ease\TWB5\LinkButton('companysetup.php', '🏭 '._('Companies'), 'warning'));
                     } else { // We Got All
                         //                        $this->customersMenuEnabled($nav, $customers);
                         $this->companiesMenuEnabled($nav, $companies);
@@ -80,7 +80,7 @@ class MainMenu extends \Ease\Html\DivTag
 
             if (empty($apps)) {
                 \MultiFlexi\User::singleton()->addStatusMessage(_('No application registered yet. Please register one.'), 'warning');
-                $nav->addMenuItem(new \Ease\TWB5\LinkButton('app.php', '<img width=30 src=images/apps.svg> '._('Applications'), 'warning'), 'right');
+                $nav->addMenuItem(new \Ease\TWB5\LinkButton('app.php', '<img width=30 src=images/apps.svg> '._('Applications'), 'warning'));
             } else {
                 $this->appsMenuEnabled($nav, $apps);
             }
@@ -94,7 +94,7 @@ class MainMenu extends \Ease\Html\DivTag
 
             $this->integrationsMenuEnabled($nav);
 
-            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=24 src=images/application-exit.svg>', ['title' => _('Sign Off')]), 'right');
+            $nav->addMenuItem(new \Ease\Html\ATag('logout.php', '<img height=24 src=images/application-exit.svg>', ['title' => _('Sign Off')]), true, 'right');
 
             if (\MultiFlexi\Runner::isServiceActive('multiflexi-scheduler.service') === false) {
                 WebPage::singleton()->addStatusMessage(_('My Scheduler systemd service is not running. Consider `systemctl start multiflexi-scheduler`'), 'warning');
@@ -104,12 +104,12 @@ class MainMenu extends \Ease\Html\DivTag
                 WebPage::singleton()->addStatusMessage(_('My Task Launcher systemd service is not running. Consider `systemctl start multiflexi-executor`'), 'warning');
             }
 
-            // Add search form outside collapsible menu to keep it always visible
-            $nav->addItem($this->searchFrom());
+            // Search box sits right after the logo and stays visible outside the collapsible menu
+            $nav->searchForm = $this->searchFrom();
         }
 
-        // Add language selector — last item in leftContent; CSS pushes it to the far right
-        $nav->addMenuItem(new \Ease\TWB5\Widgets\LangSelect('locale'), 'right');
+        // Language selector on the right-hand side, after the sign-off link
+        $nav->addMenuItem(new \Ease\TWB5\Widgets\LangSelect('locale'), true, 'right');
     }
 
     /**
@@ -289,17 +289,17 @@ class MainMenu extends \Ease\Html\DivTag
         if (!empty(\Ease\Shared::logger()->getMessages())) {
             WebPage::singleton()->addCss(<<<'EOD'
 
-#smdrag { height: 8px;
-          background-image:  url( images/slidehandle.png );
-          background-color: #ccc;
-          background-repeat: no-repeat;
-          background-position: top center;
-          cursor: ns-resize;
-}
-#smdrag:hover { background-color: #f5ad66; }
+                #smdrag { height: 8px;
+                          background-image:  url( images/slidehandle.png );
+                          background-color: #ccc;
+                          background-repeat: no-repeat;
+                          background-position: top center;
+                          cursor: ns-resize;
+                }
+                #smdrag:hover { background-color: #f5ad66; }
 
 
-EOD);
+                EOD);
             $this->addItem(WebPage::singleton()->getStatusMessagesBlock(['id' => 'status-messages', 'title' => _('Click to hide messages')]));
             $this->addItem(new \Ease\Html\DivTag(null, ['id' => 'smdrag', 'style' => 'margin-bottom: 5px']));
             \Ease\Shared::logger()->cleanMessages();
