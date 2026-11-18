@@ -9049,3 +9049,135 @@ msgstr "Vytvořit přihlašovací údaje Office365"
 
 #~ msgid "Manual Schedule"
 #~ msgstr "Ruční plánování"
+
+msgid "Runs"
+msgstr "Spuštění"
+
+msgid "Success rate"
+msgstr "Úspěšnost"
+
+msgid "Failures"
+msgstr "Selhání"
+
+msgid "Queued"
+msgstr "Ve frontě"
+
+msgid "Clear company filter"
+msgstr "Zrušit filtr společnosti"
+
+msgid "Filter the dashboard by this company"
+msgstr "Filtrovat přehled podle této společnosti"
+
+msgid "%d apps"
+msgstr "%d aplikací"
+
+msgid "failed"
+msgstr "selhalo"
+
+msgid "Open company"
+msgstr "Otevřít společnost"
+
+msgid "Click a company to filter the dashboard"
+msgstr "Kliknutím na společnost filtrujete přehled"
+
+msgid "Dashboard is filtered by company"
+msgstr "Přehled je filtrován podle společnosti"
+
+msgid "Runs per day"
+msgstr "Spuštění po dnech"
+
+msgid "last 30 days"
+msgstr "posledních 30 dní"
+
+msgid "Not runnable (127)"
+msgstr "Nespustitelné (127)"
+
+msgid "Exception (255)"
+msgstr "Výjimka (255)"
+
+msgid "%s latest jobs"
+msgstr "%s posledních úloh"
+
+msgid "1 pixel = 1 job · newest in the centre, older ones spiral outwards"
+msgstr "1 pixel = 1 úloha · nejnovější uprostřed, starší po spirále ven"
+
+msgid "%d of %d"
+msgstr "%d z %d"
+
+msgid "Scheduled jobs queue"
+msgstr "Fronta naplánovaných úloh"
+
+msgid "Filter the queue"
+msgstr "Filtrovat frontu"
+
+msgid "Starts"
+msgstr "Začíná"
+
+msgid "No scheduled jobs match the filter."
+msgstr "Žádné naplánované úlohy neodpovídají filtru."
+
+msgid "Refreshes automatically every minute"
+msgstr "Obnovuje se automaticky každou minutu"
+
+msgid "Overdue"
+msgstr "Po termínu"
+
+msgid "Tomorrow"
+msgstr "Zítra"
+
+msgid "Open company %s"
+msgstr "Otevřít společnost %s"
+
+msgid "Click a company to open it"
+msgstr "Kliknutím na společnost ji otevřete"
+
+msgid "Last job"
+msgstr "Poslední úloha"
+
+msgid "No job yet"
+msgstr "Zatím žádná úloha"
+
+msgid "Recent jobs"
+msgstr "Poslední úlohy"
+
+msgid "Unfinished"
+msgstr "Nedokončené"
+
+msgid "No jobs match the filter."
+msgstr "Žádné úlohy neodpovídají filtru."
+
+msgid "Filter applications by tag"
+msgstr "Filtrovat aplikace podle štítku"
+
+msgid "Company ID"
+msgstr "IČO"
+
+msgid "Set up"
+msgstr "Nastaveno"
+
+msgid "Zabbix host"
+msgstr "Zabbix host"
+
+msgid "Data retained until"
+msgstr "Data uchována do"
+
+msgid "Marked for deletion"
+msgstr "Označeno ke smazání"
+
+msgid "Settings"
+msgstr "Nastavení"
+
+msgid "Prototype"
+msgstr "Prototyp"
+
+msgid "Show all credential types"
+msgstr "Zobrazit všechny typy přihlašovacích údajů"
+
+msgid "Show credential types based on this prototype"
+msgstr "Zobrazit typy přihlašovacích údajů vycházející z tohoto prototypu"
+
+msgid "Show credential prototype"
+msgstr "Zobrazit prototyp přihlašovacích údajů"
+
+msgid "Used by credential types"
+msgstr "Používají typy přihlašovacích údajů"

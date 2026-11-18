@@ -21,78 +21,83 @@ WebPage::singleton()->onlyForLogged();
 
 WebPage::singleton()->setBreadcrumb([]);
 WebPage::singleton()->addItem(new PageTop(_('MultiFlexi')));
+WebPage::singleton()->includeCss(WebPage::versionedAsset('css/nocturne-dashboard.css'));
 
-WebPage::singleton()->container->addItem(new CompaniesBar());
+// Summary of every company the user may access (RBAC is applied inside DashboardData)
+$data = new \MultiFlexi\DashboardData();
 
-// Get filter parameter
-$filter = WebPage::singleton()->getRequestValue('filter');
+$page = new \Ease\Html\DivTag(null, ['class' => 'nc-page']);
+$page->addItem(new DashboardKpiStrip($data));
+$page->addItem(new DashboardCompanyGrid($data));
 
-$chartEngine = new \MultiFlexi\FilteredCompanyJobLister();
+$chartsRow = new \Ease\Html\DivTag(null, ['class' => 'nc-row']);
+$chartsRow->addItem(new DashboardDailyChart($data));
+$chartsRow->addItem(new DashboardJobHistory($data));
+$page->addItem($chartsRow);
 
-// Apply filter if specified
-if (!empty($filter)) {
-    $chartEngine->applyFilter($filter);
-}
+// Queue: same information as `multiflexi-cli queue:list`, grouped by day
+$page->addItem(new DashboardQueue($data));
 
-$chartsRow = new \Ease\TWB5\Row();
-$chartsRow->addColumn(8, new AllJobsLastMonthChart($chartEngine, ['id' => 'container']));
-$chartsRow->addColumn(4, new JobGraphWidget(null, null, null, 20, 10, [], true));
-WebPage::singleton()->container->addItem($chartsRow);
-
-// Queue: same information as `multiflexi-cli queue:list`, with IDs used only as link targets
-$engine = new \MultiFlexi\ScheduleLister();
-
-WebPage::singleton()->container->addItem(new DBDataTable($engine));
+WebPage::singleton()->container->addItem($page);
 
 WebPage::singleton()->addItem(new PageBottom('jobs'));
 
-// Get dynamic object name for JavaScript and CSS (without namespace)
-$objectName = \Ease\Functions::baseClassName($engine);
-
-// Add compact table styling
-WebPage::singleton()->addCSS(<<<CSS
-    #{$objectName}_wrapper table.dataTable tbody td {
-        padding: 4px 8px !important;
-        line-height: 1.3 !important;
-        vertical-align: middle !important;
-    }
-    #{$objectName}_wrapper table.dataTable tbody tr {
-        height: 32px !important;
-    }
-    #{$objectName}_wrapper table.dataTable thead th {
-        padding: 6px 8px !important;
-        font-size: 0.9em !important;
-    }
-CSS);
-
 WebPage::singleton()->addJavaScript(<<<'EOD'
 
-    // Initialize Bootstrap 5 popovers (native API). Data attributes on each
-    // trigger (data-bs-content / data-bs-trigger / data-bs-placement / data-bs-html)
-    // are read automatically by bootstrap.Popover.
-    function mfInitPopovers() {
-        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(function (el) {
-            if (!bootstrap.Popover.getInstance(el)) {
-                new bootstrap.Popover(el, { container: 'body' });
+        (function () {
+            // Client side filters of the queue: interval segment + free text
+            function applyQueueFilters() {
+                var table = document.getElementById('nc-queue');
+                if (!table) { return; }
+                var checked = document.querySelector('input[name="nc-iv"]:checked');
+                var iv = checked ? checked.value : 'all';
+                var qInput = document.getElementById('nc-queue-q');
+                var q = qInput ? qInput.value.trim().toLowerCase() : '';
+                var shown = 0;
+
+                table.querySelectorAll('tbody.nc-queue-group').forEach(function (group) {
+                    var visible = 0;
+                    group.querySelectorAll('tr[data-iv]').forEach(function (row) {
+                        var show = (iv === 'all' || row.dataset.iv === iv) && (q === '' || row.dataset.q.indexOf(q) !== -1);
+                        row.hidden = !show;
+                        if (show) { visible++; }
+                    });
+                    group.querySelector('.nc-group-head').hidden = visible === 0;
+                    shown += visible;
+                });
+
+                var empty = document.getElementById('nc-queue-empty');
+                if (empty) { empty.hidden = shown !== 0; }
             }
-        });
-    }
-    document.addEventListener('DOMContentLoaded', mfInitPopovers);
-    mfInitPopovers();
 
-    // Reinitialize popovers after every DataTable redraw
-    $('#
-EOD.$objectName.<<<'EOD'
-').on('draw.dt', function () {
-        mfInitPopovers();
-    });
+            document.addEventListener('input', function (e) {
+                if (e.target && e.target.id === 'nc-queue-q') { applyQueueFilters(); }
+            });
+            document.addEventListener('change', function (e) {
+                if (e.target && e.target.name === 'nc-iv') { applyQueueFilters(); }
+            });
 
-    setInterval(function () {
-      $('#
-EOD.$objectName.<<<'EOD'
-').DataTable().ajax.reload();
-    }, 60000);
+            // Refresh the queue section every minute, keeping the chosen filters
+            setInterval(function () {
+                var section = document.getElementById('nc-queue-section');
+                if (!section) { return; }
+                var iv = (document.querySelector('input[name="nc-iv"]:checked') || {}).value || 'all';
+                var q = (document.getElementById('nc-queue-q') || {}).value || '';
+                fetch(window.location.href, { credentials: 'same-origin' })
+                    .then(function (r) { return r.text(); })
+                    .then(function (html) {
+                        var fresh = new DOMParser().parseFromString(html, 'text/html').getElementById('nc-queue-section');
+                        if (!fresh) { return; }
+                        section.innerHTML = fresh.innerHTML;
+                        var radio = document.getElementById('nc-iv-' + iv);
+                        if (radio) { radio.checked = true; }
+                        document.getElementById('nc-queue-q').value = q;
+                        applyQueueFilters();
+                    })
+                    .catch(function () {});
+            }, 60000);
+        })();
 
-EOD);
+    EOD);
 
 WebPage::singleton()->draw();

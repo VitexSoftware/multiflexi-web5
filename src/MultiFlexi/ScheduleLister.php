@@ -79,13 +79,58 @@ EOD;
     {
         $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
 
-        return parent::listingQuery()
+        $query = parent::listingQuery();
+
+        // RBAC: the queue must only show jobs of companies the user may access
+        $accessibleCompanyIds = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
+
+        if (empty($accessibleCompanyIds)) {
+            $query->where('1=0');
+        } else {
+            $query->where('runtemplate.company_id IN ('.implode(',', array_map('intval', $accessibleCompanyIds)).')');
+        }
+
+        return $query
             ->leftJoin('job ON job.id = schedule.job')->select(['job.schedule_type'])
             ->leftJoin('user ON user.id = job.launched_by')
             ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')->select(['runtemplate.name AS runtemplate_name', 'runtemplate.id AS runtemplate_id'])
             ->leftJoin('apps ON apps.id = runtemplate.app_id')->select(['apps.id AS app_id', 'apps.uuid AS app_uuid'])
             ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)->select(['COALESCE(app_translations.name, apps.name) AS app_name'])
             ->leftJoin('company ON company.id = runtemplate.company_id')->select(['company.name AS company_name', 'company.id AS company_id', 'company.logo AS company_logo']);
+    }
+
+    /**
+     * Render job.schedule_type for the "Trigger" column.
+     *
+     * For cron-scheduler-spawned jobs, schedule_type holds the RunTemplate's
+     * interval name (hourly, daily, ...) via Scheduler::codeToInterval().
+     * For manually/explicitly triggered jobs it holds one of the
+     * Job::SCHEDULE_TYPE_* constants, which get a friendlier label here.
+     */
+    public static function scheduleTypeLabel(?string $scheduleType): string
+    {
+        $labels = [
+            Job::SCHEDULE_TYPE_ADHOC => _('Ad-hoc'),
+            Job::SCHEDULE_TYPE_ADHOC_WEB => _('Ad-hoc (Web)'),
+            Job::SCHEDULE_TYPE_ADHOC_CLI => _('Ad-hoc (CLI)'),
+            Job::SCHEDULE_TYPE_ADHOC_API => _('Ad-hoc (API)'),
+            Job::SCHEDULE_TYPE_EVENT => _('Event'),
+            Job::SCHEDULE_TYPE_COMMAND_LINE => _('Scheduled (CLI/API)'),
+        ];
+
+        if ($scheduleType !== null && isset($labels[$scheduleType])) {
+            return $labels[$scheduleType];
+        }
+
+        if ($scheduleType === null || $scheduleType === '') {
+            return _('Unknown');
+        }
+
+        $code = Scheduler::intervalToCode($scheduleType);
+        $emoji = Scheduler::getIntervalEmoji($code);
+        $label = self::intervalLabel($code) ?? ucfirst($scheduleType);
+
+        return ($emoji === '' ? '' : $emoji.'&nbsp;').$label;
     }
 
     /**
@@ -110,40 +155,6 @@ EOD;
             $companyName,
             ['style' => 'height: 20px; width: 20px; object-fit: contain; border-radius: 50%;'],
         );
-    }
-
-    /**
-     * Render job.schedule_type for the "Trigger" column.
-     *
-     * For cron-scheduler-spawned jobs, schedule_type holds the RunTemplate's
-     * interval name (hourly, daily, ...) via Scheduler::codeToInterval().
-     * For manually/explicitly triggered jobs it holds one of the
-     * Job::SCHEDULE_TYPE_* constants, which get a friendlier label here.
-     */
-    private static function scheduleTypeLabel(?string $scheduleType): string
-    {
-        $labels = [
-            Job::SCHEDULE_TYPE_ADHOC => _('Ad-hoc'),
-            Job::SCHEDULE_TYPE_ADHOC_WEB => _('Ad-hoc (Web)'),
-            Job::SCHEDULE_TYPE_ADHOC_CLI => _('Ad-hoc (CLI)'),
-            Job::SCHEDULE_TYPE_ADHOC_API => _('Ad-hoc (API)'),
-            Job::SCHEDULE_TYPE_EVENT => _('Event'),
-            Job::SCHEDULE_TYPE_COMMAND_LINE => _('Scheduled (CLI/API)'),
-        ];
-
-        if ($scheduleType !== null && isset($labels[$scheduleType])) {
-            return $labels[$scheduleType];
-        }
-
-        if ($scheduleType === null || $scheduleType === '') {
-            return _('Unknown');
-        }
-
-        $code = Scheduler::intervalToCode($scheduleType);
-        $emoji = Scheduler::getIntervalEmoji($code);
-        $label = self::intervalLabel($code) ?? ucfirst($scheduleType);
-
-        return ($emoji === '' ? '' : $emoji.'&nbsp;').$label;
     }
 
     /**
