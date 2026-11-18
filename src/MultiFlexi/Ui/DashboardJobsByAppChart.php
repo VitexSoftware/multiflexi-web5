@@ -52,7 +52,7 @@ class DashboardJobsByAppChart extends \Ease\Html\DivTag
                     $chartData[$row['name'] ?? _('Unknown')] = (int) $row['job_count'];
                 }
 
-                $graph = new \Goat1000\SVGGraph\SVGGraph(600, 400, [
+                $graph = new \Goat1000\SVGGraph\SVGGraph(600, 400, ChartTheme::apply([
                     'back_colour' => '#ffffff',
                     'stroke_colour' => '#000',
                     'back_stroke_width' => 0,
@@ -68,9 +68,9 @@ class DashboardJobsByAppChart extends \Ease\Html\DivTag
                     'bar_space' => 5,
                     'show_data_labels' => true,
                     'data_label_font_size' => 10,
-                ]);
+                ]));
 
-                $graph->colours(['#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#9b59b6', '#1abc9c', '#34495e', '#16a085', '#27ae60', '#2980b9']);
+                $graph->colours(ChartTheme::PALETTE);
                 $graph->values($chartData);
                 $this->addItem(new \Ease\Html\DivTag($graph->fetch('BarGraph'), ['class' => 'chart-container']));
             } else {

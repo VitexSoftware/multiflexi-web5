@@ -14,6 +14,8 @@ multiflexi-web (2.6.0) unstable; urgency=medium
     exit code badges, dark job charts and spiral legend
   * Top menu order: logo, search box, menu, then sign off and language selector
     on the right
+  * Dashboard and task charts (dashboard.php, tasks.php) use the dark theme: page
+    background, muted palette and light axes, legends and lines (ChartTheme)
   * Credential prototypes: the code column links to the credential types of
     that prototype (credentialtypes.php?prototype=CODE), the prototype page
     shows how many types use it, and credential types link back to their

@@ -33,13 +33,13 @@ class TaskSuccessChart extends \Ease\Html\DivTag
             $rows = $tasker->getFluentPDO()
                 ->from('task')
                 ->select(<<<'EOD'
-DATE(window_end) as day,
-                     COUNT(*) as total,
-                     SUM(CASE WHEN state IN ('fulfilled','fulfilled_late') THEN 1 ELSE 0 END) as ok,
-                     SUM(CASE WHEN state = 'fulfilled' THEN 1 ELSE 0 END) as on_time,
-                     SUM(CASE WHEN state = 'fulfilled_late' THEN 1 ELSE 0 END) as late,
-                     SUM(CASE WHEN state IN ('failed','missed') THEN 1 ELSE 0 END) as bad
-EOD,)
+                    DATE(window_end) as day,
+                                         COUNT(*) as total,
+                                         SUM(CASE WHEN state IN ('fulfilled','fulfilled_late') THEN 1 ELSE 0 END) as ok,
+                                         SUM(CASE WHEN state = 'fulfilled' THEN 1 ELSE 0 END) as on_time,
+                                         SUM(CASE WHEN state = 'fulfilled_late' THEN 1 ELSE 0 END) as late,
+                                         SUM(CASE WHEN state IN ('failed','missed') THEN 1 ELSE 0 END) as bad
+                    EOD, )
                 ->where('window_end >= ?', $since)
                 ->where("state NOT IN ('open','running')")
                 ->groupBy('DATE(window_end)')
@@ -63,7 +63,7 @@ EOD,)
                     $failData[$label] = (int) $row['bad'];
                 }
 
-                $graph = new \Goat1000\SVGGraph\SVGGraph(900, 320, [
+                $graph = new \Goat1000\SVGGraph\SVGGraph(900, 320, array_merge(ChartTheme::apply([
                     'back_colour' => '#ffffff',
                     'stroke_colour' => '#000',
                     'back_stroke_width' => 0,
@@ -84,9 +84,9 @@ EOD,)
                     'line_stroke_width' => 2,
                     'marker_type' => 'circle',
                     'marker_size' => 4,
-                ]);
+                ], '#e9e9ed'), ['stroke_colour' => '#cfd3e5']));
 
-                $graph->colours(['#2ecc71', '#3498db', '#f39c12', '#e74c3c']);
+                $graph->colours([ChartTheme::SUCCESS, ChartTheme::INFO, ChartTheme::WARNING, ChartTheme::FAILURE]);
                 $graph->values([
                     'pct' => $pctData,
                     'ontime' => $onTimeData,

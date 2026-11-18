@@ -61,7 +61,7 @@ class DashboardIntervalChart extends \Ease\Html\DivTag
                     $chartData[$intervalName] = (int) $row['template_count'];
                 }
 
-                $graph = new \Goat1000\SVGGraph\SVGGraph(1200, 400, [
+                $graph = new \Goat1000\SVGGraph\SVGGraph(1200, 400, ChartTheme::apply([
                     'back_colour' => '#ffffff',
                     'stroke_colour' => '#000',
                     'back_stroke_width' => 0,
@@ -77,9 +77,9 @@ class DashboardIntervalChart extends \Ease\Html\DivTag
                     'bar_space' => 10,
                     'show_data_labels' => true,
                     'data_label_font_size' => 11,
-                ]);
+                ]));
 
-                $graph->colours(['#9b59b6', '#3498db', '#2ecc71', '#f39c12', '#e74c3c', '#1abc9c', '#34495e']);
+                $graph->colours(ChartTheme::PALETTE);
                 $graph->values($chartData);
                 $this->addItem(new \Ease\Html\DivTag($graph->fetch('BarGraph'), ['class' => 'chart-container']));
             } else {

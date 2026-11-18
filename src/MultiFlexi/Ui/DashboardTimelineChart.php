@@ -58,7 +58,7 @@ class DashboardTimelineChart extends \Ease\Html\DivTag
                     $failData[] = (int) $row['failed_jobs'];
                 }
 
-                $graph = new \Goat1000\SVGGraph\SVGGraph(1200, 400, [
+                $graph = new \Goat1000\SVGGraph\SVGGraph(1200, 400, array_merge(ChartTheme::apply([
                     'back_colour' => '#ffffff',
                     'stroke_colour' => '#000',
                     'back_stroke_width' => 0,
@@ -78,9 +78,9 @@ class DashboardTimelineChart extends \Ease\Html\DivTag
                     'legend_font_size' => 12,
                     'legend_position' => 'top right 10 10',
                     'legend_colour' => '#000',
-                ]);
+                ], '#e9e9ed'), ['stroke_colour' => '#cfd3e5']));
 
-                $graph->colours(['#2ecc71', '#e74c3c']);
+                $graph->colours([ChartTheme::SUCCESS, ChartTheme::FAILURE]);
                 $graph->values(['success' => array_combine($dates, $successData), 'fail' => array_combine($dates, $failData)]);
                 $this->addItem(new \Ease\Html\DivTag($graph->fetch('MultiLineGraph'), ['class' => 'chart-container']));
             } else {
