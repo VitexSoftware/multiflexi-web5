@@ -95,7 +95,7 @@ foreach ($creds as $crd) {
 }
 
 $companyPanelContents[] = $credList;
-$bottomLine = new \Ease\TWB5\LinkButton('credential.php?company_id='.$companies->getMyKey(), '️➕ 🔐'._('Create'), 'info btn-lg w-100 disabled');
+$bottomLine = new \Ease\TWB5\LinkButton('credential.php?company_id='.$companies->getMyKey().'&return='.rawurlencode('companycreds.php?company_id='.$companies->getMyKey()), '️➕ 🔐'._('Create'), 'info btn-lg w-100 disabled');
 
 WebPage::singleton()->container->addItem(new CompanyPanel($companies, $companyPanelContents, $bottomLine));
 WebPage::singleton()->addItem(new PageBottom('company/'.$companies->getMyKey()));

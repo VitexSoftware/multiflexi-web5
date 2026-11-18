@@ -963,6 +963,8 @@ EOD,
 
         $credentialType = new \MultiFlexi\CredentialType();
         $credential = new \MultiFlexi\Credential();
+        $returnHere = '&return='.rawurlencode('activation-wizard.php?step=4');
+        $boundCredentials = $runTemplate->getCredentialsAssigned();
 
         foreach ($requirements as $requirement) {
             $form->addItem(new \Ease\Html\H4Tag($requirement));
@@ -974,7 +976,7 @@ EOD,
 
             if (!$credType) {
                 $alert = new \Ease\TWB5\Alert('warning', sprintf(_('Credential type %s not found.'), $requirement));
-                $alert->addItem(new \Ease\TWB5\LinkButton('credentialtype.php?company_id='.$company->getMyKey().'&prototype='.$requirement, _('Create Credential Type'), 'primary btn-sm'));
+                $alert->addItem(new \Ease\TWB5\LinkButton('credentialtype.php?company_id='.$company->getMyKey().'&prototype='.$requirement.'&runtemplate_id='.(int) $runTemplate->getMyKey().$returnHere, _('Create Credential Type'), 'primary btn-sm'));
                 $form->addItem($alert);
 
                 continue;
@@ -988,7 +990,7 @@ EOD,
 
             if (empty($companyCredentials)) {
                 $alert = new \Ease\TWB5\Alert('warning', sprintf(_('No credentials found for %s.'), $requirement));
-                $alert->addItem(new \Ease\TWB5\LinkButton('credential.php?company_id='.$company->getMyKey().'&credential_type_id='.$credType['id'], _('Create Credential'), 'primary btn-sm'));
+                $alert->addItem(new \Ease\TWB5\LinkButton('credential.php?company_id='.$company->getMyKey().'&credential_type_id='.$credType['id'].'&runtemplate_id='.(int) $runTemplate->getMyKey().$returnHere, _('Create Credential'), 'primary btn-sm'));
                 $form->addItem($alert);
 
                 continue;
@@ -997,10 +999,21 @@ EOD,
             // Create select for credentials
             $select = new \Ease\Html\SelectTag('credential['.$requirement.']');
             $select->addTagClass('form-control');
+            // A RunTemplate without its credential cannot run: do not let the user skip it
+            $select->setTagProperty('required', 'required');
             $select->addItem(new \Ease\Html\OptionTag(_('-- Select Credential --'), ''));
 
+            // Preselect the already bound credential, or the only one available
+            $boundId = isset($boundCredentials[$requirement]) ? (int) $boundCredentials[$requirement]['credentials_id'] : (\count($companyCredentials) === 1 ? (int) $companyCredentials[0]['id'] : 0);
+
             foreach ($companyCredentials as $cred) {
-                $select->addItem(new \Ease\Html\OptionTag($cred['name'], (string) $cred['id']));
+                $option = new \Ease\Html\OptionTag($cred['name'], (string) $cred['id']);
+
+                if ($boundId === (int) $cred['id']) {
+                    $option->setTagProperty('selected', 'selected');
+                }
+
+                $select->addItem($option);
             }
 
             $formGroup = new \Ease\TWB5\FormGroup(

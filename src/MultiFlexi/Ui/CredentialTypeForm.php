@@ -86,6 +86,10 @@ class CredentialTypeForm extends SecureForm
 
         }
 
+        if (ReturnUrl::fromRequest()) {
+            $formContents[] = new \Ease\TWB5\LinkButton((string) ReturnUrl::fromRequest(), '↩️ '._('Back to the previous form'), 'secondary btn-sm mb-2');
+        }
+
         $formContents[] = $credTypeRow1;
 
         if (isset($infoPanel)) {
@@ -137,6 +141,10 @@ class CredentialTypeForm extends SecureForm
             } else {
                 $toolRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialtype.php?id='.$credtype->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg w-100'));
             }
+        }
+
+        if (ReturnUrl::fromRequest()) {
+            $this->addItem(new \Ease\Html\InputHiddenTag('return', (string) ReturnUrl::fromRequest()));
         }
 
         if (WebPage::getRequestValue('runtemplate_id', 'int')) {

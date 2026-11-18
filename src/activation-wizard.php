@@ -202,7 +202,17 @@ if (WebPage::singleton()->isPosted()) {
                     }
                 }
 
-                ActivationWizard::updateWizardData(['credentials_assigned' => true]);
+                // Do not leave a RunTemplate without credentials it requires: stay on step 4
+                $checkedTemplate = new \MultiFlexi\RunTemplate($runtemplateId);
+                $bound = $checkedTemplate->getCredentialsAssigned();
+                $missing = array_values(array_filter($checkedTemplate->getRequirements(), static fn ($requirement) => !\array_key_exists($requirement, $bound)));
+
+                if (!empty($missing)) {
+                    $checkedTemplate->addStatusMessage(sprintf(_('Credentials are still missing for: %s. Create or choose them to continue.'), implode(', ', $missing)), 'warning');
+                    $step = 4;
+                } else {
+                    ActivationWizard::updateWizardData(['credentials_assigned' => true]);
+                }
             }
 
             break;

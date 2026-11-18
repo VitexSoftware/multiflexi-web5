@@ -24,7 +24,8 @@ $credTypeId = WebPage::getRequestValue('credential_type_id', 'int');
 
 $kredenc = new \MultiFlexi\Credential($credId);
 $returnRuntemplate = WebPage::getRequestValue('runtemplate_id', 'int');
-unset($_POST['runtemplate_id']);
+$returnUrl = ReturnUrl::fromRequest();
+unset($_POST['runtemplate_id'], $_POST['return']);
 
 // Enforce access control if credential exists
 if ($kredenc->getMyKey()) {
@@ -55,6 +56,8 @@ if (null !== $delete) {
 
 if (WebPage::singleton()->isPosted() && null === WebPage::getRequestValue('checkavailability')) {
     try {
+        $wasNew = null === $kredenc->getMyKey();
+
         if ($kredenc->takeData($_POST) && null !== $kredenc->dbsync()) {
             $kredenc->addStatusMessage(_('Credential field Saved'), 'success');
 
@@ -69,8 +72,12 @@ if (WebPage::singleton()->isPosted() && null === WebPage::getRequestValue('check
                 if ($returnTemplate->getMyKey() && $credType && (int) $returnTemplate->getDataValue('company_id') === (int) $kredenc->getDataValue('company_id')) {
                     (new \MultiFlexi\RunTplCreds())->bind($returnTemplate->getMyKey(), (int) $kredenc->getMyKey(), (string) $credType->getDataValue('prototype'));
                     $kredenc->addStatusMessage(_('Credential assigned to the RunTemplate'), 'success');
-                    WebPage::singleton()->redirect('runtemplate.php?id='.$returnTemplate->getMyKey());
+                    WebPage::singleton()->redirect($returnUrl ?? 'runtemplate.php?id='.$returnTemplate->getMyKey());
                 }
+            }
+
+            if ($returnUrl && $wasNew && $kredenc->getMyKey()) {
+                WebPage::singleton()->redirect($returnUrl);
             }
         }
     } catch (\PDOException $exc) {

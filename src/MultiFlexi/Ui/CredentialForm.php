@@ -66,7 +66,7 @@ class CredentialForm extends SecureForm
             }
 
             if ($kredenc->getCredentialType()) {
-                $formContents[] = new LinkButton('credentialtype.php?company_id='.$kredenc->getDataValue('company_id').'&class='.$kredenc->getCredentialType()->getDataValue('class'), '️➕ 🔐 new credential type', 'success btn-sm', ['title' => _('New Credential Type')]);
+                $formContents[] = new LinkButton('credentialtype.php?company_id='.$kredenc->getDataValue('company_id').'&prototype='.rawurlencode((string) $kredenc->getCredentialType()->getDataValue('prototype')).'&return='.rawurlencode($kredenc->getMyKey() ? 'credential.php?id='.$kredenc->getMyKey() : 'credential.php?company_id='.(int) $kredenc->getDataValue('company_id').'&credential_type_id='.(int) $kredenc->getCredentialType()->getMyKey()), '️➕ 🔐 new credential type', 'success btn-sm', ['title' => _('New Credential Type')]);
             }
         } else {
             $formContents[] = new FormGroup(_('Choose company first'), new InputHiddenTag('credential_type_id', '0'));
@@ -103,7 +103,15 @@ class CredentialForm extends SecureForm
             }
         }
 
+        if (ReturnUrl::fromRequest()) {
+            array_unshift($formContents, new LinkButton((string) ReturnUrl::fromRequest(), '↩️ '._('Back to the previous form'), 'secondary btn-sm mb-2'));
+        }
+
         $formContents[] = new InputHiddenTag('id', (string) ($kredenc->getMyKey() ?? ''));
+
+        if (ReturnUrl::fromRequest()) {
+            $formContents[] = new InputHiddenTag('return', (string) ReturnUrl::fromRequest());
+        }
 
         if (WebPage::getRequestValue('runtemplate_id', 'int')) {
             $formContents[] = new InputHiddenTag('runtemplate_id', (string) WebPage::getRequestValue('runtemplate_id', 'int'));

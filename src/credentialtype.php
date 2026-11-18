@@ -24,8 +24,9 @@ $class = WebPage::getRequestValue('prototype');
 
 $crtype = new \MultiFlexi\CredentialType($credTypeId, ['autoload' => true]);
 $returnRuntemplate = WebPage::getRequestValue('runtemplate_id', 'int');
+$returnUrl = ReturnUrl::fromRequest();
 $createdNow = false;
-unset($_POST['runtemplate_id']);
+unset($_POST['runtemplate_id'], $_POST['return']);
 
 if ((null === $class) === false) {
     $crtype->setPrototypeClass($class);
@@ -202,8 +203,15 @@ if (WebPage::singleton()->isPosted()) {
 }
 
 if ($createdNow) {
+    $typeParam = '&credential_type_id='.$crtype->getMyKey();
+
+    if ($returnUrl && str_starts_with($returnUrl, 'credential.php')) {
+        // Came from a credential form: return there with the new type preselected
+        WebPage::singleton()->redirect($returnUrl.$typeParam);
+    }
+
     // Continue straight to filling in the first Credential of the new type
-    WebPage::singleton()->redirect('credential.php?company_id='.(int) $crtype->getDataValue('company_id').'&credential_type_id='.$crtype->getMyKey().($returnRuntemplate ? '&runtemplate_id='.$returnRuntemplate : ''));
+    WebPage::singleton()->redirect('credential.php?company_id='.(int) $crtype->getDataValue('company_id').$typeParam.($returnRuntemplate ? '&runtemplate_id='.$returnRuntemplate : '').($returnUrl ? '&return='.rawurlencode($returnUrl) : ''));
 }
 
 if ($addField) {
