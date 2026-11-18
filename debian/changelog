@@ -1,3 +1,32 @@
+multiflexi-web (2.6.0) unstable; urgency=medium
+
+  * Nocturne dark theme for the whole web UI (css/nocturne.css): Bootstrap 5.3
+    dark mapping, tinted outline buttons, dark DataTables, panels, toggles and
+    footer, cache-busted stylesheet URLs
+  * New home page layout: summary strip, company cards linking to the company
+    page, runs-per-day chart, job history spiral and a day-grouped scheduled
+    queue with interval and text filters; the queue is now limited to the
+    companies the user may access
+  * New company page layout: header with 30-day summary and toolbar, compact
+    application tiles with tag filter, recent jobs table and a readable
+    company details drawer
+  * Job state palette: dark tinted rows with a stripe on the left edge, dark
+    exit code badges, dark job charts and spiral legend
+  * Top menu order: logo, search box, menu, then sign off and language selector
+    on the right
+  * Credential prototypes: the code column links to the credential types of
+    that prototype (credentialtypes.php?prototype=CODE), the prototype page
+    shows how many types use it, and credential types link back to their
+    prototype
+  * Credential types without their own logo no longer show the first row's
+    prototype logo
+  * Fix swapped Badge arguments (credential prototypes list, Semaphore action,
+    consent history) and a TypeError on app.php for a not yet saved application
+  * Debian Jenkinsfile: build every distribution in a node-local git worktree
+    (fixes "cannot find readable debian/changelog" on shared NFS workspaces)
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 19 Nov 2026 00:04:08 +0100
+
 multiflexi-web (2.5.0) unstable; urgency=medium
 
   * Add tasks.php — task overview with metric cards, daily fulfilment chart,
