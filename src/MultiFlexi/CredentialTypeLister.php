@@ -82,12 +82,12 @@ class CredentialTypeLister extends CredentialType
         // The logo column links to the credential prototype the type is based on
         $prototypeCode = (string) ($dataRowRaw['prototype'] ?? '');
         $prototypeId = self::prototypes()[$prototypeCode]['id'] ?? null;
-        $logoImg = new \Ease\Html\ImgTag($logoSrc, $data['name'], ['title' => $prototypeCode !== '' ? $prototypeCode : $data['name'], 'style' => 'height: 50px;']);
+        $logoImg = new \Ease\Html\ImgTag($logoSrc, $data['name'], ['title' => htmlspecialchars($prototypeCode !== '' ? $prototypeCode : $data['name']), 'style' => 'height: 50px;']);
 
         $data['logo'] = (string) ($prototypeId !== null
             ? new \Ease\Html\ATag(
                 'credentialprototype.php?id='.$prototypeId,
-                [$logoImg, ' ', new \Ease\Html\SmallTag($prototypeCode)],
+                [$logoImg, ' ', new \Ease\Html\SmallTag(htmlspecialchars($prototypeCode))],
                 ['title' => _('Show credential prototype'), 'class' => 'text-decoration-none'],
             )
             : new \Ease\Html\ATag('credentialtype.php?id='.$this->getMyKey(), $logoImg));
