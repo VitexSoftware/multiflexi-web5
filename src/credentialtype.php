@@ -190,6 +190,14 @@ if (WebPage::singleton()->isPosted()) {
 } else {
     if ((null === WebPage::getRequestValue('company_id')) === false) {
         $crtype->setDataValue('company_id', WebPage::getRequestValue('company_id', 'int'));
+    } elseif ($returnRuntemplate) {
+        // Arrived from a RunTemplate: its company is the current one
+        $fromTemplate = new \MultiFlexi\RunTemplate($returnRuntemplate);
+
+        if ($fromTemplate->getMyKey() && !$crtype->getDataValue('company_id')) {
+            \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess((int) $fromTemplate->getDataValue('company_id'));
+            $crtype->setDataValue('company_id', (int) $fromTemplate->getDataValue('company_id'));
+        }
     }
 }
 

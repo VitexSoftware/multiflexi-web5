@@ -974,7 +974,7 @@ EOD,
 
             if (!$credType) {
                 $alert = new \Ease\TWB5\Alert('warning', sprintf(_('Credential type %s not found.'), $requirement));
-                $alert->addItem(new \Ease\TWB5\LinkButton('credentialtype.php?prototype='.$requirement, _('Create Credential Type'), 'primary btn-sm'));
+                $alert->addItem(new \Ease\TWB5\LinkButton('credentialtype.php?company_id='.$company->getMyKey().'&prototype='.$requirement, _('Create Credential Type'), 'primary btn-sm'));
                 $form->addItem($alert);
 
                 continue;
