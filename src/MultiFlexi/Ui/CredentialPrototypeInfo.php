@@ -26,26 +26,26 @@ class CredentialPrototypeInfo extends \Ease\TWB5\Card
     {
         parent::__construct(null, ['class' => 'mb-3']);
 
-        $this->addItem(new \Ease\Html\H4Tag($prototype->name(), ['class' => 'card-header']));
+        $this->addItem(new \Ease\Html\H4Tag(htmlspecialchars($prototype->name(), \ENT_QUOTES), ['class' => 'card-header']));
         $body = new \Ease\Html\DivTag(null, ['class' => 'card-body']);
 
         $description = $prototype->description();
 
         if ($description !== '') {
-            $body->addItem(new \Ease\Html\PTag($description, ['class' => 'lead']));
+            $body->addItem(new \Ease\Html\PTag(htmlspecialchars($description, \ENT_QUOTES), ['class' => 'lead']));
         }
 
         $meta = new \Ease\Html\DlTag(null, ['class' => 'row']);
         $rows = [
-            _('Class') => \Ease\Functions::baseClassName($prototype),
-            _('UUID') => $prototype->uuid(),
+            _('Class') => htmlspecialchars(\Ease\Functions::baseClassName($prototype), \ENT_QUOTES),
+            _('UUID') => htmlspecialchars($prototype->uuid(), \ENT_QUOTES),
         ];
 
         foreach (['version' => _('Version'), 'url' => _('URL'), 'homepage' => _('Homepage'), 'tags' => _('Tags')] as $key => $label) {
             $value = method_exists($prototype, 'getDataValue') ? $prototype->getDataValue($key) : null;
 
             if (!empty($value)) {
-                $rows[$label] = preg_match('#^https?://#', (string) $value) ? new \Ease\Html\ATag((string) $value, (string) $value, ['target' => '_blank', 'rel' => 'noopener']) : (string) $value;
+                $rows[$label] = preg_match('#^https?://#i', (string) $value) ? new \Ease\Html\ATag(htmlspecialchars((string) $value, \ENT_QUOTES), htmlspecialchars((string) $value, \ENT_QUOTES), ['target' => '_blank', 'rel' => 'noopener noreferrer']) : htmlspecialchars((string) $value, \ENT_QUOTES);
             }
         }
 
@@ -72,7 +72,7 @@ class CredentialPrototypeInfo extends \Ease\TWB5\Card
 
     private static function fieldsTable(string $title, \MultiFlexi\ConfigFields $fields): \Ease\Container
     {
-        $box = new \Ease\Container(new \Ease\Html\H5Tag($title));
+        $box = new \Ease\Container(new \Ease\Html\H5Tag(htmlspecialchars($title, \ENT_QUOTES)));
         $table = new \Ease\Html\TableTag(null, ['class' => 'table table-sm table-striped']);
         $table->addRowHeaderColumns([_('Code'), _('Type'), _('Flags'), _('Name'), _('Description')]);
 
@@ -88,11 +88,11 @@ class CredentialPrototypeInfo extends \Ease\TWB5\Card
             }
 
             $table->addRowColumns([
-                new \Ease\Html\SpanTag($field->getCode(), ['style' => 'font-family: monospace']),
-                $field->getType(),
+                new \Ease\Html\SpanTag(htmlspecialchars($field->getCode(), \ENT_QUOTES), ['style' => 'font-family: monospace']),
+                htmlspecialchars($field->getType(), \ENT_QUOTES),
                 implode(', ', $flags),
-                $field->getName(),
-                trim($field->getDescription().' '.$field->getHint()),
+                htmlspecialchars($field->getName(), \ENT_QUOTES),
+                htmlspecialchars(trim($field->getDescription().' '.$field->getHint()), \ENT_QUOTES),
             ]);
         }
 

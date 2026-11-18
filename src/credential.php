@@ -62,6 +62,10 @@ if (WebPage::singleton()->isPosted() && null === WebPage::getRequestValue('check
                 $returnTemplate = new \MultiFlexi\RunTemplate($returnRuntemplate);
                 $credType = $kredenc->getCredentialType();
 
+                if ($returnTemplate->getMyKey()) {
+                    \MultiFlexi\Security\CompanyAccessControl::enforceCompanyAccess((int) $returnTemplate->getDataValue('company_id'));
+                }
+
                 if ($returnTemplate->getMyKey() && $credType && (int) $returnTemplate->getDataValue('company_id') === (int) $kredenc->getDataValue('company_id')) {
                     (new \MultiFlexi\RunTplCreds())->bind($returnTemplate->getMyKey(), (int) $kredenc->getMyKey(), (string) $credType->getDataValue('prototype'));
                     $kredenc->addStatusMessage(_('Credential assigned to the RunTemplate'), 'success');
