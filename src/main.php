@@ -36,7 +36,7 @@ if (!empty($filter)) {
 
 $chartsRow = new \Ease\TWB5\Row();
 $chartsRow->addColumn(8, new AllJobsLastMonthChart($chartEngine, ['id' => 'container']));
-$chartsRow->addColumn(4, new JobGraphWidget());
+$chartsRow->addColumn(4, new JobGraphWidget(null, null, null, 20, 10, [], true));
 WebPage::singleton()->container->addItem($chartsRow);
 
 // Queue: same information as `multiflexi-cli queue:list`, with IDs used only as link targets
