@@ -187,8 +187,10 @@ $table = new \Ease\Html\DivTag('Table temporarily disabled for debugging');
 /*
 if (!empty($currentConsent)) {
     foreach ($currentConsent as $type => $consent) {
-        $statusBadge = new \Ease\TWB5\Badge($consent['status'] ? 'success' : 'danger',
-                                           $consent['status'] ? _('Granted') : _('Denied'));
+        $statusBadge = new \Ease\TWB5\Badge(
+            $consent['status'] ? _('Granted') : _('Denied'),
+            $consent['status'] ? 'success' : 'danger',
+        );
 
         $withdrawButton = '';
         if ($consent['status'] && $type !== ConsentManager::CONSENT_ESSENTIAL) {
@@ -223,41 +225,41 @@ WebPage::singleton()->container->addItem($historyPanel);
 // Add JavaScript for withdraw functionality
 WebPage::singleton()->container->includeJavaScript(<<<'EOD'
 
-function withdrawConsent(type) {
-    if (confirm('
-EOD._('Are you sure you want to withdraw this consent?').<<<'EOD'
-')) {
-        fetch('consent-api.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            },
-            credentials: 'same-origin',
-            body: JSON.stringify({
-                action: 'withdraw_consent',
-                consent_type: type
+    function withdrawConsent(type) {
+        if (confirm('
+    EOD._('Are you sure you want to withdraw this consent?').<<<'EOD'
+    ')) {
+            fetch('consent-api.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    action: 'withdraw_consent',
+                    consent_type: type
+                })
             })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                location.reload();
-            } else {
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('
+    EOD._('Error withdrawing consent: ').<<<'EOD'
+    ' + data.message);
+                }
+            })
+            .catch(error => {
                 alert('
-EOD._('Error withdrawing consent: ').<<<'EOD'
-' + data.message);
-            }
-        })
-        .catch(error => {
-            alert('
-EOD._('Error withdrawing consent').<<<'EOD'
-');
-        });
+    EOD._('Error withdrawing consent').<<<'EOD'
+    ');
+            });
+        }
     }
-}
 
-EOD);
+    EOD);
 
 // Add information section
 $infoHeaderContent = new \Ease\Html\H5Tag([

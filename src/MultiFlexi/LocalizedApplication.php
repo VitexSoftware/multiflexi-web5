@@ -25,10 +25,12 @@ class LocalizedApplication extends Application
     use ApplicationTranslation;
 
     /**
-     * Localized record name, falling back to the raw name when no translation exists.
+     * Localized record name, falling back to the raw name when no translation exists
+     * (empty string for an application that has no record yet).
      */
     public function getRecordName(): string
     {
-        return $this->getLocalizedName() ?? parent::getRecordName();
+        // parent::getRecordName() is null for a not yet saved application (import / new)
+        return $this->getLocalizedName() ?? (string) parent::getRecordName();
     }
 }

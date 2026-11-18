@@ -93,6 +93,6 @@ class Semaphore extends \MultiFlexi\Action\Semaphore
      */
     public function configForm(): \Ease\Embedable
     {
-        return new \Ease\TWB5\Badge('info', _('Endpoint and token are read from the selected Semaphore credential'));
+        return new \Ease\TWB5\Badge(_('Endpoint and token are read from the selected Semaphore credential'), 'info');
     }
 }

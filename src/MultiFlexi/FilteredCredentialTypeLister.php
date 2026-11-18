@@ -20,6 +20,20 @@ namespace MultiFlexi;
  */
 class FilteredCredentialTypeLister extends CredentialTypeLister
 {
+    private ?string $prototypeCode = null;
+
+    /**
+     * Show only credential types based on the given credential prototype.
+     *
+     * @param null|string $code Prototype code (e.g. "AbraFlexi"); anything that is not a plain class name is ignored
+     */
+    public function setPrototype(?string $code): self
+    {
+        $this->prototypeCode = ($code !== null && preg_match('/^[A-Za-z0-9_]+$/', $code) === 1) ? $code : null;
+
+        return $this;
+    }
+
     /**
      * Override listingQuery to filter by accessible companies.
      */
@@ -33,6 +47,10 @@ class FilteredCredentialTypeLister extends CredentialTypeLister
         if (empty($accessibleCompanyIds)) {
             // Return empty result if user has no access
             return $query->where('1=0');
+        }
+
+        if ($this->prototypeCode !== null) {
+            $query->where('credential_type.prototype', $this->prototypeCode);
         }
 
         // Filter credential types by accessible companies

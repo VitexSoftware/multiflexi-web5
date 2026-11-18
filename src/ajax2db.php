@@ -137,6 +137,15 @@ if ($engine instanceof \MultiFlexi\CompanyAppRunTemplateLister) {
     }
 }
 
+// Narrow credential types to those based on one prototype
+if ($engine instanceof \MultiFlexi\FilteredCredentialTypeLister) {
+    $prototype = \Ease\WebPage::getRequestValue('prototype');
+
+    if (\is_string($prototype) && $prototype !== '') {
+        $engine->setPrototype($prototype);
+    }
+}
+
 // DataTables PHP library
 // include( './lib/DataTables.php' );
 // if (WebPage::singleton()->getRequestValue('columns')) {

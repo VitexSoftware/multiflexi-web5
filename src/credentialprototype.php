@@ -129,6 +129,24 @@ if (WebPage::singleton()->isPosted()) {
 
 WebPage::singleton()->addItem(new \MultiFlexi\Ui\PageTop(_('Credential Prototype')));
 
+// How many credential types are based on this prototype (only those the user may access, as in the list it links to)
+if ($prototype->getMyKey() && $prototype->getDataValue('code')) {
+    $usedCode = (string) $prototype->getDataValue('code');
+    $usedBy = (new \MultiFlexi\FilteredCredentialTypeLister())->setPrototype($usedCode)->listingQuery()->count();
+
+    WebPage::singleton()->container->addItem(new \Ease\Html\DivTag(
+        [
+            new \Ease\Html\SpanTag(_('Used by credential types').': ', ['class' => 'me-2']),
+            new \Ease\Html\ATag(
+                'credentialtypes.php?prototype='.rawurlencode($usedCode),
+                new \Ease\TWB5\Badge((string) $usedBy, $usedBy > 0 ? 'info' : 'secondary'),
+                ['title' => _('Show credential types based on this prototype'), 'class' => 'text-decoration-none'],
+            ),
+        ],
+        ['class' => 'mb-3'],
+    ));
+}
+
 $prototypeForm = new CredentialProtoTypeForm($prototype);
 
 WebPage::singleton()->container->addItem($prototypeForm);

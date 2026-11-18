@@ -53,8 +53,8 @@ class CredentialProtoTypeLister extends \Ease\TWB5\Table
 
         // Create header row
         $headerRow = new \Ease\Html\TrTag();
-        $headerRow->addItem(new \Ease\Html\ThTag(_('Logo')));
         $headerRow->addItem(new \Ease\Html\ThTag(_('ID')));
+        $headerRow->addItem(new \Ease\Html\ThTag(_('Logo')));
         $headerRow->addItem(new \Ease\Html\ThTag(_('Code')));
         $headerRow->addItem(new \Ease\Html\ThTag(_('Name')));
         $headerRow->addItem(new \Ease\Html\ThTag(_('Version')));
@@ -101,10 +101,10 @@ class CredentialProtoTypeLister extends \Ease\TWB5\Table
                     ['height' => '32', 'style' => 'object-fit: contain;'],
                 );
 
+                $row->addItem(new \Ease\Html\TdTag(new \Ease\Html\ATag('credentialprototype.php?id='.$protoTypeInfo['id'], (string) $protoTypeInfo['id'])));
                 $row->addItem(new \Ease\Html\TdTag($logoImg));
-                $row->addItem(new \Ease\Html\TdTag($protoTypeInfo['id']));
-                $row->addItem(new \Ease\Html\TdTag(new \Ease\TWB5\Badge($codeColor, $protoTypeInfo['code'])));
-                $row->addItem(new \Ease\Html\TdTag(new \Ease\TWB5\Badge($sourceColor, $protoTypeInfo['name'])));
+                $row->addItem(new \Ease\Html\TdTag(new \Ease\Html\ATag('credentialtypes.php?prototype='.rawurlencode((string) $protoTypeInfo['code']), new \Ease\TWB5\Badge((string) $protoTypeInfo['code'], $codeColor), ['title' => _('Show credential types based on this prototype'), 'class' => 'text-decoration-none'])));
+                $row->addItem(new \Ease\Html\TdTag(new \Ease\TWB5\Badge((string) $protoTypeInfo['name'], $sourceColor)));
                 $row->addItem(new \Ease\Html\TdTag($protoTypeInfo['version'] ?: '1.0'));
                 $row->addItem(new \Ease\Html\TdTag(new \Ease\Html\SmallTag($protoTypeInfo['uuid'])));
                 $row->addItem(new \Ease\Html\TdTag($actions));
