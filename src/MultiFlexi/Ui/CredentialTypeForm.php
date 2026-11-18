@@ -52,6 +52,7 @@ class CredentialTypeForm extends SecureForm
                 $credtype->getPrototype()->prepareConfigForm();
 
                 $helperCol->addItem(new FieldsForm($credtype->getPrototype()->fieldsInternal(), $credtype->getDataValue('prototype')));
+                $infoPanel = new CredentialPrototypeInfo($credtype->getPrototype());
             }
 
             $provided = new \Ease\TWB5\Panel(new \Ease\Html\H4Tag(_('Fields provided')));
@@ -83,46 +84,68 @@ class CredentialTypeForm extends SecureForm
                 }
             }
 
-            $helperCol->addItem($provided);
         }
 
         $formContents[] = $credTypeRow1;
 
-        $formContents[] = new \Ease\Html\DivTag($this->credTypeField('new', new \MultiFlexi\ConfigFieldWithHelper('', 'string', '', '')), ['class' => 'border border-primary rounded']);
+        if (isset($infoPanel)) {
+            $formContents[] = $infoPanel;
+        }
+
+        // Field remapping / custom fields / Test / Remove are hidden until expanded
+        $advanced = new \Ease\Html\DetailsTag(new \Ease\Html\SummaryTag('🔧 '._('Field mapping, custom fields, test and removal')), ['class' => 'mb-3']);
+
+        if (WebPage::getRequestValue('remove') === 'true' || WebPage::getRequestValue('test')) {
+            $advanced->setTagProperty('open', 'open');
+        }
+
+        if (isset($provided)) {
+            $advanced->addItem($provided);
+        }
+
+        $advanced->addItem(new \Ease\Html\DivTag($this->credTypeField('new', new \MultiFlexi\ConfigFieldWithHelper('', 'string', '', '')), ['class' => 'border border-primary rounded']));
 
         $fields = $credtype->getFields(); // Helper?!
 
         foreach ($fields as $crTypeField) {
-            $formContents[] = $this->credTypeField((string) $crTypeField->getMykey() ?? 'new', $crTypeField);
+            $advanced->addItem($this->credTypeField((string) $crTypeField->getMykey() ?? 'new', $crTypeField));
         }
+
+        $formContents[] = $advanced;
 
         parent::__construct(['action' => 'credentialtype.php', 'method' => 'POST'], $formContents);
         // $this->setTagProperty('enctype', 'multipart/form-data');
 
         $submitRow = new \Ease\TWB5\Row();
+        $toolRow = new \Ease\TWB5\Row();
 
         if (null === $credtype->getMyKey()) {
-            $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('#', '🚀 '._('Test'), 'disabled btn-lg w-100'));
+            $toolRow->addColumn(6, new \Ease\TWB5\LinkButton('#', '🚀 '._('Test'), 'disabled btn-lg w-100'));
         } else {
-            $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('credentialtype.php?id='.$credtype->getMyKey().'&test=true', '🚀 '._('Test'), 'success btn-lg w-100'));
+            $toolRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialtype.php?id='.$credtype->getMyKey().'&test=true', '🚀 '._('Test'), 'success btn-lg w-100'));
         }
 
-        $submitRow->addColumn(8, new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100', ['title' => _('Apply changes'), 'id' => 'CredentialTypeFormapplybutton']));
+        $submitRow->addColumn(12, new \Ease\TWB5\SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100', ['title' => _('Apply changes'), 'id' => 'CredentialTypeFormapplybutton']));
 
         if (null === $credtype->getMyKey()) {
-            $submitRow->addColumn(2, new \Ease\TWB5\SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg w-100', ['disabled' => 'true']));
+            $toolRow->addColumn(6, new \Ease\TWB5\SubmitButton('⚰️ '._('Remove').' !', 'disabled btn-lg w-100', ['disabled' => 'true']));
         } else {
             $this->addItem(new \Ease\Html\InputHiddenTag('id', $credtype->getMyKey()));
 
             if (WebPage::getRequestValue('remove') === 'true') {
-                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('credentialtype.php?delete='.$credtype->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg w-100'));
+                $toolRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialtype.php?delete='.$credtype->getMyKey(), '⚰️ '._('Remove').' !', 'danger btn-lg w-100'));
             } else {
-                $submitRow->addColumn(2, new \Ease\TWB5\LinkButton('credentialtype.php?id='.$credtype->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg w-100'));
+                $toolRow->addColumn(6, new \Ease\TWB5\LinkButton('credentialtype.php?id='.$credtype->getMyKey().'&remove=true', '⚰️ '._('Remove').' ?', 'warning btn-lg w-100'));
             }
+        }
+
+        if (WebPage::getRequestValue('runtemplate_id', 'int')) {
+            $this->addItem(new \Ease\Html\InputHiddenTag('runtemplate_id', (string) WebPage::getRequestValue('runtemplate_id', 'int')));
         }
 
         $this->addItem(new \Ease\Html\InputHiddenTag('version', (int) $credtype->getDataValue('version')));
 
+        $advanced->addItem($toolRow);
         $this->addItem($submitRow);
     }
 

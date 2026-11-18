@@ -105,6 +105,10 @@ class CredentialForm extends SecureForm
 
         $formContents[] = new InputHiddenTag('id', (string) ($kredenc->getMyKey() ?? ''));
 
+        if (WebPage::getRequestValue('runtemplate_id', 'int')) {
+            $formContents[] = new InputHiddenTag('runtemplate_id', (string) WebPage::getRequestValue('runtemplate_id', 'int'));
+        }
+
         $submitRow = new Row();
         $submitRow->addColumn(6, new SubmitButton('🍏 '._('Apply'), 'primary btn-lg w-100', ['title' => _('Apply changes'), 'id' => 'credentialapplybutton']));
 

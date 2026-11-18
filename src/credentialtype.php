@@ -23,6 +23,9 @@ $credTypeId = WebPage::getRequestValue('id', 'int');
 $class = WebPage::getRequestValue('prototype');
 
 $crtype = new \MultiFlexi\CredentialType($credTypeId, ['autoload' => true]);
+$returnRuntemplate = WebPage::getRequestValue('runtemplate_id', 'int');
+$createdNow = false;
+unset($_POST['runtemplate_id']);
 
 if ((null === $class) === false) {
     $crtype->setPrototypeClass($class);
@@ -95,8 +98,11 @@ if (WebPage::singleton()->isPosted()) {
 
     try {
         if ($credentialTypeData['company_id']) {
+            $wasNew = null === $crtype->getMyKey();
+
             if ($crtype->takeData($credentialTypeData) && null !== $crtype->dbsync()) {
                 $crtype->addStatusMessage(_('Credential field Saved'), 'success');
+                $createdNow = $wasNew && null !== $crtype->getMyKey();
 
                 if (isset($new) && \array_key_exists('keyname', $new) && \strlen($new['keyname'])) {
                     $fielder->takeData($new);
@@ -185,6 +191,11 @@ if (WebPage::singleton()->isPosted()) {
     if ((null === WebPage::getRequestValue('company_id')) === false) {
         $crtype->setDataValue('company_id', WebPage::getRequestValue('company_id', 'int'));
     }
+}
+
+if ($createdNow) {
+    // Continue straight to filling in the first Credential of the new type
+    WebPage::singleton()->redirect('credential.php?company_id='.(int) $crtype->getDataValue('company_id').'&credential_type_id='.$crtype->getMyKey().($returnRuntemplate ? '&runtemplate_id='.$returnRuntemplate : ''));
 }
 
 if ($addField) {

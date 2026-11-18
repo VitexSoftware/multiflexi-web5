@@ -1,0 +1,103 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * This file is part of the MultiFlexi package
+ *
+ * https://multiflexi.eu/
+ *
+ * (c) Vítězslav Dvořák <http://vitexsoftware.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
+namespace MultiFlexi\Ui;
+
+/**
+ * Read-only overview of what a Credential Prototype offers.
+ *
+ * @no-named-arguments
+ */
+class CredentialPrototypeInfo extends \Ease\TWB5\Card
+{
+    public function __construct(\MultiFlexi\credentialTypeInterface $prototype)
+    {
+        parent::__construct(null, ['class' => 'mb-3']);
+
+        $this->addItem(new \Ease\Html\H4Tag($prototype->name(), ['class' => 'card-header']));
+        $body = new \Ease\Html\DivTag(null, ['class' => 'card-body']);
+
+        $description = $prototype->description();
+
+        if ($description !== '') {
+            $body->addItem(new \Ease\Html\PTag($description, ['class' => 'lead']));
+        }
+
+        $meta = new \Ease\Html\DlTag(null, ['class' => 'row']);
+        $rows = [
+            _('Class') => \Ease\Functions::baseClassName($prototype),
+            _('UUID') => $prototype->uuid(),
+        ];
+
+        foreach (['version' => _('Version'), 'url' => _('URL'), 'homepage' => _('Homepage'), 'tags' => _('Tags')] as $key => $label) {
+            $value = method_exists($prototype, 'getDataValue') ? $prototype->getDataValue($key) : null;
+
+            if (!empty($value)) {
+                $rows[$label] = preg_match('#^https?://#', (string) $value) ? new \Ease\Html\ATag((string) $value, (string) $value, ['target' => '_blank', 'rel' => 'noopener']) : (string) $value;
+            }
+        }
+
+        $rows[_('Availability check')] = (new \ReflectionMethod($prototype, 'checkAvailability'))->getDeclaringClass()->getName() === \MultiFlexi\CredentialProtoType::class
+            ? _('Not implemented (never blocks jobs)')
+            : _('Implemented (live check before job start)');
+
+        foreach ($rows as $label => $value) {
+            $meta->addItem(new \Ease\Html\DtTag($label, ['class' => 'col-sm-3']));
+            $meta->addItem(new \Ease\Html\DdTag($value, ['class' => 'col-sm-9']));
+        }
+
+        $body->addItem($meta);
+
+        $body->addItem(self::fieldsTable(_('Fields provided'), $prototype->fieldsProvided()));
+        $internal = $prototype->fieldsInternal();
+
+        if (\count($internal->getFields())) {
+            $body->addItem(self::fieldsTable(_('Prototype settings'), $internal));
+        }
+
+        $this->addItem($body);
+    }
+
+    private static function fieldsTable(string $title, \MultiFlexi\ConfigFields $fields): \Ease\Container
+    {
+        $box = new \Ease\Container(new \Ease\Html\H5Tag($title));
+        $table = new \Ease\Html\TableTag(null, ['class' => 'table table-sm table-striped']);
+        $table->addRowHeaderColumns([_('Code'), _('Type'), _('Flags'), _('Name'), _('Description')]);
+
+        foreach ($fields->getFields() as $field) {
+            $flags = [];
+
+            if ($field->isRequired()) {
+                $flags[] = _('required');
+            }
+
+            if ($field->isSecret()) {
+                $flags[] = _('secret');
+            }
+
+            $table->addRowColumns([
+                new \Ease\Html\SpanTag($field->getCode(), ['style' => 'font-family: monospace']),
+                $field->getType(),
+                implode(', ', $flags),
+                $field->getName(),
+                trim($field->getDescription().' '.$field->getHint()),
+            ]);
+        }
+
+        $box->addItem($table);
+
+        return $box;
+    }
+}

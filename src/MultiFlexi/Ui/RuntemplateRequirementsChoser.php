@@ -96,7 +96,7 @@ class RuntemplateRequirementsChoser extends \Ease\Html\DivTag
                 $credTypes = $helper->listingQuery()->where('company_id', $companyId)->where('prototype', $requirement);
 
                 foreach ($credTypes as $myCredType) {
-                    $adders->addColumn(4, new \Ease\TWB5\LinkButton('credential.php?company_id='.$companyId.'&credential_type_id='.$myCredType['id'], '️➕ 🔐'.sprintf(_('Create credential based on %s type'), $myCredType['name']), 'info btn-sm w-100'));
+                    $adders->addColumn(4, new \Ease\TWB5\LinkButton('credential.php?company_id='.$companyId.'&credential_type_id='.$myCredType['id'].'&runtemplate_id='.$runtemplate->getMyKey(), '️➕ 🔐'.sprintf(_('Create credential based on %s type'), $myCredType['name']), 'info btn-sm w-100'));
                 }
 
                 if (\array_key_exists($requirement, $this->assignedCredentials) === false) {
@@ -104,7 +104,7 @@ class RuntemplateRequirementsChoser extends \Ease\Html\DivTag
                 }
             } else {
                 $state = 'warning';
-                $adders->addColumn(4, new \Ease\TWB5\LinkButton('credentialtype.php?company_id='.$companyId.'&prototype='.$requirement, '️➕ 🔐'._('Create Credential type'), 'success btn-sm', ['title' => _('New Credential Type')]));
+                $adders->addColumn(4, new \Ease\TWB5\LinkButton('credentialtype.php?company_id='.$companyId.'&prototype='.$requirement.'&runtemplate_id='.$runtemplate->getMyKey(), '️➕ 🔐'._('Create Credential type'), 'success btn-sm', ['title' => _('New Credential Type')]));
                 $runtemplate->addStatusMessage(sprintf(_('Please, define The Credential type using %s'), $requirement));
             }
         } else {
