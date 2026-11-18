@@ -205,6 +205,14 @@ EOD);
             $app = new \MultiFlexi\Application($this->wizardData['app_id']);
             $uuid = $app->getDataValue('uuid');
 
+            // Multi-app queue progress, e.g. "2/3"
+            $appsTotal = (int) ($this->wizardData['apps_total'] ?? 1);
+
+            if ($appsTotal > 1 && $this->currentStep >= 3) {
+                $position = \count($this->wizardData['completed'] ?? []) + 1;
+                $steps[2] .= ' <span class="badge text-bg-info ms-1">'.min($position, $appsTotal).'/'.$appsTotal.' '.htmlspecialchars((string) $app->getRecordName()).'</span>';
+            }
+
             if ($uuid) {
                 $steps[2] .= ' <img src="appimage.php?uuid='.$uuid.'" width="20" height="20" style="height: 20px; margin-left: 5px; object-fit: contain;" />';
             }
@@ -504,7 +512,12 @@ EOD,
         $appCards = new \Ease\TWB5\Row();
 
         foreach ($applications as $appData) {
-            $isSelected = ($this->wizardData['app_id'] ?? null) === $appData['id'];
+            $preselected = array_map('intval', array_merge(
+                empty($this->wizardData['app_id']) ? [] : [$this->wizardData['app_id']],
+                $this->wizardData['app_queue'] ?? [],
+                array_column($this->wizardData['completed'] ?? [], 'app_id'),
+            ));
+            $isSelected = \in_array((int) $appData['id'], $preselected, true);
             $cardClass = $isSelected ? 'border-primary bg-light' : '';
 
             // Add data-tags attribute for JavaScript filtering
@@ -568,7 +581,7 @@ EOD,
                 $cardBody->addItem($tagBadges);
             }
 
-            $radio = new \Ease\Html\InputTag('app_id', $appData['id'], ['type' => 'radio', 'required' => 'required']);
+            $radio = new \Ease\Html\InputTag('app_id[]', $appData['id'], ['type' => 'checkbox']);
 
             if ($isSelected) {
                 $radio->setTagProperty('checked', 'checked');
@@ -587,17 +600,29 @@ EOD,
             <<<'EOD'
 // Make app cards clickable
 document.querySelectorAll('.wizard-content .app-card').forEach(function(card) {
-    card.addEventListener('click', function() {
-        var radio = this.querySelector('input[type="radio"]');
-        if (radio) {
-            radio.checked = true;
-            document.querySelectorAll('.wizard-content .app-card').forEach(c => {
-                c.classList.remove('border-primary', 'bg-light');
-            });
-            this.classList.add('border-primary', 'bg-light');
+    card.addEventListener('click', function(e) {
+        var box = this.querySelector('input[type="checkbox"]');
+        if (box) {
+            // Clicking the checkbox itself already toggles it
+            if (e.target !== box) {
+                box.checked = !box.checked;
+            }
+            this.classList.toggle('border-primary', box.checked);
+            this.classList.toggle('bg-light', box.checked);
         }
     });
 });
+
+// Require at least one selected application
+var appForm = document.getElementById('wizardForm');
+if (appForm) {
+    appForm.addEventListener('submit', function(e) {
+        if (!appForm.querySelector('input[name="app_id[]"]:checked')) {
+            e.preventDefault();
+            alert('Select at least one application');
+        }
+    });
+}
 
 // Tag filtering functionality with localStorage support
 $(document).ready(function() {
@@ -1170,6 +1195,23 @@ EOD,
         $container->addItem(new \Ease\Html\H3Tag('🎉 '._('Activation Complete')));
         $container->addItem(new \Ease\Html\PTag('🚀 '._('Your RunTemplate has been successfully created and configured!')));
         $container->addItem(new \Ease\Html\HrTag());
+
+        // Multi-app activation: list every RunTemplate created in this run
+        $completedList = $this->wizardData['completed'] ?? [];
+
+        if (\count($completedList) > 1) {
+            $allList = new \Ease\Html\UlTag();
+
+            foreach ($completedList as $done) {
+                $doneRt = new \MultiFlexi\RunTemplate((int) $done['runtemplate_id']);
+                $allList->addItem(new \Ease\Html\LiTag(new \Ease\Html\ATag('runtemplate.php?id='.(int) $done['runtemplate_id'], '⚗️ #'.(int) $done['runtemplate_id'].' '.$doneRt->getRecordName())));
+            }
+
+            $container->addItem(new \Ease\Html\H4Tag(_('Created RunTemplates')));
+            $container->addItem($allList);
+            $container->addItem(new \Ease\Html\HrTag());
+        }
+
         $container->addItem(new \Ease\Html\H4Tag(_('RunTemplate Summary')));
 
         // Create summary table

@@ -84,7 +84,11 @@ if (WebPage::singleton()->isPosted()) {
         case 3:
             // Step 2 -> Step 3: Save application selection and auto-assign if needed
             if (isset($postData['app_id'], $postData['company_id'])) {
-                $appId = (int) $postData['app_id'];
+                // app_id may be an array (multi-select) or a scalar (legacy single select)
+                $appIds = array_values(array_unique(array_filter(
+                    array_map('intval', (array) $postData['app_id']),
+                    static fn (int $id): bool => $id > 0,
+                )));
                 $companyId = (int) $postData['company_id'];
 
                 if (!\MultiFlexi\Security\CompanyAccessControl::currentUserCanAccessCompany($companyId)) {
@@ -94,18 +98,37 @@ if (WebPage::singleton()->isPosted()) {
                     break;
                 }
 
+                if (empty($appIds)) {
+                    \Ease\Shared::user()->addStatusMessage(_('Select at least one application'), 'warning');
+                    $step = 2;
+
+                    break;
+                }
+
+                $appId = array_shift($appIds);
+
+                // First app is processed now, the rest waits in the queue
                 ActivationWizard::updateWizardData([
                     'company_id' => $companyId,
                     'app_id' => $appId,
+                    'app_queue' => $appIds,
+                    'apps_total' => 1 + \count($appIds),
+                    'completed' => [],
+                    'runtemplate_id' => null,
+                    'runtemplate_name' => null,
+                    'credentials_assigned' => false,
+                    'configuration_saved' => false,
                 ]);
 
-                // Assign the application to the company if not already assigned
+                // Assign the selected applications to the company if not already assigned
                 $companyObj = new \MultiFlexi\Company($companyId);
                 $companyAppObj = new \MultiFlexi\CompanyApp($companyObj);
                 $alreadyAssigned = array_keys($companyAppObj->getAssigned()->fetchAll('app_id'));
 
-                if (!\in_array($appId, $alreadyAssigned, true)) {
-                    $companyAppObj->insertToSQL(['company_id' => $companyId, 'app_id' => $appId]);
+                foreach (array_merge([$appId], $appIds) as $selectedAppId) {
+                    if (!\in_array($selectedAppId, $alreadyAssigned, true)) {
+                        $companyAppObj->insertToSQL(['company_id' => $companyId, 'app_id' => $selectedAppId]);
+                    }
                 }
             }
 
@@ -258,6 +281,37 @@ if (WebPage::singleton()->isPosted()) {
                         $company->getRecordName(),
                     );
                     $runTemplate->addStatusMessage($successMessage, 'success');
+
+                    // Record this app as finished (idempotent on page refresh)
+                    $wizardState = $_SESSION['activation_wizard'] ?? [];
+                    $completed = $wizardState['completed'] ?? [];
+                    $alreadyDone = array_column($completed, 'runtemplate_id');
+
+                    if (!\in_array($runtemplateId, $alreadyDone, true)) {
+                        $completed[] = ['app_id' => (int) $runTemplate->getDataValue('app_id'), 'runtemplate_id' => $runtemplateId];
+                    }
+
+                    $queue = $wizardState['app_queue'] ?? [];
+
+                    if (!empty($queue)) {
+                        // More applications waiting: start the next one at step 3
+                        $nextAppId = (int) array_shift($queue);
+                        ActivationWizard::updateWizardData([
+                            'completed' => $completed,
+                            'app_queue' => $queue,
+                            'app_id' => $nextAppId,
+                            'runtemplate_id' => null,
+                            'runtemplate_name' => null,
+                            'runtemplate_note' => '',
+                            'credentials_assigned' => false,
+                            'configuration_saved' => false,
+                        ]);
+                        WebPage::singleton()->redirect('activation-wizard.php?step=3');
+
+                        exit;
+                    }
+
+                    ActivationWizard::updateWizardData(['completed' => $completed]);
 
                     // Don't clear wizard data yet, we need it for summary page (step 7)
                 }
