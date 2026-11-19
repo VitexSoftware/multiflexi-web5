@@ -31,22 +31,6 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
     private array $appCache = [];
 
     /**
-     * Localized description of a job exit code as declared by the given application.
-     */
-    private function exitCodeDescription(int $appId, $exitCode): string
-    {
-        if ($exitCode === null || $appId <= 0) {
-            return '';
-        }
-
-        if (!isset($this->appCache[$appId])) {
-            $this->appCache[$appId] = new \MultiFlexi\Application($appId);
-        }
-
-        return $this->appCache[$appId]->exitCodeDescription((int) $exitCode);
-    }
-
-    /**
      * Constructor.
      */
     public function __construct()
@@ -158,5 +142,23 @@ class DashboardRecentJobsTable extends \Ease\Html\DivTag
         } catch (\Exception $e) {
             $this->addItem(new \Ease\TWB5\Badge(_('Error loading recent jobs: ').$e->getMessage(), 'danger'));
         }
+    }
+
+    /**
+     * Localized description of a job exit code as declared by the given application.
+     *
+     * @param mixed $exitCode
+     */
+    private function exitCodeDescription(int $appId, $exitCode): string
+    {
+        if ($exitCode === null || $appId <= 0) {
+            return '';
+        }
+
+        if (!isset($this->appCache[$appId])) {
+            $this->appCache[$appId] = new \MultiFlexi\Application($appId);
+        }
+
+        return $this->appCache[$appId]->exitCodeDescription((int) $exitCode);
     }
 }
