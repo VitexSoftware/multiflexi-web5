@@ -64,7 +64,7 @@ $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
 
 $allApps = $apper->getFluentPDO()
     ->from('apps')
-    ->select('apps.id, apps.name, apps.description, apps.uuid, apps.image, apps.tags')
+    ->select('apps.id, apps.name, apps.description, apps.uuid, apps.image, apps.tags, apps.executable')
     ->select('COALESCE(app_translations.name, apps.name) AS localized_name')
     ->select('COALESCE(app_translations.description, apps.description) AS localized_description')
     ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)
@@ -108,13 +108,12 @@ if (!empty($allTags)) {
 // Add tag filter using PillBox if tags are available
 if (!empty($allTags)) {
     $filterContainer->addItem(new \Ease\Html\H4Tag(_('Filter by Tags')));
-    $filterContainer->addItem(new PTag(_('Select tags to filter applications. All tags are selected by default to show all applications.')));
+    $filterContainer->addItem(new PTag(_('Pick one or more tags to show only applications having all of them. With no tag picked, all applications are shown.')));
 
     $filterRow = new Row();
 
-    // Pre-select all tags by default
-    $allTagIds = array_column($allTags, 'id');
-    $tagFilter = new PillBox('tag_filter', $allTags, $allTagIds, ['class' => 'form-control mb-3', 'placeholder' => _('Select tags to filter applications...')]);
+    // Nothing picked = no filter; picking tags narrows the list down
+    $tagFilter = new PillBox('tag_filter', $allTags, [], ['class' => 'form-control mb-3', 'placeholder' => _('Select tags to filter applications...')]);
     $filterRow->addColumn(10, $tagFilter);
 
     // Add reset filter button
@@ -122,7 +121,7 @@ if (!empty($allTags)) {
         'class' => 'btn btn-outline-secondary mb-3',
         'type' => 'button',
         'id' => 'reset-tag-filter',
-        'title' => _('Select all tags to show all applications'),
+        'title' => _('Clear the tag filter to show all applications'),
     ]);
     $filterRow->addColumn(2, $resetButton);
 
@@ -130,7 +129,7 @@ if (!empty($allTags)) {
 }
 
 // Add search box
-$searchBox = new \Ease\Html\InputSearchTag('app_search', '', ['placeholder' => _('Search applications...'), 'class' => 'form-control form-control-lg mb-3']);
+$searchBox = new \Ease\Html\InputSearchTag('app_search', '', ['id' => 'app_search', 'placeholder' => _('Search applications...'), 'class' => 'form-control form-control-lg mb-3']);
 $filterContainer->addItem($searchBox);
 
 // Show count of selected apps
@@ -154,11 +153,22 @@ foreach ($allApps as $app) {
     $tagsList = !empty($app['tags']) ? explode(',', $app['tags']) : [];
     $tagsDataAttr = implode(',', array_map('trim', $tagsList));
 
-    $cardDiv = new DivTag(null, ['class' => 'col-md-4 col-lg-3 mb-3 app-card-wrapper', 'data-app-name' => strtolower($app['name']), 'data-app-desc' => strtolower($app['description'] ?? ''), 'data-tags' => $tagsDataAttr]);
+    // Everything the search box matches against: original and localized name and
+    // description, the executable (package command, e.g. abraflexi-daydigest) and tags
+    $searchText = mb_strtolower(implode(' ', [
+        $app['name'],
+        $app['localized_name'] ?? '',
+        $app['description'] ?? '',
+        $app['localized_description'] ?? '',
+        basename((string) ($app['executable'] ?? '')),
+        $tagsDataAttr,
+    ]));
+
+    $cardDiv = new DivTag(null, ['class' => 'col-md-4 col-lg-3 mb-3 app-card-wrapper', 'data-search' => $searchText, 'data-tags' => $tagsDataAttr]);
 
     $card = new Card(
         null,
-        ['class' => 'h-100 app-card '.($isAssigned ? 'border-primary' : ''), 'style' => $isAssigned ? 'background-color: #e7f3ff;' : ''],
+        ['class' => 'h-100 app-card'.($isAssigned ? ' app-card-selected' : '')],
     );
 
     $cardBody = new DivTag(null, ['class' => 'card-body']);
@@ -235,8 +245,12 @@ WebPage::singleton()->addCSS(<<<'CSS'
     transform: translateY(-5px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
-.app-card-wrapper[data-hidden="true"] {
+.app-card-wrapper[data-hidden="true"],
+.app-card-wrapper[data-tag-hidden="true"] {
     display: none;
+}
+.tag-badge {
+    cursor: pointer;
 }
 .app-checkbox {
     width: 20px;
@@ -250,8 +264,19 @@ WebPage::singleton()->addCSS(<<<'CSS'
 .app-detail-link {
     color: inherit;
 }
+.app-card-selected {
+    border-color: var(--color-accent-500, var(--bs-primary));
+    background-color: color-mix(in srgb, var(--color-accent, var(--bs-primary)) 16%, var(--bs-card-bg, transparent));
+    box-shadow: 0 0 0 1px var(--color-accent-500, var(--bs-primary));
+}
+.tag-badge.tag-badge-selected {
+    font-weight: bold;
+    background-color: var(--color-accent-600, var(--bs-primary)) !important;
+    color: var(--color-neutral-100, #fff) !important;
+    box-shadow: 0 0 0 1px var(--color-accent-300, var(--bs-primary));
+}
 .app-detail-link:hover {
-    color: #007bff;
+    color: var(--bs-link-hover-color);
     text-decoration: underline !important;
 }
 CSS);
@@ -271,116 +296,76 @@ $(document).ready(function() {
     $('.app-checkbox').change(function() {
         var card = $(this).closest('.app-card');
         if ($(this).is(':checked')) {
-            card.addClass('border-primary').css('background-color', '#e7f3ff');
+            card.addClass('app-card-selected');
         } else {
-            card.removeClass('border-primary').css('background-color', '');
+            card.removeClass('app-card-selected');
         }
         updateCount();
     });
 
     // Search functionality
-    $('#app_search').on('keyup', function() {
-        var searchText = $(this).val().toLowerCase();
-        $('.app-card-wrapper').each(function() {
-            var appName = $(this).data('app-name');
-            var appDesc = $(this).data('app-desc') || '';
-            var isVisible = $(this).css('display') !== 'none';
-            if (appName.includes(searchText) || appDesc.includes(searchText)) {
-                $(this).attr('data-hidden', 'false').show();
-            } else {
-                $(this).attr('data-hidden', 'true').hide();
-            }
+    // Text search among the applications left by the tag filter: the two filters
+    // hide cards through separate attributes (data-hidden / data-tag-hidden), so a
+    // card is shown only when it passes both. Every word typed must match.
+    function filterApplicationsBySearch() {
+        var words = ($('#app_search').val() || '').toLowerCase().split(/\s+/).filter(function(word) {
+            return word.length > 0;
         });
-    });
 
-    // Tag filtering functionality with localStorage support
+        $('.app-card-wrapper').each(function() {
+            var haystack = $(this).attr('data-search') || '';
+            var matches = words.every(function(word) {
+                return haystack.indexOf(word) !== -1;
+            });
+            $(this).attr('data-hidden', matches ? 'false' : 'true');
+        });
+    }
+
+    // "input" also catches paste and the clear (×) button of the search field
+    $('#app_search').on('input', filterApplicationsBySearch);
+
+    // Tag filtering (selection remembered in localStorage)
     const STORAGE_KEY = 'multiflexi_companyapps_tag_filter';
-    const DEFAULT_ALL_SELECTED = 'all_tags_selected';
 
     var tagFilterSelectize = null;
     var allAvailableTags = [];
 
-    // Function to save tag selection to localStorage
     function saveTagSelection(selectedTags) {
         try {
-            if (selectedTags.length === allAvailableTags.length) {
-                localStorage.setItem(STORAGE_KEY, DEFAULT_ALL_SELECTED);
-            } else if (selectedTags.length === 0) {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify([]));
-            } else {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedTags));
-            }
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(selectedTags));
         } catch (e) {
-            console.warn('Failed to save tag selection to localStorage:', e);
+            // storage unavailable (private window etc.) - the filter still works
         }
     }
 
-    // Function to load tag selection from localStorage
     function loadTagSelection() {
         try {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (!saved || saved === DEFAULT_ALL_SELECTED) {
-                return allAvailableTags.slice();
-            }
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
-                return parsed.filter(tag => allAvailableTags.includes(tag));
-            }
-            return allAvailableTags.slice();
+            var parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+            // Older versions stored the string "all_tags_selected" (= no filter)
+            return Array.isArray(parsed) ? parsed.filter(function (tag) { return allAvailableTags.includes(tag); }) : [];
         } catch (e) {
-            console.warn('Failed to load tag selection to localStorage:', e);
-            return allAvailableTags.slice();
+            return [];
         }
     }
 
-    // Function to filter applications based on selected tags
+    // Show only applications having every selected tag; no tag selected = show all.
+    // Hidden cards keep their checkbox state, so filtering never changes which
+    // applications get assigned when the form is submitted.
     function filterApplicationsByTags(selectedTags) {
-        var tagsArray = [];
-        if (typeof selectedTags === 'string' && selectedTags.length > 0) {
-            tagsArray = selectedTags.split(',');
-        } else if (Array.isArray(selectedTags)) {
-            tagsArray = selectedTags;
-        }
+        var tagsArray = Array.isArray(selectedTags) ? selectedTags : (selectedTags ? String(selectedTags).split(',') : []);
 
-        var visibleCount = 0;
         $('.app-card-wrapper').each(function() {
-            var cardTags = $(this).attr('data-tags') || '';
-            var cardTagsArray = cardTags.split(',').map(function(tag) {
+            var cardTagsArray = ($(this).attr('data-tags') || '').split(',').map(function(tag) {
                 return tag.trim();
             }).filter(function(tag) {
                 return tag.length > 0;
             });
 
-            var shouldShow = true;
+            var shouldShow = tagsArray.every(function(tag) {
+                return cardTagsArray.indexOf(tag) !== -1;
+            });
 
-            // If no tags are selected, show ALL applications
-            if (tagsArray.length === 0) {
-                shouldShow = true;
-            } else {
-                // Show apps that have no tags or have at least one matching tag
-                if (cardTagsArray.length === 0) {
-                    shouldShow = true;
-                } else {
-                    shouldShow = false;
-                    for (var i = 0; i < tagsArray.length; i++) {
-                        if (cardTagsArray.indexOf(tagsArray[i]) !== -1) {
-                            shouldShow = true;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (shouldShow) {
-                $(this).show();
-                visibleCount++;
-            } else {
-                $(this).hide();
-                var checkbox = $(this).find('.app-checkbox');
-                if (checkbox.is(':checked')) {
-                    checkbox.prop('checked', false).trigger('change');
-                }
-            }
+            $(this).attr('data-tag-hidden', shouldShow ? 'false' : 'true');
         });
 
         highlightSelectedTags(tagsArray);
@@ -392,55 +377,48 @@ $(document).ready(function() {
         $('.tag-badge').each(function() {
             var tagText = $(this).text().trim();
 
-            $(this).removeClass('text-bg-primary text-bg-warning text-bg-success text-bg-info').addClass('text-bg-secondary');
-            $(this).css({
-                'font-weight': 'normal',
-                'box-shadow': 'none',
-                'transform': 'scale(1)',
-                'border': 'none'
-            });
-
-            if (selectedTags.includes(tagText)) {
-                $(this).removeClass('text-bg-secondary').addClass('text-bg-primary');
-                $(this).css({
-                    'font-weight': 'bold',
-                    'box-shadow': '0 2px 6px rgba(0,123,255,0.4)',
-                    'transform': 'scale(1.1)',
-                    'border': '2px solid #0056b3',
-                    'background-color': '#007bff',
-                    'color': '#ffffff'
-                });
-            }
+            // Colours come from .tag-badge-selected so they follow the dark theme
+            $(this).toggleClass('tag-badge-selected', selectedTags.includes(tagText));
         });
     }
 
-    // Initialize tag filter selectize
-    setTimeout(function() {
-        var element = $('#tag_filterpillBox');
-        if (element.length > 0 && element[0].selectize) {
-            tagFilterSelectize = element[0].selectize;
-            var options = tagFilterSelectize.options;
-            allAvailableTags = Object.keys(options);
-
-            var savedSelection = loadTagSelection();
-            tagFilterSelectize.setValue(savedSelection, true);
-            filterApplicationsByTags(savedSelection);
-
-            tagFilterSelectize.on('change', function(value) {
-                var selectedTags = Array.isArray(value) ? value : (value ? value.split(',') : []);
-                saveTagSelection(selectedTags);
-                filterApplicationsByTags(selectedTags);
-            });
-
-            $('#reset-tag-filter').on('click', function() {
-                tagFilterSelectize.setValue(allAvailableTags, true);
-                saveTagSelection(allAvailableTags);
-                filterApplicationsByTags(allAvailableTags);
-            });
-        } else {
-            setTimeout(arguments.callee, 500);
+    // Clicking a tag badge on a card adds that tag to the filter
+    $(document).on('click', '.tag-badge', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (tagFilterSelectize) {
+            tagFilterSelectize.addItem($(this).text().trim());
         }
-    }, 1000);
+    });
+
+    // Initialize tag filter selectize (PillBox creates it shortly after DOM ready)
+    (function initTagFilter() {
+        var element = $('#tag_filterpillBox');
+        if (element.length === 0) {
+            return;
+        }
+        if (!element[0].selectize) {
+            setTimeout(initTagFilter, 200);
+            return;
+        }
+
+        tagFilterSelectize = element[0].selectize;
+        allAvailableTags = Object.keys(tagFilterSelectize.options);
+
+        var savedSelection = loadTagSelection();
+        tagFilterSelectize.setValue(savedSelection, true);
+        filterApplicationsByTags(savedSelection);
+
+        tagFilterSelectize.on('change', function(value) {
+            var selectedTags = Array.isArray(value) ? value : (value ? value.split(',') : []);
+            saveTagSelection(selectedTags);
+            filterApplicationsByTags(selectedTags);
+        });
+
+        $('#reset-tag-filter').on('click', function() {
+            tagFilterSelectize.clear();
+        });
+    })();
 
     // Update selected count
     function updateCount() {
