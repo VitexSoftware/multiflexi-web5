@@ -140,11 +140,13 @@ class RoleBasedAccessControl
     public function createRole(string $name, string $displayName, ?string $description = null, bool $isSystem = false): ?int
     {
         try {
+            // Rbac::createRole() is an upsert; only a role that did not exist yet is audited as created
+            $existed = \in_array($name, array_column($this->rbac->getAllRoles(true), 'name'), true);
             $roleId = $this->rbac->createRole($name, $displayName, $description, $isSystem);
 
             $this->clearCache();
 
-            if ($roleId !== null && isset($GLOBALS['securityAuditLogger'])) {
+            if ($roleId !== null && !$existed && isset($GLOBALS['securityAuditLogger'])) {
                 $GLOBALS['securityAuditLogger']->logEvent(
                     'role_created',
                     "Role '{$name}' created with ID {$roleId}",
@@ -460,12 +462,25 @@ class RoleBasedAccessControl
      */
     private function initializeDefaultData(): void
     {
-        foreach ($this->defaultPermissions as $name => $description) {
+        // This runs on every request (init.php), so seed only what is missing:
+        // re-upserting everything used to cost dozens of queries per request and
+        // wrote five "role_created" audit rows each time.
+        $existingPermissions = array_column($this->rbac->getAllPermissions(), 'name');
+        $existingRoles = array_column($this->rbac->getAllRoles(true), 'name');
+
+        $missingPermissions = array_diff_key($this->defaultPermissions, array_flip($existingPermissions));
+        $missingRoles = array_diff_key($this->defaultRoles, array_flip($existingRoles));
+
+        if ($missingPermissions === [] && $missingRoles === []) {
+            return;
+        }
+
+        foreach ($missingPermissions as $name => $description) {
             [$resource, $action] = explode('.', $name, 2);
             $this->createPermission($name, $description, $resource, $action, true);
         }
 
-        foreach ($this->defaultRoles as $roleName => $roleData) {
+        foreach ($missingRoles as $roleName => $roleData) {
             $this->createRole(
                 $roleName,
                 $roleData['name'],
