@@ -11,6 +11,7 @@ composer.lock
 .vscode/settings.json
 /.php-cs-fixer.cache
 /tests/.phpunit.result.cache
+/.phpunit.result.cache
 /log/
 /nbproject/configs/
 /src/translations.php
