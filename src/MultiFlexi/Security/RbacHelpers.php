@@ -177,6 +177,24 @@ class RbacHelpers
     }
 
     /**
+     * Admin gate for pages that must deny by default.
+     *
+     * When RBAC is active only the admin / super_admin role counts, so revoking
+     * the role revokes access even if the legacy per-user "admin" setting is still
+     * set. Without RBAC the legacy setting must be strictly true.
+     */
+    public static function currentUserIsAdministrator(): bool
+    {
+        if (self::isAvailable()) {
+            return self::isCurrentUserAdmin();
+        }
+
+        $user = \Ease\Shared::user();
+
+        return method_exists($user, 'getSettingValue') && $user->getSettingValue('admin') === true;
+    }
+
+    /**
      * Enforce admin access.
      *
      * @throws \Exception If user is not admin

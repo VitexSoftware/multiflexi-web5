@@ -20,7 +20,9 @@ use MultiFlexi\User;
 
 require_once './init.php';
 
-WebPage::singleton()->onlyForLogged();
+if (WebPage::singleton()->onlyForLogged()) {
+    exit;
+}
 
 $targetUserId = WebPage::singleton()->getRequestValue('target_user_id', 'int');
 $currentUser = \Ease\Shared::user(); // signed-in user from the session (User::singleton() is a fresh, anonymous object)
@@ -40,8 +42,8 @@ if (!$targetUser->getId()) {
 }
 
 // Check permissions - users can delete themselves, admins can delete others
-$canDelete = ($currentUser->getId() === $targetUser->getId())
-             || $currentUser->getSettingValue('admin'); // Adjust this based on your role system
+$canDelete = ((int) $currentUser->getId() === (int) $targetUser->getId())
+             || \MultiFlexi\Security\RbacHelpers::currentUserIsAdministrator();
 
 if (!$canDelete) {
     WebPage::singleton()->addStatusMessage(_('You do not have permission to request deletion for this user'), 'error');

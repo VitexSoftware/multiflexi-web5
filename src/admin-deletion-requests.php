@@ -21,12 +21,14 @@ use MultiFlexi\User;
 
 require_once './init.php';
 
-WebPage::singleton()->onlyForLogged();
+if (WebPage::singleton()->onlyForLogged()) {
+    exit;
+}
 
 $currentUser = \Ease\Shared::user(); // signed-in user from the session (User::singleton() is a fresh, anonymous object)
 
-// Check if user is admin (adjust this based on your role system)
-if (!$currentUser->getSettingValue('admin')) {
+// Admins only, deny by default (RBAC role, or the legacy setting without RBAC)
+if (!\MultiFlexi\Security\RbacHelpers::currentUserIsAdministrator()) {
     WebPage::singleton()->addStatusMessage(_('Access denied. Administrator privileges required.'), 'error');
     WebPage::singleton()->redirect('main.php');
 

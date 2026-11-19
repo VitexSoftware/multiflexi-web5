@@ -46,11 +46,8 @@ if (WebPage::singleton()->onlyForLogged()) {
 // a fresh, never-logged-in object and bounce every visitor back to the login page.
 $user = \Ease\Shared::user();
 
-// Admins only, deny by default: RBAC role when RBAC is active, otherwise the
-// legacy per-user "admin" setting (kept in sync by createuser.php)
-$isAdmin = \MultiFlexi\Security\RbacHelpers::isAvailable()
-    ? \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()
-    : $user->getSettingValue('admin') === true;
+// Admins only, deny by default (RBAC role, or the legacy setting without RBAC)
+$isAdmin = \MultiFlexi\Security\RbacHelpers::currentUserIsAdministrator();
 
 if (!$isAdmin) {
     $user->addStatusMessage(_('Insufficient privileges'), 'error');
