@@ -113,10 +113,30 @@ class DashboardQueue extends \Ease\Html\DivTag
         return '<tr data-iv="'.htmlspecialchars($code).'" data-q="'.htmlspecialchars($search).'">'
             .'<td class="nc-num"><div class="nc-stack"><span>'.$after->format('H:i').'</span><span class="nc-muted nc-small">'.new \Ease\Html\Widgets\LiveAge($after).'</span></div></td>'
             .'<td><span class="nc-tag">'.ScheduleLister::scheduleTypeLabel($type === null ? null : (string) $type).'</span></td>'
-            .'<td><a href="app.php?id='.(int) $row['app_id'].'" class="nc-entity"><span class="nc-chip-ico">'.htmlspecialchars(self::initials($app)).'</span>'.htmlspecialchars($app).'</a></td>'
+            .'<td><a href="app.php?id='.(int) $row['app_id'].'" class="nc-entity">'.self::appIcon($row['app_uuid'] ?? null, $app).htmlspecialchars($app).'</a></td>'
             .'<td><a href="runtemplate.php?id='.(int) $row['runtemplate_id'].'" class="nc-plain">⚗️&nbsp;'.htmlspecialchars($template).'</a></td>'
-            .'<td><a href="company.php?id='.(int) $row['company_id'].'" class="nc-entity nc-plain"><span class="nc-chip-ico nc-round">'.htmlspecialchars(self::initials($company)).'</span>'.htmlspecialchars($company).'</a></td>'
+            .'<td><a href="company.php?id='.(int) $row['company_id'].'" class="nc-entity nc-plain">'.self::companyIcon($row['company_logo'] ?? null, $company).htmlspecialchars($company).'</a></td>'
             .'<td class="text-end nc-num"><a href="job.php?id='.(int) $row['job'].'" class="nc-muted">🏁&nbsp;#'.(int) $row['job'].'</a></td></tr>';
+    }
+
+    /**
+     * Application icon (same source as \MultiFlexi\Ui\AppLogo), falling back to the generic apps icon.
+     */
+    private static function appIcon(?string $appUuid, string $appName): string
+    {
+        $src = empty($appUuid) ? 'images/apps.svg' : 'appimage.php?uuid='.rawurlencode($appUuid);
+
+        return '<img src="'.htmlspecialchars($src).'" alt="'.htmlspecialchars($appName).'" class="nc-app-ico" loading="lazy">';
+    }
+
+    /**
+     * Company logo (same source as \MultiFlexi\Ui\CompanyLogo), falling back to the generic company icon.
+     */
+    private static function companyIcon(?string $companyLogo, string $companyName): string
+    {
+        $src = empty($companyLogo) ? 'images/company.svg' : $companyLogo;
+
+        return '<img src="'.htmlspecialchars($src).'" alt="'.htmlspecialchars($companyName).'" class="nc-app-ico nc-round" loading="lazy">';
     }
 
     private static function dayLabel(string $date, \DateTimeImmutable $today): string
@@ -140,16 +160,5 @@ class DashboardQueue extends \Ease\Html\DivTag
         }
 
         return ucfirst((string) $formatted);
-    }
-
-    private static function initials(string $name): string
-    {
-        $letters = '';
-
-        foreach (\array_slice(preg_split('/\s+/u', trim($name)) ?: [], 0, 2) as $word) {
-            $letters .= mb_strtoupper(mb_substr($word, 0, 1));
-        }
-
-        return $letters === '' ? '?' : $letters;
     }
 }
