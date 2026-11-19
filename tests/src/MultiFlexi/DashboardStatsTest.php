@@ -55,13 +55,13 @@ class DashboardStatsTest extends TestCase
     public function testAggregation(): void
     {
         $rows = [
-            ['begin' => '2026-11-18 10:00:00', 'exitcode' => 0, 'company_id' => 1, 'app_id' => 5],
-            ['begin' => '2026-11-18 11:00:00', 'exitcode' => 0, 'company_id' => 1, 'app_id' => 5],
-            ['begin' => '2026-11-18 12:00:00', 'exitcode' => 1, 'company_id' => 2, 'app_id' => 7],
-            ['begin' => '2026-11-17 09:00:00', 'exitcode' => 255, 'company_id' => 2, 'app_id' => 7],
-            ['begin' => '2026-11-17 09:30:00', 'exitcode' => null, 'company_id' => 2, 'app_id' => 8],
-            ['begin' => '2026-09-01 09:30:00', 'exitcode' => 1, 'company_id' => 2, 'app_id' => 8], // outside window
-            ['begin' => null, 'exitcode' => 1, 'company_id' => 2, 'app_id' => 8], // never started
+            ['begin' => '2026-11-18 10:00:00', 'exitcode' => 0, 'company_id' => 1, 'runtemplate_id' => 5],
+            ['begin' => '2026-11-18 11:00:00', 'exitcode' => 0, 'company_id' => 1, 'runtemplate_id' => 5],
+            ['begin' => '2026-11-18 12:00:00', 'exitcode' => 1, 'company_id' => 2, 'runtemplate_id' => 7],
+            ['begin' => '2026-11-17 09:00:00', 'exitcode' => 255, 'company_id' => 2, 'runtemplate_id' => 7],
+            ['begin' => '2026-11-17 09:30:00', 'exitcode' => null, 'company_id' => 2, 'runtemplate_id' => 8],
+            ['begin' => '2026-09-01 09:30:00', 'exitcode' => 1, 'company_id' => 2, 'runtemplate_id' => 8], // outside window
+            ['begin' => null, 'exitcode' => 1, 'company_id' => 2, 'runtemplate_id' => 8], // never started
         ];
         $stats = new DashboardStats($rows, $this->today);
 
@@ -74,15 +74,15 @@ class DashboardStatsTest extends TestCase
     public function testCompanyBreakdown(): void
     {
         $rows = [
-            ['begin' => '2026-11-18 10:00:00', 'exitcode' => 0, 'company_id' => 1, 'app_id' => 5],
-            ['begin' => '2026-11-18 12:00:00', 'exitcode' => 1, 'company_id' => 2, 'app_id' => 7],
-            ['begin' => '2026-11-18 13:00:00', 'exitcode' => 1, 'company_id' => 2, 'app_id' => 7],
+            ['begin' => '2026-11-18 10:00:00', 'exitcode' => 0, 'company_id' => 1, 'runtemplate_id' => 5],
+            ['begin' => '2026-11-18 12:00:00', 'exitcode' => 1, 'company_id' => 2, 'runtemplate_id' => 7],
+            ['begin' => '2026-11-18 13:00:00', 'exitcode' => 1, 'company_id' => 2, 'runtemplate_id' => 7],
         ];
         $stats = new DashboardStats($rows, $this->today);
 
         $this->assertSame(1, $stats->company(1)['success']);
-        $this->assertSame([7 => 2], $stats->company(2)['apps']);
+        $this->assertSame([7 => 2], $stats->company(2)['runtemplates']);
         $this->assertSame(0, $stats->company(99)['success']);
-        $this->assertSame([], $stats->company(99)['apps']);
+        $this->assertSame([], $stats->company(99)['runtemplates']);
     }
 }

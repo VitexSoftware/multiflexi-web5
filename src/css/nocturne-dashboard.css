@@ -45,6 +45,13 @@
 .nc-issues { display: flex; flex-direction: column; gap: var(--space-2); padding-top: var(--space-3); border-top: 1px solid var(--color-divider); }
 .nc-issue { display: flex; align-items: center; gap: var(--space-3); font-size: 12px; }
 .nc-issue-app { flex: 1; color: var(--color-neutral-200); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+/* Whole card opens the company; run template links stay clickable above that overlay */
+.nc-company-link, .nc-company-link:hover { color: var(--color-text); text-decoration: none; }
+.nc-company-link::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); }
+.nc-company-link:focus-visible { outline: none; }
+.nc-company-link:focus-visible::after { outline: 2px solid var(--color-accent, currentColor); outline-offset: 2px; }
+a.nc-issue-app { position: relative; z-index: 1; text-decoration: none; }
+a.nc-issue-app:hover, a.nc-issue-app:focus-visible { color: var(--color-text); text-decoration: underline; }
 
 /* Chart + spiral row */
 .nc-row { display: flex; gap: var(--space-4); align-items: stretch; flex-wrap: wrap; }

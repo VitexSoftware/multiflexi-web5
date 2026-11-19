@@ -18,7 +18,8 @@ namespace MultiFlexi\Ui;
 use MultiFlexi\DashboardData;
 
 /**
- * Grid of company cards summarising the last 30 days; a card opens company.php.
+ * Grid of company cards summarising the last 30 days; a card opens company.php,
+ * a failing run template listed on it opens runtemplate.php.
  *
  * @no-named-arguments
  */
@@ -49,17 +50,18 @@ class DashboardCompanyGrid extends \Ease\Html\DivTag
                 : htmlspecialchars(self::initials($name));
 
             $issues = '';
-            $apps = $counts['apps'];
-            arsort($apps);
-            $apps = \array_slice($apps, 0, self::MAX_ISSUES, true);
+            $runTemplates = $counts['runtemplates'];
+            arsort($runTemplates);
+            $runTemplates = \array_slice($runTemplates, 0, self::MAX_ISSUES, true);
 
-            if ($apps !== []) {
-                $names = $data->appNames(array_keys($apps));
+            if ($runTemplates !== []) {
+                $labels = $data->runTemplateLabels(array_keys($runTemplates));
                 $issues = '<div class="nc-issues">';
 
-                foreach ($apps as $appId => $n) {
+                foreach ($runTemplates as $runTemplateId => $n) {
+                    $label = $labels[$runTemplateId] ?? '#'.$runTemplateId;
                     $issues .= '<div class="nc-issue"><i class="bi bi-exclamation-circle nc-fail-text"></i>'
-                        .'<span class="nc-issue-app">'.htmlspecialchars($names[$appId] ?? '#'.$appId).'</span>'
+                        .'<a href="runtemplate.php?id='.(int) $runTemplateId.'" class="nc-issue-app" title="'.htmlspecialchars(sprintf(_('Open run template %s'), $label)).'">'.htmlspecialchars($label).'</a>'
                         .'<span class="nc-fail-text">'.$n.'×</span></div>';
                 }
 
@@ -69,17 +71,18 @@ class DashboardCompanyGrid extends \Ease\Html\DivTag
             $okWidth = $total > 0 ? round($ok / $total * 100, 2) : 0;
             $failWidth = $total > 0 ? round($fail / $total * 100, 2) : 0;
 
+            // The company link is stretched over the whole card; run template links sit above it
             $cards .= '<div class="nc-company-wrap">'
-                .'<a href="'.htmlspecialchars($href).'" class="nc-company" title="'.htmlspecialchars(sprintf(_('Open company %s'), $name)).'">'
+                .'<div class="nc-company">'
                 .'<div class="nc-company-head"><div class="nc-avatar">'.$logo.'</div>'
-                .'<div class="nc-company-id"><span class="nc-company-name">'.htmlspecialchars($name).'</span>'
+                .'<div class="nc-company-id"><a href="'.htmlspecialchars($href).'" class="nc-company-name nc-company-link" title="'.htmlspecialchars(sprintf(_('Open company %s'), $name)).'">'.htmlspecialchars($name).'</a>'
                 .'<span class="nc-muted">'.htmlspecialchars(sprintf(_('%d apps'), $data->appCount($id))).'</span></div>'
                 .'<span class="nc-company-rate'.($rate !== null && $rate < 80 ? ' nc-fail-text' : '').'">'.($rate === null ? '—' : $rate."\u{a0}%").'</span></div>'
                 .'<div class="nc-bar"><div class="nc-bar-ok" style="width:'.$okWidth.'%"></div><div class="nc-bar-fail" style="width:'.$failWidth.'%"></div></div>'
                 .'<div class="nc-company-legend"><span><i class="nc-dot nc-dot-ok"></i>'.$ok.' '.htmlspecialchars(_('success')).'</span>'
                 .'<span><i class="nc-dot nc-dot-fail"></i>'.$fail.' '.htmlspecialchars(_('failed')).'</span></div>'
                 .$issues
-                .'</a>'
+                .'</div>'
                 .'</div>';
         }
 

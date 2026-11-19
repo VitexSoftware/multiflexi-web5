@@ -122,22 +122,90 @@ class DashboardData
     }
 
     /**
-     * Application names by ID.
+     * Display labels of run templates by ID.
+     *
+     * The name of a run template is chosen by the user and shown as is, never
+     * translated. Only a run template without any name falls back to the
+     * (localized) name of its application.
+     *
+     * @param array<int, int> $runTemplateIds
+     *
+     * @return array<int, string>
+     */
+    public function runTemplateLabels(array $runTemplateIds): array
+    {
+        if ($runTemplateIds === []) {
+            return [];
+        }
+
+        $rows = $this->jobber->getFluentPDO(true)
+            ->from('runtemplate')
+            ->select(['runtemplate.id', 'runtemplate.name', 'runtemplate.app_id', 'apps.name AS app_name'], true)
+            ->leftJoin('apps ON apps.id = runtemplate.app_id')
+            ->where('runtemplate.id', array_map('intval', $runTemplateIds))
+            ->fetchAll();
+
+        $appNames = $this->localizedAppNames(array_map(static fn (array $row): int => (int) $row['app_id'], $rows));
+        $labels = [];
+
+        foreach ($rows as $row) {
+            $name = trim((string) $row['name']);
+            $appId = (int) $row['app_id'];
+
+            if ($name === '') {
+                $name = $appNames[$appId] ?? (string) $row['app_name'];
+            }
+
+            $labels[(int) $row['id']] = $name;
+        }
+
+        return $labels;
+    }
+
+    /**
+     * Application names by ID in the current UI language (English, then raw name as fallback).
      *
      * @param array<int, int> $appIds
      *
      * @return array<int, string>
      */
-    public function appNames(array $appIds): array
+    public function localizedAppNames(array $appIds): array
     {
+        $appIds = array_values(array_unique(array_filter(array_map('intval', $appIds))));
+
         if ($appIds === []) {
             return [];
         }
 
         $names = [];
 
-        foreach ($this->jobber->getFluentPDO(true)->from('apps')->select(['id', 'name'], true)->where('id', array_map('intval', $appIds))->fetchAll() as $row) {
+        foreach ($this->jobber->getFluentPDO(true)->from('apps')->select(['id', 'name'], true)->where('id', $appIds)->fetchAll() as $row) {
             $names[(int) $row['id']] = (string) $row['name'];
+        }
+
+        $lang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+
+        try {
+            $translations = $this->jobber->getFluentPDO(true)
+                ->from('app_translations')
+                ->select(['app_id', 'lang', 'name'], true)
+                ->where('app_id', $appIds)
+                ->where('lang', array_unique([$lang, 'en']))
+                ->fetchAll();
+        } catch (\Exception $e) {
+            return $names; // translations table not migrated yet
+        }
+
+        $byLang = [];
+
+        foreach ($translations as $row) {
+            if ((string) $row['name'] !== '') {
+                $byLang[(string) $row['lang']][(int) $row['app_id']] = (string) $row['name'];
+            }
+        }
+
+        foreach ($appIds as $appId) {
+            $names[$appId] = $byLang[$lang][$appId] ?? $byLang['en'][$appId] ?? $names[$appId] ?? '#'.$appId;
         }
 
         return $names;
@@ -225,7 +293,7 @@ class DashboardData
 
         return $this->jobber->getFluentPDO(true)
             ->from('job')
-            ->select(['begin', 'exitcode', 'company_id', 'app_id'], true)
+            ->select(['begin', 'exitcode', 'company_id', 'runtemplate_id'], true)
             ->where('begin >= ?', $since)
             ->where('job.company_id IN ('.implode(',', $companyIds).')')
             ->order('begin')

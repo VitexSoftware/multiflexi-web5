@@ -19,7 +19,7 @@ namespace MultiFlexi;
  * Pure aggregation of job rows for the dashboard (no database access).
  *
  * Input rows are arrays with the keys `begin` (datetime string or null),
- * `exitcode` (int|string|null), `company_id` and `app_id`.
+ * `exitcode` (int|string|null), `company_id` and `runtemplate_id`.
  *
  * @no-named-arguments
  */
@@ -36,7 +36,7 @@ final class DashboardStats
     private array $days = [];
 
     /**
-     * @var array<int, array{success: int, fail: int, waiting: int, exception: int, apps: array<int, int>}>
+     * @var array<int, array{success: int, fail: int, waiting: int, exception: int, runtemplates: array<int, int>}>
      */
     private array $companies = [];
 
@@ -76,14 +76,15 @@ final class DashboardStats
             $companyId = (int) ($row['company_id'] ?? 0);
 
             if (!isset($this->companies[$companyId])) {
-                $this->companies[$companyId] = self::emptyCounts() + ['apps' => []];
+                $this->companies[$companyId] = self::emptyCounts() + ['runtemplates' => []];
             }
 
             ++$this->companies[$companyId][$state];
 
-            if ($state === self::STATE_FAIL || $state === self::STATE_EXCEPTION) {
-                $appId = (int) ($row['app_id'] ?? 0);
-                $this->companies[$companyId]['apps'][$appId] = ($this->companies[$companyId]['apps'][$appId] ?? 0) + 1;
+            $runTemplateId = (int) ($row['runtemplate_id'] ?? 0);
+
+            if ($runTemplateId > 0 && ($state === self::STATE_FAIL || $state === self::STATE_EXCEPTION)) {
+                $this->companies[$companyId]['runtemplates'][$runTemplateId] = ($this->companies[$companyId]['runtemplates'][$runTemplateId] ?? 0) + 1;
             }
         }
     }
@@ -141,11 +142,11 @@ final class DashboardStats
     /**
      * Counts for one company (zeros when it has no jobs in the window).
      *
-     * @return array{success: int, fail: int, waiting: int, exception: int, apps: array<int, int>}
+     * @return array{success: int, fail: int, waiting: int, exception: int, runtemplates: array<int, int>}
      */
     public function company(int $companyId): array
     {
-        return $this->companies[$companyId] ?? (self::emptyCounts() + ['apps' => []]);
+        return $this->companies[$companyId] ?? (self::emptyCounts() + ['runtemplates' => []]);
     }
 
     /**
