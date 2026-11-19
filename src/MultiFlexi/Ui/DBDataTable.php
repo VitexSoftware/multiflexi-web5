@@ -69,7 +69,7 @@ class DBDataTable extends \Ease\Html\TableTag
             ['class' => 'display', 'style' => 'width: 100%'],
         );
         $gridTagID = $this->setTagId($engine->getObjectName());
-        $this->columns = $this->prepareColumns($engine->getGetDataTableColumns());
+        $this->columns = self::hideFilteredColumns($this->prepareColumns($engine->getGetDataTableColumns()), $engine->filter ?? []);
         //        $this->includeJavaScript('assets/datatables.js');
         //        $this->includeCss('assets/datatables.css');
         //        $this->includeJavaScript('js/cache.js');
@@ -251,6 +251,31 @@ EOD);
         }
 
         return $dataTablesColumns;
+    }
+
+    /**
+     * Hide columns whose value is fixed by the engine filter.
+     *
+     * A column filtered to one value (e.g. runtemplate_id on a run template
+     * page, company_id on jobs.php?company_id=…) shows the same value in every
+     * row, so it is only noise. Unset/empty filter values do not hide anything.
+     *
+     * @param array<int, array<string, mixed>> $columns
+     * @param array<string, mixed>             $filter
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function hideFilteredColumns(array $columns, array $filter): array
+    {
+        foreach ($columns as $index => $column) {
+            $value = $filter[$column['name'] ?? ''] ?? null;
+
+            if (\is_scalar($value) && (string) $value !== '') {
+                $columns[$index]['visible'] = false;
+            }
+        }
+
+        return $columns;
     }
 
     public function finalize(): void

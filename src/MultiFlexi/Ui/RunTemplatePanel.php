@@ -94,7 +94,15 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statsCards = new \MultiFlexi\Ui\RunTemplateStatsCards($runtemplate);
 
-        $runtemplateJobs = new \MultiFlexi\Ui\RuntemplateJobsListing($runtemplate);
+        // Same server-side DataTable as jobs.php (RBAC aware), narrowed to this run template;
+        // the filter travels to ajax2db.php in the data source URL. A run template fixes
+        // its app and company too, so all three columns are hidden as constant.
+        $jobLister = new \MultiFlexi\FilteredCompanyJobLister();
+        $jobLister->setObjectName('RuntemplateJobs');
+        $jobLister->filter['runtemplate_id'] = (int) $runtemplate->getMyKey();
+        $jobLister->filter['app_id'] = (int) $runtemplate->getDataValue('app_id');
+        $jobLister->filter['company_id'] = (int) $runtemplate->getDataValue('company_id');
+        $runtemplateJobs = new DBDataTable($jobLister);
         $nameInput = new \Ease\Html\ATag('#', $runtemplate->getRecordName(), ['class' => 'editable', 'style' => 'font-size: xx-large; font-weight: bold; color: #fff;', 'id' => 'name', 'data-pk' => $runtemplate->getMyKey(), 'data-url' => 'runtemplatesave.php', 'data-title' => _('Update RunTemplate name')]);
 
         // Add note field as WYSIWYG editable textarea
@@ -296,6 +304,14 @@ EOD);
         $runtemplateTabs->addTab('📅 '._('Scheduling'), [$schedulingContent, $slaRow]);
         $runtemplateTabs->addTab('⚙️ '._('Configuration'), [new RuntemplateConfigForm($runtemplate)]);
         $runtemplateTabs->addTab('🏁 '._('Jobs'), $runtemplateJobs);
+        // The jobs DataTable is built while its tab is hidden: fix column widths once shown
+        $this->addJavaScript(<<<'JS'
+document.addEventListener('shown.bs.tab', function () {
+    if ($.fn.dataTable) {
+        $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+    }
+});
+JS);
         $runtemplateTabs->addTab('📋 '._('Tasks'), [new RuntemplateTaskMetrics($runtemplate), new TasksTable('all', $runtemplateId)]);
         $runtemplateTabs->addTab('🔐 '._('Environment'), [new EnvironmentView($runtemplate->credentialsEnvironment()), new RunTemplateDotEnv($runtemplate)]);
 
