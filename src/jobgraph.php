@@ -32,7 +32,7 @@ $accessibleCompanies = \MultiFlexi\Security\CompanyAccessControl::getCurrentUser
 $jobber = new \MultiFlexi\Job();
 
 // Build query based on provided parameters
-$query = $jobber->listingQuery()->select('exitcode', true)->limit($showAll ? $maxSide * $maxSide : $width * $height)->orderBy('id DESC');
+$query = $jobber->listingQuery()->select('exitcode', true)->limit($showAll ? $maxSide * $maxSide : JobGraph::spiralCapacity($width, $height))->orderBy('id DESC');
 
 if ($runtemplateId) {
     $runtemplate = new \MultiFlexi\RunTemplate($runtemplateId);

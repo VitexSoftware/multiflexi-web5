@@ -16,10 +16,33 @@ declare(strict_types=1);
 namespace MultiFlexi\Ui;
 
 /**
+ * Job history spiral: one pixel per job.
+ *
+ * The spiral is a timeline running from the centre outwards: the oldest job
+ * shown sits in the centre and the newest one at the outer end, so as new jobs
+ * arrive the oldest drop out in the middle. Jobs are passed newest first (as
+ * fetched with ORDER BY id DESC); only as many as fit the spiral are drawn.
+ *
  * @no-named-arguments
  */
 class JobGraph
 {
+    /**
+     * Background colour of the image (Nocturne neutral-900).
+     */
+    private const GROUND = [41, 43, 49];
+
+    /**
+     * How much of its own colour the oldest shown job keeps (0 = invisible).
+     */
+    private const FAR_VISIBILITY = 0.1;
+
+    /**
+     * Steepness of the fade into the distance: above 1 the past recedes fast,
+     * so most of the older half already blends into the background.
+     */
+    private const DEPTH_CURVE = 1.8;
+
     private $width;
     private $height;
     private $todaysJobs;
@@ -54,12 +77,43 @@ class JobGraph
         }
     }
 
+    /**
+     * Number of pixels the spiral covers before it leaves a width × height image.
+     */
+    public static function spiralCapacity(int $width, int $height): int
+    {
+        $x = (int) ($width / 2);
+        $y = (int) ($height / 2);
+        $dx = 1;
+        $dy = 0;
+        $segmentLength = 1;
+        $segmentPassed = 0;
+        $capacity = 0;
+
+        while ($x >= 0 && $x < $width && $y >= 0 && $y < $height) {
+            ++$capacity;
+            $x += $dx;
+            $y += $dy;
+
+            if (++$segmentPassed === $segmentLength) {
+                $segmentPassed = 0;
+                [$dx, $dy] = [-$dy, $dx];
+
+                if ($dy === 0) {
+                    ++$segmentLength;
+                }
+            }
+        }
+
+        return $capacity;
+    }
+
     public function generateImage(): void
     {
         $this->image = imagecreatetruecolor($this->width, $this->height);
 
         // Nocturne palette (same RGB as the dashboard legend); ground = neutral-900
-        $ground = imagecolorallocate($this->image, 41, 43, 49);
+        $ground = imagecolorallocate($this->image, ...self::GROUND);
         imagefill($this->image, 0, 0, $ground);
 
         $palette = [
@@ -78,11 +132,14 @@ class JobGraph
         $dy = 0;
         $segment_length = 1;
         $segment_passed = 0;
-        $totalJobs = max(1, \count($this->todaysJobs));
 
-        foreach ($this->todaysJobs as $index => $job) {
-            // Newest job (index 0) is brightest, older ones fade towards 45 %
-            $fade = 1 - 0.55 * ($index / $totalJobs);
+        // Keep the newest jobs that fit and draw them oldest first: the oldest
+        // shown job lands in the centre, the newest at the end of the spiral
+        $jobs = array_reverse(\array_slice(array_values($this->todaysJobs), 0, self::spiralCapacity($this->width, $this->height)));
+        $totalJobs = max(1, \count($jobs));
+
+        foreach ($jobs as $index => $job) {
+            $visibility = self::visibility($index, $totalJobs);
 
             if ($job['exitcode'] === 0) {
                 $key = 'success';
@@ -102,7 +159,7 @@ class JobGraph
             }
 
             $rgb = $palette[$key];
-            $color = imagecolorallocate($this->image, (int) ($rgb[0] * $fade), (int) ($rgb[1] * $fade), (int) ($rgb[2] * $fade));
+            $color = imagecolorallocate($this->image, ...self::towardsGround($rgb, $visibility));
 
             imagesetpixel($this->image, $x, $y, $color);
 
@@ -129,6 +186,41 @@ class JobGraph
                 break;
             }
         }
+    }
+
+    /**
+     * Perspective of the timeline: the newest job (outer end) is fully visible,
+     * going back in time towards the centre jobs recede into the distance.
+     *
+     * @param int $index position in drawing order, 0 = oldest shown job
+     */
+    public static function visibility(int $index, int $total): float
+    {
+        if ($total <= 1) {
+            return 1.0;
+        }
+
+        $recency = $index / ($total - 1); // 0 = oldest, 1 = newest
+
+        return self::FAR_VISIBILITY + (1 - self::FAR_VISIBILITY) * $recency ** self::DEPTH_CURVE;
+    }
+
+    /**
+     * Blend a colour into the background by the given visibility (1 = own colour).
+     *
+     * @param array{0: int, 1: int, 2: int} $rgb
+     *
+     * @return array{0: int, 1: int, 2: int}
+     */
+    public static function towardsGround(array $rgb, float $visibility): array
+    {
+        $blended = [];
+
+        foreach ($rgb as $channel => $value) {
+            $blended[$channel] = (int) round(self::GROUND[$channel] + ($value - self::GROUND[$channel]) * $visibility);
+        }
+
+        return $blended;
     }
 
     public function getBase64Image(): string

@@ -25,7 +25,7 @@ use MultiFlexi\DashboardData;
 class DashboardJobHistory extends \Ease\Html\DivTag
 {
     /**
-     * Side of the spiral in pixels; the newest side*side jobs are shown.
+     * Side of the spiral image in pixels; the newest jobs that fit the spiral are shown.
      */
     private const SIDE = 100;
 
@@ -40,7 +40,8 @@ class DashboardJobHistory extends \Ease\Html\DivTag
             $params['company_id'] = $data->getCompanyId();
         }
 
-        $counts = $data->historyCounts(self::SIDE * self::SIDE);
+        // Count exactly the jobs drawn: the spiral holds fewer than SIDE * SIDE
+        $counts = $data->historyCounts(JobGraph::spiralCapacity(self::SIDE, self::SIDE));
         $total = array_sum($counts);
 
         $legend = [
@@ -57,13 +58,13 @@ class DashboardJobHistory extends \Ease\Html\DivTag
                 .'<span class="nc-grow">'.htmlspecialchars($label).'</span><span class="nc-muted nc-num">'.number_format($counts[$key], 0, ',', "\u{a0}").'</span></span>';
         }
 
-        $title = _('Each pixel is one job, the newest in the centre, older ones spiral outwards');
+        $title = _('Each pixel is one job, the oldest in the centre, newer ones spiral outwards');
 
         parent::__construct(
             '<div class="nc-section-head"><h2 class="nc-h2">'.htmlspecialchars(_('Job history')).'</h2>'
             .'<span class="nc-muted nc-num">'.htmlspecialchars(sprintf(_('%s latest jobs'), number_format($total, 0, ',', "\u{a0}"))).'</span></div>'
             .'<div class="nc-spiral"><img src="jobgraph.php?'.htmlspecialchars(http_build_query($params)).'" alt="'.htmlspecialchars(_('Job History Graph')).'" title="'.htmlspecialchars($title).'">'
-            .'<span class="nc-muted nc-small">'.htmlspecialchars(_('1 pixel = 1 job · newest in the centre, older ones spiral outwards')).'</span></div>'
+            .'<span class="nc-muted nc-small">'.htmlspecialchars(_('1 pixel = 1 job · oldest in the centre, newer ones spiral outwards')).'</span></div>'
             .'<div class="nc-legend nc-legend-grid">'.$legendHtml.'</div>',
             $properties + ['class' => 'nc-panel nc-panel-narrow'],
         );

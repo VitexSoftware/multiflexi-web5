@@ -9098,8 +9098,11 @@ msgstr "Výjimka (255)"
 msgid "%s latest jobs"
 msgstr "%s posledních úloh"
 
-msgid "1 pixel = 1 job · newest in the centre, older ones spiral outwards"
-msgstr "1 pixel = 1 úloha · nejnovější uprostřed, starší po spirále ven"
+msgid "1 pixel = 1 job · oldest in the centre, newer ones spiral outwards"
+msgstr "1 pixel = 1 úloha · nejstarší uprostřed, novější po spirále ven"
+
+msgid "Each pixel is one job, the oldest in the centre, newer ones spiral outwards"
+msgstr "Každý pixel je jedna úloha, nejstarší uprostřed, novější po spirále ven"
 
 msgid "%d of %d"
 msgstr "%d z %d"
