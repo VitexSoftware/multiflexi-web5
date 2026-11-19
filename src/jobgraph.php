@@ -27,6 +27,11 @@ $height = WebPage::getRequestValue('height', 'int') ?: 10;
 $showAll = (bool) WebPage::getRequestValue('all', 'int');
 $maxSide = 1500; // safety cap for "all" mode
 
+// width/height come from the URL: clamp them so neither the spiral walk nor
+// the image allocation can be blown up by a crafted request
+$width = max(1, min($maxSide, $width));
+$height = max(1, min($maxSide, $height));
+
 $accessibleCompanies = \MultiFlexi\Security\CompanyAccessControl::getCurrentUserAccessibleCompanies();
 
 $jobber = new \MultiFlexi\Job();
