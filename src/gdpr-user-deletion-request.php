@@ -23,7 +23,7 @@ require_once './init.php';
 WebPage::singleton()->onlyForLogged();
 
 $targetUserId = WebPage::singleton()->getRequestValue('target_user_id', 'int');
-$currentUser = User::singleton();
+$currentUser = \Ease\Shared::user(); // signed-in user from the session (User::singleton() is a fresh, anonymous object)
 
 // If no target user specified, use current user
 if (!$targetUserId) {

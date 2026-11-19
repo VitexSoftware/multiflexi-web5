@@ -36,19 +36,25 @@ use MultiFlexi\DataRetention\RetentionReporter;
 use MultiFlexi\DataRetention\RetentionService;
 use MultiFlexi\Ui\WebPage;
 
-$user = User::singleton();
-
-if (!$user->getDataValue('id')) {
-    $user->addStatusMessage(_('Please sign in'), 'warning');
-    WebPage::singleton()->redirect('login.php?redirect='.urlencode($_SERVER['REQUEST_URI']));
-
+// Redirects to login.php (remembering this page) when nobody is signed in;
+// onlyForLogged() does not stop the script, and the POST handlers below must not run
+if (WebPage::singleton()->onlyForLogged()) {
     exit;
 }
 
-// Check if user has admin privileges (you may need to adjust this based on your role system)
-if (!$user->permitRead('admin')) {
+// The signed-in user lives in the session (init.php); User::singleton() would be
+// a fresh, never-logged-in object and bounce every visitor back to the login page.
+$user = \Ease\Shared::user();
+
+// Admins only, deny by default: RBAC role when RBAC is active, otherwise the
+// legacy per-user "admin" setting (kept in sync by createuser.php)
+$isAdmin = \MultiFlexi\Security\RbacHelpers::isAvailable()
+    ? \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin()
+    : $user->getSettingValue('admin') === true;
+
+if (!$isAdmin) {
     $user->addStatusMessage(_('Insufficient privileges'), 'error');
-    \Ease\Shared::user(null)->redirect('index.php');
+    WebPage::singleton()->redirect('main.php');
 
     exit;
 }
@@ -82,7 +88,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     sprintf(_('Policy "%s" created successfully'), $policyData['policy_name']),
                     'success',
                 );
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $user->addStatusMessage($e->getMessage(), 'error');
             }
 
@@ -92,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $policyId = (int) ($_POST['policy_id'] ?? 0);
                 $enabled = isset($_POST['enabled']);
                 $policyManager->togglePolicy($policyId, $enabled);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $user->addStatusMessage($e->getMessage(), 'error');
             }
 
@@ -101,7 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             try {
                 $policyId = (int) ($_POST['policy_id'] ?? 0);
                 $policyManager->deletePolicy($policyId);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $user->addStatusMessage($e->getMessage(), 'error');
             }
 
@@ -127,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $user->addStatusMessage($error, 'error');
                     }
                 }
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $user->addStatusMessage($e->getMessage(), 'error');
             }
 
@@ -139,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     sprintf(_('Updated retention dates for %d records'), $summary['updated_records']),
                     'success',
                 );
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $user->addStatusMessage($e->getMessage(), 'error');
             }
 

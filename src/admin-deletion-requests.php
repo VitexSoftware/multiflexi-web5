@@ -23,7 +23,7 @@ require_once './init.php';
 
 WebPage::singleton()->onlyForLogged();
 
-$currentUser = User::singleton();
+$currentUser = \Ease\Shared::user(); // signed-in user from the session (User::singleton() is a fresh, anonymous object)
 
 // Check if user is admin (adjust this based on your role system)
 if (!$currentUser->getSettingValue('admin')) {
