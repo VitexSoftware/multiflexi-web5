@@ -22,6 +22,8 @@ namespace MultiFlexi;
  */
 class CompanyJobLister extends CompanyJob
 {
+    use AppTagFilterable;
+
     /**
      * Filter type for job listing.
      */
@@ -61,6 +63,8 @@ class CompanyJobLister extends CompanyJob
             $this->filterType = $conditions['_jobfilter'];
             unset($conditions['_jobfilter']);
         }
+
+        $conditions = $this->takeAppTagsFromConditions($conditions);
 
         return parent::getAllForDataTable($conditions);
     }
@@ -148,31 +152,16 @@ class CompanyJobLister extends CompanyJob
         ]);
     }
 
-    public function addSelectizeValues($query)
+    /**
+     * Base query with the job-state and application-tag filters applied.
+     *
+     * They belong here rather than in addSelectizeValues(): DBEngine counts
+     * recordsTotal/recordsFiltered on listingQuery() before addSelectizeValues()
+     * runs, so filters added there narrowed the rows but not the paging counts.
+     */
+    public function listingQuery(): \Envms\FluentPDO\Queries\Select
     {
-        // Get current language (first 2 chars from locale, e.g. 'en' from 'en_US')
-        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
-
-        // Build queue position map for all scheduled jobs
-        $scheduler = new \MultiFlexi\Scheduler();
-        $scheduledJobsQuery = $scheduler->listingQuery()->select('schedule.job, schedule.after')->orderBy('schedule.after ASC');
-        // Disable smart join to prevent FluentPDO from trying to auto-join on schedule_id
-        $scheduledJobsQuery->disableSmartJoin();
-        $scheduledJobs = $scheduledJobsQuery->fetchAll();
-        $this->scheduledCounts = [];
-        $position = 1;
-
-        foreach ($scheduledJobs as $scheduledJob) {
-            $this->scheduledCounts[$scheduledJob['job']] = $position++;
-        }
-
-        $query->select(['apps.name AS appname', 'apps.uuid', 'apps.image AS appimage', 'apps.description AS appdescription', 'apps.homepage AS apphomepage', 'app_translations.name AS appname_localized', 'app_translations.description AS appdescription_localized', 'job.id', 'begin', 'end', 'exitcode', 'job.block_reason', 'job.blocked_at', 'launched_by', 'login', 'job.app_id AS app_id', 'job.executor', 'job.company_id', 'company.name', 'company.logo', 'company.ic', 'company.enabled', 'schedule', 'schedule_type', 'job.runtemplate_id', 'runtemplate.name AS runtemplate_name', 'runtemplate.note AS runtemplate_note', 'runtemplate.interv AS runtemplate_interv', 'runtemplate.cron AS runtemplate_cron', 'runtemplate.last_schedule AS runtemplate_last_schedule', 'runtemplate.next_schedule AS runtemplate_next_schedule', 'runtemplate.delay AS runtemplate_delay', 'schedule.id AS schedule_id'], true)
-            ->leftJoin('apps ON apps.id = job.app_id')
-            ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)
-            ->leftJoin('company ON company.id = job.company_id')
-            ->leftJoin('user ON user.id = job.launched_by')
-            ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')
-            ->leftJoin('schedule ON schedule.job = job.id');
+        $query = parent::listingQuery();
 
         // Apply special filters based on filterType
         if (!empty($this->filterType)) {
@@ -207,6 +196,35 @@ class CompanyJobLister extends CompanyJob
                     break;
             }
         }
+
+        return $this->applyAppTagFilter($query, 'job.app_id');
+    }
+
+    public function addSelectizeValues($query)
+    {
+        // Get current language (first 2 chars from locale, e.g. 'en' from 'en_US')
+        $currentLang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+
+        // Build queue position map for all scheduled jobs
+        $scheduler = new \MultiFlexi\Scheduler();
+        $scheduledJobsQuery = $scheduler->listingQuery()->select('schedule.job, schedule.after')->orderBy('schedule.after ASC');
+        // Disable smart join to prevent FluentPDO from trying to auto-join on schedule_id
+        $scheduledJobsQuery->disableSmartJoin();
+        $scheduledJobs = $scheduledJobsQuery->fetchAll();
+        $this->scheduledCounts = [];
+        $position = 1;
+
+        foreach ($scheduledJobs as $scheduledJob) {
+            $this->scheduledCounts[$scheduledJob['job']] = $position++;
+        }
+
+        $query->select(['apps.name AS appname', 'apps.uuid', 'apps.image AS appimage', 'apps.description AS appdescription', 'apps.homepage AS apphomepage', 'app_translations.name AS appname_localized', 'app_translations.description AS appdescription_localized', 'job.id', 'begin', 'end', 'exitcode', 'job.block_reason', 'job.blocked_at', 'launched_by', 'login', 'job.app_id AS app_id', 'job.executor', 'job.company_id', 'company.name', 'company.logo', 'company.ic', 'company.enabled', 'schedule', 'schedule_type', 'job.runtemplate_id', 'runtemplate.name AS runtemplate_name', 'runtemplate.note AS runtemplate_note', 'runtemplate.interv AS runtemplate_interv', 'runtemplate.cron AS runtemplate_cron', 'runtemplate.last_schedule AS runtemplate_last_schedule', 'runtemplate.next_schedule AS runtemplate_next_schedule', 'runtemplate.delay AS runtemplate_delay', 'schedule.id AS schedule_id'], true)
+            ->leftJoin('apps ON apps.id = job.app_id')
+            ->leftJoin('app_translations ON app_translations.app_id = apps.id AND app_translations.lang = ?', $currentLang)
+            ->leftJoin('company ON company.id = job.company_id')
+            ->leftJoin('user ON user.id = job.launched_by')
+            ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')
+            ->leftJoin('schedule ON schedule.job = job.id');
 
         return parent::addSelectizeValues($query);
     }

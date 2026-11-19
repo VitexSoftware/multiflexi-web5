@@ -42,7 +42,10 @@ class TasksTable extends \Ease\Html\DivTag
         'running' => 'task-row-info',
     ];
 
-    public function __construct(?string $stateFilter = null, ?int $runtemplateId = null)
+    /**
+     * @param array<int, string> $appTags show only tasks of applications having all these tags
+     */
+    public function __construct(?string $stateFilter = null, ?int $runtemplateId = null, array $appTags = [])
     {
         parent::__construct(null, ['id' => 'tasks-table-wrapper']);
 
@@ -75,6 +78,11 @@ EOD,)
 
             if ($runtemplateId !== null) {
                 $query->where('task.runtemplate_id', $runtemplateId);
+            }
+
+            if ($appTags !== []) {
+                $appIds = \MultiFlexi\AppTags::appIdsWithAll($appTags);
+                $query->where($appIds === [] ? '1=0' : 'runtemplate.app_id IN ('.implode(',', $appIds).')');
             }
 
             $tasks = $query->fetchAll();

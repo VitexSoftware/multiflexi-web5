@@ -31,7 +31,13 @@ $buttonRow->addColumn(12, [
 WebPage::singleton()->container->addItem($buttonRow);
 WebPage::singleton()->container->addItem(new \Ease\Html\HrTag());
 
-WebPage::singleton()->container->addItem(new DBDataTable(new \MultiFlexi\FilteredRunTemplateLister()));
+// Narrow run templates to applications having all selected tags (?apptags=A,B)
+$appTags = \MultiFlexi\AppTags::fromRequest();
+WebPage::singleton()->container->addItem(new AppTagFilterBar($appTags));
+
+$runTemplateLister = new \MultiFlexi\FilteredRunTemplateLister();
+$runTemplateLister->setAppTags($appTags);
+WebPage::singleton()->container->addItem(new DBDataTable($runTemplateLister));
 
 WebPage::singleton()->addCSS(<<<'CSS'
 /* Runtemplates listing: improve readability/contrast for app & company pills */

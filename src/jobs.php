@@ -39,6 +39,10 @@ WebPage::singleton()->addItem(new PageTop($pageTitle));
 // Add filter toolbar
 WebPage::singleton()->container->addItem(new JobFilterToolbar($filter, 'jobs.php'));
 
+// Narrow jobs to applications having all selected tags (?apptags=A,B)
+$appTags = \MultiFlexi\AppTags::fromRequest();
+WebPage::singleton()->container->addItem(new AppTagFilterBar($appTags));
+
 // Job history graph scoped to the active company/app filters
 $companyIdInt = $companyId ? (int) $companyId : null;
 $appIdInt = $appId ? (int) $appId : null;
@@ -48,6 +52,7 @@ WebPage::singleton()->container->addItem(new JobGraphWidget(null, $companyIdInt,
 
 $engine->setCompany($companyId);
 $engine->setApp($appId);
+$engine->setAppTags($appTags);
 
 // Aplikace filtru pokud je specifikován
 if (!empty($filter)) {

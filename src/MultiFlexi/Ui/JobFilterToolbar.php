@@ -125,25 +125,25 @@ CSS);
 
         // All Jobs button
         $allJobsClass = empty($this->activeFilter) ? 'btn btn-primary' : 'btn btn-outline-primary';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl, '🏁 '._('All Jobs'), ['class' => $allJobsClass, 'title' => _('Show all jobs'), 'id' => 'alljobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.preg_replace('/^&/', '?', \MultiFlexi\AppTags::queryFragment()), '🏁 '._('All Jobs'), ['class' => $allJobsClass, 'title' => _('Show all jobs'), 'id' => 'alljobsbuttonmain']));
 
         // Success button
         $successClass = ($this->activeFilter === 'success') ? 'btn btn-success' : 'btn btn-outline-success';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=success', '✅ '._('Successful'), ['class' => $successClass, 'title' => _('Show successful jobs'), 'id' => 'successfuljobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=success'.\MultiFlexi\AppTags::queryFragment(), '✅ '._('Successful'), ['class' => $successClass, 'title' => _('Show successful jobs'), 'id' => 'successfuljobsbuttonmain']));
         // Failed button
         $failedClass = ($this->activeFilter === 'failed') ? 'btn btn-danger' : 'btn btn-outline-danger';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=failed', '❌ '._('Failed'), ['class' => $failedClass, 'title' => _('Show failed jobs'), 'id' => 'failedjobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=failed'.\MultiFlexi\AppTags::queryFragment(), '❌ '._('Failed'), ['class' => $failedClass, 'title' => _('Show failed jobs'), 'id' => 'failedjobsbuttonmain']));
 
         // Running button
         $runningClass = ($this->activeFilter === 'running') ? 'btn btn-info' : 'btn btn-outline-info';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=running', '▶️ '._('Running'), ['class' => $runningClass, 'title' => _('Show running jobs'), 'id' => 'runningjobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=running'.\MultiFlexi\AppTags::queryFragment(), '▶️ '._('Running'), ['class' => $runningClass, 'title' => _('Show running jobs'), 'id' => 'runningjobsbuttonmain']));
 
         // Scheduled/Waiting button
         $scheduledClass = ($this->activeFilter === 'scheduled') ? 'btn btn-secondary' : 'btn btn-outline-secondary';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=scheduled', '<span class="hourglass-spin">⏳</span> '._('Scheduled'), ['class' => $scheduledClass, 'title' => _('Show scheduled jobs'), 'id' => 'scheduledjobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=scheduled'.\MultiFlexi\AppTags::queryFragment(), '<span class="hourglass-spin">⏳</span> '._('Scheduled'), ['class' => $scheduledClass, 'title' => _('Show scheduled jobs'), 'id' => 'scheduledjobsbuttonmain']));
         // Today button
         $todayClass = ($this->activeFilter === 'today') ? 'btn btn-warning' : 'btn btn-outline-warning';
-        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=today', '📅 '._('Today'), ['class' => $todayClass, 'title' => _('Show today\'s jobs'), 'id' => 'todayjobsbuttonmain']));
+        $buttonGroup->addItem(new \Ease\Html\ATag($this->baseUrl.'?filter=today'.\MultiFlexi\AppTags::queryFragment(), '📅 '._('Today'), ['class' => $todayClass, 'title' => _('Show today\'s jobs'), 'id' => 'todayjobsbuttonmain']));
 
         $this->addItem($buttonGroup);
     }

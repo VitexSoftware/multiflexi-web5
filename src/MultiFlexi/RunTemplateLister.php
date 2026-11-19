@@ -22,6 +22,21 @@ namespace MultiFlexi;
  */
 class RunTemplateLister extends RunTemplate
 {
+    use AppTagFilterable;
+
+    /**
+     * @param array<string, mixed> $conditions
+     */
+    public function getAllForDataTable($conditions = [])
+    {
+        return parent::getAllForDataTable($this->takeAppTagsFromConditions($conditions));
+    }
+
+    public function listingQuery(): \Envms\FluentPDO\Queries\Select
+    {
+        return $this->applyAppTagFilter(parent::listingQuery(), $this->getMyTable().'.app_id');
+    }
+
     public function columns($columns = [])
     {
         return parent::columns([

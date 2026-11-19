@@ -22,6 +22,7 @@ $oPage->onlyForLogged();
 
 $stateFilter = $oPage->getRequestValue('state') ?: 'all';
 $runtemplateId = (int) ($oPage->getRequestValue('runtemplate_id') ?: 0) ?: null;
+$appTags = \MultiFlexi\AppTags::fromRequest();
 
 $stateLabels = [
     'all' => _('Tasks Overview'),
@@ -64,7 +65,7 @@ $pills = [
 
 foreach ($pills as $state => $pill) {
     [$colour, $label] = $pill;
-    $href = 'tasks.php?state='.$state.($runtemplateId ? '&runtemplate_id='.$runtemplateId : '');
+    $href = 'tasks.php?state='.$state.($runtemplateId ? '&runtemplate_id='.$runtemplateId : '').\MultiFlexi\AppTags::queryFragment();
     $isActive = ($stateFilter === $state);
     $cls = 'btn btn-sm btn-'.($isActive ? '' : 'outline-').$colour;
     $filterBar->addItem(new \Ease\Html\ATag($href, $label, ['class' => $cls]));
@@ -72,11 +73,14 @@ foreach ($pills as $state => $pill) {
 
 $oPage->container->addItem($filterBar);
 
+// Narrow tasks to applications having all selected tags (?apptags=A,B)
+$oPage->container->addItem(new AppTagFilterBar($appTags));
+
 // ── RunTemplate filter notice ─────────────────────────────────────────────────
 if ($runtemplateId) {
     $rt = new \MultiFlexi\RunTemplate($runtemplateId);
     $rtName = htmlspecialchars($rt->getRecordName() ?: '#'.$runtemplateId);
-    $clearHref = 'tasks.php?state='.$stateFilter;
+    $clearHref = 'tasks.php?state='.$stateFilter.\MultiFlexi\AppTags::queryFragment();
     $oPage->container->addItem(new \Ease\TWB5\Alert(
         'info',
         sprintf(_('Filtered to RunTemplate: <strong>%s</strong>'), $rtName)
@@ -85,7 +89,7 @@ if ($runtemplateId) {
 }
 
 // ── Tasks table ───────────────────────────────────────────────────────────────
-$oPage->container->addItem(new TasksTable($stateFilter, $runtemplateId));
+$oPage->container->addItem(new TasksTable($stateFilter, $runtemplateId, $appTags));
 
 // ── CSS ───────────────────────────────────────────────────────────────────────
 $oPage->addCSS(DashboardStyles::getStyles());
