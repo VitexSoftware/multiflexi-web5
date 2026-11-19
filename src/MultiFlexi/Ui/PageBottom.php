@@ -57,11 +57,7 @@ class PageBottom extends \Ease\Html\FooterTag
 
         $footrow->addColumn(2, [$github, '&nbsp;', $linkedIn]);
 
-        $lnks = $footrow->addColumn(4, new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Docs')));
-
-        if ($this->apiLink && self::apiAvailable()) {
-            $lnks->addItem($this->apiLinks());
-        }
+        $footrow->addColumn(4, new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Docs')));
 
         $this->addItem(new \Ease\TWB5\Container($footrow));
 
@@ -82,9 +78,14 @@ class PageBottom extends \Ease\Html\FooterTag
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('book').'&nbsp;', new \Ease\Html\ATag('https://multiflexi.readthedocs.io', _('Documentation'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('info-circle').'&nbsp;', new \Ease\Html\ATag('about.php', _('About MultiFlexi'))]),
             new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('github').'&nbsp;', new \Ease\Html\ATag('https://github.com/VitexSoftware/MultiFlexi/', _('Source code'), ['target' => '_blank', 'rel' => 'noopener noreferrer'])]),
-            new \Ease\Html\H5Tag(_('Browsing History')),
-            new \Ease\Html\Widgets\BrowsingHistory(),
         ];
+
+        if ($this->apiLink && self::apiAvailable()) {
+            $body[] = new \Ease\Html\PTag([new \Ease\TWB5\Widgets\BsIcon('braces').'&nbsp;', $this->apiLinks()]);
+        }
+
+        $body[] = new \Ease\Html\H5Tag(_('Browsing History'));
+        $body[] = new \Ease\Html\Widgets\BrowsingHistory();
 
         $drawer = new \Ease\TWB5\OffCanvas('helpOffCanvas', new \Ease\TWB5\Widgets\BsIcon('question-circle').'&nbsp;'._('Help & Information'), $body, 'end');
 
@@ -95,6 +96,9 @@ class PageBottom extends \Ease\Html\FooterTag
             'title' => _('Help'),
             'aria-label' => _('Help'),
         ]);
+
+        // Keep the last page content (e.g. wizard Next button) scrollable above the floating button
+        WebPage::singleton()->addCss('body { padding-bottom: 5rem; }');
 
         return [$button, $drawer];
     }
@@ -111,10 +115,12 @@ class PageBottom extends \Ease\Html\FooterTag
 
     public function apiLinks()
     {
+        $links = [];
+
         foreach (['html', 'json', 'xml', 'yml', 'csv'] as $format) {
-            $links[] = new \Ease\Html\ATag('api/VitexSoftware/MultiFlexi/1.0.0/'.$this->apiLink.'.'.$format, $format);
+            $links[] = new \Ease\Html\ATag('api/VitexSoftware/MultiFlexi/1.0.0/'.$this->apiLink.'.'.$format, $format, ['target' => '_blank', 'rel' => 'noopener noreferrer']);
         }
 
-        return '&nbsp;API ['.implode(',', $links).']';
+        return _('API').' ['.implode(', ', $links).']';
     }
 }
