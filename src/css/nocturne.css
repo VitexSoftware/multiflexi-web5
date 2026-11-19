@@ -179,14 +179,50 @@ body {
   color: var(--color-neutral-600);
 }
 
-/* Selectize inputs follow the dark surface */
-.selectize-input,
-.selectize-dropdown {
+/* Selectize inputs follow the dark surface.
+   The selectize stylesheet is often included after this one with hard-coded
+   light colours, so these rules are scoped under [data-bs-theme] to win on
+   specificity regardless of load order. */
+[data-bs-theme="dark"] .selectize-control .selectize-input,
+[data-bs-theme="dark"] .selectize-control .selectize-input.full,
+[data-bs-theme="dark"] .selectize-control.single .selectize-input.input-active,
+[data-bs-theme="dark"] .selectize-control .selectize-input.disabled,
+[data-bs-theme="dark"] .selectize-dropdown,
+[data-bs-theme="dark"] .selectize-dropdown.form-control,
+[data-bs-theme="dark"] .selectize-dropdown .optgroup-header {
   background: var(--color-surface);
   border-color: var(--color-divider);
   color: var(--color-text);
 }
-.selectize-dropdown .active { background: var(--color-neutral-900); color: var(--color-text); }
+[data-bs-theme="dark"] .selectize-control .selectize-input input,
+[data-bs-theme="dark"] .selectize-dropdown .option { color: var(--color-text); }
+[data-bs-theme="dark"] .selectize-control .selectize-input input::placeholder { color: var(--color-neutral-500); }
+[data-bs-theme="dark"] .selectize-control .selectize-input.focus {
+  border-color: var(--color-accent-500);
+  box-shadow: 0 0 0 .2rem color-mix(in srgb, var(--color-accent) 30%, transparent);
+}
+/* Chosen items (multi select / pill box) */
+[data-bs-theme="dark"] .selectize-control.multi .selectize-input > div {
+  background: var(--color-accent-800);
+  color: var(--color-accent-200);
+  border-color: transparent;
+}
+[data-bs-theme="dark"] .selectize-control.multi .selectize-input > div.active {
+  background: var(--color-accent-600);
+  color: var(--color-neutral-100);
+}
+[data-bs-theme="dark"] .selectize-control.plugin-remove_button .item .remove { border-left-color: color-mix(in srgb, var(--color-accent-200) 30%, transparent); }
+[data-bs-theme="dark"] .selectize-control.plugin-remove_button .item .remove:hover { background: color-mix(in srgb, var(--color-text) 12%, transparent); }
+[data-bs-theme="dark"] .selectize-control.plugin-clear_button .clear,
+[data-bs-theme="dark"] .selectize-dropdown.plugin-dropdown_header .selectize-dropdown-header-close { color: var(--color-text); }
+[data-bs-theme="dark"] .selectize-control.single .selectize-input:not(.no-arrow)::after { border-top-color: var(--color-neutral-400); }
+[data-bs-theme="dark"] .selectize-control.single .selectize-input:not(.no-arrow).dropdown-active::after { border-bottom-color: var(--color-neutral-400); border-top-color: transparent; }
+/* Dropdown options */
+[data-bs-theme="dark"] .selectize-dropdown .active,
+[data-bs-theme="dark"] .selectize-dropdown .active:not(.selected) { background: var(--color-neutral-900); color: var(--color-text); }
+[data-bs-theme="dark"] .selectize-dropdown .selected { background: var(--color-accent-800); color: var(--color-accent-200); }
+[data-bs-theme="dark"] .selectize-dropdown [data-selectable] .highlight { background: color-mix(in srgb, var(--color-accent) 35%, transparent); color: inherit; }
+[data-bs-theme="dark"] .selectize-dropdown.plugin-dropdown_header .selectize-dropdown-header { background: var(--color-neutral-900); border-bottom-color: var(--color-divider); }
 
 hr { border-color: var(--color-divider); opacity: 1; }
 :focus-visible { outline: 2px solid var(--color-accent); outline-offset: 2px; }

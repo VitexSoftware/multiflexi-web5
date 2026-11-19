@@ -162,13 +162,13 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
                 $cronDescription !== null ? new \Ease\Html\SmallTag($cronDescription, ['class' => 'text-muted d-block mt-1']) : '',
                 '<br>',
                 new \Ease\Html\StrongTag(_('Startup Delay')), $delayChooser,
-            ], ['class' => 'card card-body bg-light']),
+            ], ['class' => 'card card-body bg-body-tertiary']),
         ]);
         $schedulingContent->addColumn(6, [
             new \Ease\Html\H5Tag(_('Execution Environment')),
             new \Ease\Html\DivTag([
                 new \Ease\Html\StrongTag(_('Executor')), $executorChooser,
-            ], ['class' => 'card card-body bg-light']),
+            ], ['class' => 'card card-body bg-body-tertiary']),
         ]);
 
         // ── Task SLA & Retry ────────────────────────────────────────────────────
@@ -240,7 +240,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         $slaRow->addTagClass('mt-3');
         $slaRow->addColumn(12, [
             new \Ease\Html\H5Tag('🎯 '._('Task SLA & Retry')),
-            new \Ease\Html\DivTag($slaInner, ['class' => 'card card-body bg-light']),
+            new \Ease\Html\DivTag($slaInner, ['class' => 'card card-body bg-body-tertiary']),
         ]);
 
         $runtemplateBottom = new \Ease\TWB5\Row();
@@ -257,17 +257,18 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
         }
 
         $this->addCSS(<<<'CSS'
-            .danger-zone { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid #dc3545; border-radius: 8px; background: #fff5f5; }
-            .danger-zone h5 { color: #dc3545; margin-bottom: 0.75rem; }
+            .danger-zone { margin-top: 1.5rem; padding: 1rem 1.25rem; border: 1px solid var(--bs-danger-border-subtle); border-radius: 8px; background: var(--bs-danger-bg-subtle); color: var(--bs-body-color); }
+            .danger-zone h5 { color: var(--bs-danger-text-emphasis); margin-bottom: 0.75rem; }
             .danger-zone .form-check { margin-bottom: 0.75rem; }
-            .runtemplate-tabs .card-header { background: #f8f9fa; border-bottom: 1px solid #dee2e6; }
-            .runtemplate-tabs .card-header, .runtemplate-tabs .card-header * { color: #212529 !important; }
-            .runtemplate-tabs .card-header .text-muted { color: #6c757d !important; }
-            .runtemplate-tabs .card-header .editable { color: #0d6efd !important; }
-            .runtemplate-tabs .card-header .bg-light { background-color: #fff !important; }
-            .runtemplate-tabs .nav-tabs { border-bottom: 2px solid #007bff; margin-bottom: 1rem; }
-            .runtemplate-tabs .nav-link { font-weight: 500; color: #495057; border: none; padding: 0.75rem 1.25rem; }
-            .runtemplate-tabs .nav-link.active { color: #007bff; border-bottom: 3px solid #007bff; background: transparent; }
+            .runtemplate-tabs .card-header { background: var(--bs-tertiary-bg); border-bottom: 1px solid var(--bs-border-color); }
+            .runtemplate-tabs .card-header, .runtemplate-tabs .card-header * { color: var(--bs-body-color) !important; }
+            .runtemplate-tabs .card-header .text-muted { color: var(--bs-secondary-color) !important; }
+            .runtemplate-tabs .card-header .editable { color: var(--bs-link-color) !important; }
+            .runtemplate-tabs .card-header .bg-light { background-color: var(--bs-body-bg) !important; }
+            .runtemplate-tabs .nav-tabs { border-bottom: 2px solid var(--bs-primary); margin-bottom: 1rem; }
+            .runtemplate-tabs .nav-link { font-weight: 500; color: var(--bs-secondary-color); border: none; padding: 0.75rem 1.25rem; }
+            .runtemplate-tabs .nav-link:hover { color: var(--bs-body-color); }
+            .runtemplate-tabs .nav-link.active { color: var(--bs-link-color); border-bottom: 3px solid var(--bs-primary); background: transparent; }
             .btn-group-vertical > .btn { border-radius: 4px !important; margin-bottom: 2px; }
 CSS);
         $this->addTagClass('runtemplate-tabs');

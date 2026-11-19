@@ -218,7 +218,7 @@ class CompanyJobLister extends CompanyJob
 
         // Format ID column as link (compact)
         $dataRowRaw['id'] = sprintf(
-            '<a href="job.php?id=%d" style="font-size: 0.95em; font-weight: bold; color: #000; text-decoration: none; white-space: nowrap;">🏁%d</a>',
+            '<a href="job.php?id=%d" style="font-size: 0.95em; font-weight: bold; color: var(--bs-emphasis-color); text-decoration: none; white-space: nowrap;">🏁%d</a>',
             $jobId,
             $jobId,
         );

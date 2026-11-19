@@ -24,17 +24,22 @@ class TasksTable extends \Ease\Html\DivTag
         'fulfilled' => ['success', '✅'],
         'fulfilled_late' => ['warning', '⏰'],
         'failed' => ['danger', '❌'],
-        'missed' => ['dark', '🕳️'],
+        'missed' => ['secondary', '🕳️'],
         'open' => ['info', '🔵'],
         'running' => ['primary', '▶️'],
     ];
+    /**
+     * Row tint per state. Bootstrap's table-* variants keep a fixed light
+     * background even under data-bs-theme="dark", so rows are tinted with the
+     * theme-aware *-bg-subtle colours instead (see self::rowCss()).
+     */
     private static array $rowClass = [
-        'fulfilled' => 'table-success',
-        'fulfilled_late' => 'table-warning',
-        'failed' => 'table-danger',
-        'missed' => 'table-secondary',
+        'fulfilled' => 'task-row-success',
+        'fulfilled_late' => 'task-row-warning',
+        'failed' => 'task-row-danger',
+        'missed' => 'task-row-secondary',
         'open' => '',
-        'running' => 'table-info',
+        'running' => 'task-row-info',
     ];
 
     public function __construct(?string $stateFilter = null, ?int $runtemplateId = null)
@@ -157,6 +162,8 @@ EOD,)
 
             $this->addItem($table);
 
+            WebPage::singleton()->addCss(self::rowCss());
+
             WebPage::singleton()->addJavaScript(<<<'JS'
 
 (function () {
@@ -174,5 +181,20 @@ JS);
         } catch (\Exception $e) {
             $this->addItem(new \Ease\TWB5\Alert('danger', _('Error loading tasks: ').$e->getMessage()));
         }
+    }
+
+    /**
+     * State tints that follow the active colour theme; --bs-table-bg-type keeps
+     * Bootstrap's hover highlight working on top of the tint.
+     */
+    private static function rowCss(): string
+    {
+        $css = '';
+
+        foreach (['success', 'warning', 'danger', 'secondary', 'info'] as $variant) {
+            $css .= '#tasks-dt tr.task-row-'.$variant.' > * { --bs-table-bg-type: var(--bs-'.$variant.'-bg-subtle); }'."\n";
+        }
+
+        return $css;
     }
 }
