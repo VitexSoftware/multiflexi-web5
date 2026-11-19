@@ -60,6 +60,9 @@ if (WebPage::singleton()->isPosted() && null === WebPage::getRequestValue('check
 
         if ($kredenc->takeData($_POST) && null !== $kredenc->dbsync()) {
             $kredenc->addStatusMessage(_('Credential field Saved'), 'success');
+            // Re-read the stored state: a blank secret input means "keep", so the
+            // POSTed blank must not be what the form shows (mask "set/not set").
+            $kredenc->loadFromSQL($kredenc->getMyKey());
 
             if ($returnRuntemplate && $kredenc->getMyKey()) {
                 $returnTemplate = new \MultiFlexi\RunTemplate($returnRuntemplate);
