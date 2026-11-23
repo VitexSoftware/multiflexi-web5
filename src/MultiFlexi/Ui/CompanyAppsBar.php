@@ -29,7 +29,18 @@ class CompanyAppsBar extends \Ease\Html\DivTag
     public function __construct(Company $company, array $properties = [])
     {
         $companyId = (int) $company->getMyKey();
-        $companyApps = (new CompanyApp($company))->getAssigned()->leftJoin('apps ON apps.id = companyapp.app_id')->select(['apps.name', 'apps.description', 'apps.id', 'apps.uuid', 'apps.tags'], true)->fetchAll();
+        // Name and description in the UI language, then English, then as defined by the app
+        $lang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
+        $companyApps = (new CompanyApp($company))->getAssigned()
+            ->leftJoin('apps ON apps.id = companyapp.app_id')
+            ->leftJoin('app_translations AS app_tr ON app_tr.app_id = apps.id AND app_tr.lang = ?', $lang)
+            ->leftJoin('app_translations AS app_tr_en ON app_tr_en.app_id = apps.id AND app_tr_en.lang = ?', 'en')
+            ->select([
+                'COALESCE(app_tr.name, app_tr_en.name, apps.name) AS name',
+                'COALESCE(app_tr.description, app_tr_en.description, apps.description) AS description',
+                'apps.id', 'apps.uuid', 'apps.tags',
+            ], true)
+            ->fetchAll();
 
         $jobber = new \MultiFlexi\Job();
         $scheduler = new \MultiFlexi\Scheduler();
@@ -38,7 +49,7 @@ class CompanyAppsBar extends \Ease\Html\DivTag
 
         foreach ($companyApps as $companyApp) {
             $appId = (int) $companyApp['id'];
-            $name = _((string) $companyApp['name']);
+            $name = (string) $companyApp['name'];
 
             // Last executed job of the application in this company
             $lastJob = $jobber->listingQuery()
@@ -80,7 +91,7 @@ class CompanyAppsBar extends \Ease\Html\DivTag
             }
 
             $tiles .= '<div class="nc-app" data-tags="'.htmlspecialchars(mb_strtolower(implode(',', $tags))).'">'
-                .'<a class="nc-app-main" href="companyapp.php?company_id='.$companyId.'&app_id='.$appId.'" title="'.htmlspecialchars(_((string) $companyApp['description'])).'">'
+                .'<a class="nc-app-main" href="companyapp.php?company_id='.$companyId.'&app_id='.$appId.'" title="'.htmlspecialchars((string) $companyApp['description']).'">'
                 .'<img src="appimage.php?uuid='.htmlspecialchars((string) $companyApp['uuid']).'" alt="" class="nc-app-icon">'
                 .'<span class="nc-app-name">'.htmlspecialchars($name).'</span></a>'
                 .'<span class="nc-app-status">'.$status.'</span></div>';

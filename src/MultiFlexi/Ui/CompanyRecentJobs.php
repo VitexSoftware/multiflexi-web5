@@ -34,9 +34,13 @@ class CompanyRecentJobs extends \Ease\Html\DivTag
     public function __construct(Company $company, string $showOnly = '', array $properties = [])
     {
         $companyId = (int) $company->getMyKey();
+        // Application name in the UI language, then English, then as defined by the app
+        $lang = substr(\Ease\Locale::$localeUsed ?? 'en_US', 0, 2);
         $query = (new \MultiFlexi\Job())->listingQuery()
-            ->select(['apps.name AS appname', 'apps.uuid AS uuid', 'job.id', 'begin', 'exitcode', 'launched_by', 'job.executor', 'job.schedule_type', 'login', 'job.app_id AS app_id', 'runtemplate.id AS runtemplate_id', 'runtemplate.name AS runtemplate_name', 'schedule AS scheduled'], true)
+            ->select(['COALESCE(app_tr.name, app_tr_en.name, apps.name) AS appname', 'apps.uuid AS uuid', 'job.id', 'begin', 'exitcode', 'launched_by', 'job.executor', 'job.schedule_type', 'login', 'job.app_id AS app_id', 'runtemplate.id AS runtemplate_id', 'runtemplate.name AS runtemplate_name', 'schedule AS scheduled'], true)
             ->leftJoin('apps ON apps.id = job.app_id')
+            ->leftJoin('app_translations AS app_tr ON app_tr.app_id = apps.id AND app_tr.lang = ?', $lang)
+            ->leftJoin('app_translations AS app_tr_en ON app_tr_en.app_id = apps.id AND app_tr_en.lang = ?', 'en')
             ->leftJoin('user ON user.id = job.launched_by')
             ->leftJoin('runtemplate ON runtemplate.id = job.runtemplate_id')
             ->where('job.company_id', $companyId)
