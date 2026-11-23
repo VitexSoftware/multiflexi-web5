@@ -554,9 +554,10 @@ class WebPage extends \Ease\TWB5\WebPage
                         .mf-login-card {
                             position: relative;
                             z-index: 1;
-                            background: rgba(255,255,255,0.97);
-                            border-radius: 18px;
-                            box-shadow: 0 24px 72px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.08);
+                            background: var(--color-surface, #232532);
+                            border: 1px solid var(--color-divider);
+                            border-radius: var(--radius-lg, 14px);
+                            box-shadow: 0 24px 72px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04);
                             max-width: 420px;
                             width: 100%;
                             padding: 2.5rem;
@@ -564,13 +565,16 @@ class WebPage extends \Ease\TWB5\WebPage
                         }
                         .mf-login-card .mf-login-logo { text-align: center; margin-bottom: 1.5rem; }
                         .mf-login-card .mf-login-logo img { height: 80px; }
-                        .mf-login-card h2 { text-align: center; font-size: 1.4rem; margin-bottom: 1.5rem; color: #1e2d4a; }
+                        .mf-login-card h2 { text-align: center; font-size: 1.4rem; margin-bottom: 1.5rem; color: var(--color-text, #e9e9ed); }
+                        .mf-login-card .form-label { color: var(--color-neutral-400, #b2b6ca); }
+                        .mf-login-card #passwordrecoverybutton { color: var(--color-accent-300, #d2cefd); }
+                        .mf-login-card #passwordrecoverybutton:hover { color: var(--color-accent-100, #f5f4ff); }
                         /* Status messages adapt on auth pages */
                         body:has(#LoginFace) #status-messages,
                         body:has(#LogoutFace) #status-messages {
-                            background: rgba(255,240,180,0.92);
-                            border-left: 4px solid #e0a800;
-                            color: #4a3600;
+                            background: color-mix(in srgb, var(--color-exception, #d6be6e) 14%, var(--color-surface, #232532));
+                            border-left: 4px solid var(--color-exception, #d6be6e);
+                            color: var(--color-text, #e9e9ed);
                         }
 
                         /* ── btn-inverse (BS5 removed it, used by CompanyLinkButton etc.) ── */

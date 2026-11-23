@@ -163,12 +163,12 @@ $loginFace = new DivTag(null, ['id' => 'LoginFace']);
 
 $loginCard = new DivTag(null, ['class' => 'mf-login-card']);
 $loginCard->addItem(new DivTag(
-    new ImgTag('images/project-logo.svg', _('Logo'), ['style' => 'height: 80px']),
+    new ImgTag('images/project-logo.svg', _('Logo')),
     ['class' => 'mf-login-logo'],
 ));
 $loginCard->addItem(new \Ease\Html\H2Tag(_('Sign in to MultiFlexi')));
 
-$submit = new SubmitButton('🚪&nbsp;'._('Sign in'), 'success btn-lg w-100', ['id' => 'signinbutton']);
+$submit = new SubmitButton('🚪&nbsp;'._('Sign in'), 'primary btn-lg w-100', ['id' => 'signinbutton']);
 $loginCard->addItem(new FormGroup(
     _('Username'),
     new InputTextTag('login', $login, ['class' => 'form-control form-control-lg', 'autofocus' => 'autofocus']),
