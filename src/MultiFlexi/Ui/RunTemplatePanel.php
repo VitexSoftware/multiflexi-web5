@@ -134,7 +134,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
 
         $statusCol = $headerRow->addColumn(3, [
             new \Ease\Html\DivTag([
-                new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small text-secondary']),
+                new \Ease\Html\SmallTag(_('Status'), ['class' => 'fw-bold text-uppercase d-block mb-1 small', 'style' => 'color: rgba(255,255,255,0.6);']),
                 new \Ease\TWB5\Widgets\Toggle('active', $runtemplate->getDataValue('active') ? true : false, $runtemplate->getDataValue('active') ? 'false' : 'true', [
                     'title' => $runtemplate->getDataValue('active') ? _('Enabled') : _('Disabled'),
                     'data-runtemplate' => $runtemplateId,
@@ -144,7 +144,7 @@ class RunTemplatePanel extends \Ease\TWB5\Panel
                     'data-size' => 'small',
                 ]),
                 new \Ease\Html\SpanTag('', ['id' => 'deactivated']),
-            ], ['class' => 'p-2 rounded border text-center shadow-sm', 'style' => 'background: rgba(255,255,255,0.95);']),
+            ], ['class' => 'p-2 rounded border text-center shadow-sm', 'style' => 'background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.2) !important; color: rgba(255,255,255,0.8);']),
         ]);
         $statusCol->addTagClass('my-auto');
 
