@@ -64,11 +64,11 @@ class DashboardDailyChart extends \Ease\Html\DivTag
                 $counts['exception'],
             );
             $pct = static fn (int $v): string => number_format($v / $top * 100, 2, '.', '').'%';
-            $bars .= '<div class="nc-bar-col" title="'.htmlspecialchars($title).'">'
+            $bars .= '<a class="nc-bar-col" href="jobs.php?filter='.rawurlencode('day:'.$date).'" title="'.htmlspecialchars($title).'">'
                 .'<div class="nc-seg nc-seg-fail" style="height:'.$pct($counts['fail']).'"></div>'
                 .'<div class="nc-seg nc-seg-ok" style="height:'.$pct($counts['success']).'"></div>'
                 .'<div class="nc-seg nc-seg-exc" style="height:'.$pct($counts['exception']).'"></div>'
-                .'<div class="nc-seg nc-seg-wait" style="height:'.$pct($counts['waiting']).'"></div></div>';
+                .'<div class="nc-seg nc-seg-wait" style="height:'.$pct($counts['waiting']).'"></div></a>';
             $labels .= '<span>'.($n % 5 === 0 ? $day->format('j. n.') : '').'</span>';
             ++$n;
         }

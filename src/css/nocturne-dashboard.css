@@ -68,7 +68,7 @@ a.nc-issue-app:hover, a.nc-issue-app:focus-visible { color: var(--color-text); t
     linear-gradient(var(--color-divider), var(--color-divider)) 0 50% / 100% 1px no-repeat,
     linear-gradient(var(--color-divider), var(--color-divider)) 0 75% / 100% 1px no-repeat,
     linear-gradient(var(--color-divider), var(--color-divider)) 0 100% / 100% 1px no-repeat; }
-.nc-bar-col { flex: 1; display: flex; flex-direction: column-reverse; height: 100%; cursor: default; }
+.nc-bar-col { flex: 1; display: flex; flex-direction: column-reverse; height: 100%; cursor: pointer; text-decoration: none; }
 .nc-bar-col:hover { opacity: 0.8; }
 .nc-seg-fail { background: var(--color-fail); border-radius: 0 0 2px 2px; }
 .nc-seg-ok { background: var(--color-ok); }

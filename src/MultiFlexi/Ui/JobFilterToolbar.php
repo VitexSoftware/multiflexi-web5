@@ -74,6 +74,12 @@ class JobFilterToolbar extends \Ease\Html\DivTag
                 return _('Waiting Jobs');
 
             default:
+                $day = \MultiFlexi\CompanyJobLister::parseDayFilter($filter);
+
+                if ($day !== null) {
+                    return sprintf(_('Jobs of %s'), (new \DateTimeImmutable($day))->format('j. n. Y'));
+                }
+
                 return _('Job history');
         }
     }

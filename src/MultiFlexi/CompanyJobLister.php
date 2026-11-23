@@ -82,6 +82,22 @@ class CompanyJobLister extends CompanyJob
     }
 
     /**
+     * Extract the date from a "day:YYYY-MM-DD" filter.
+     *
+     * @return null|string Y-m-d or null when the filter is not a valid day filter
+     */
+    public static function parseDayFilter(?string $filter): ?string
+    {
+        if ($filter === null || !preg_match('/^day:(\d{4}-\d{2}-\d{2})$/', $filter, $m)) {
+            return null;
+        }
+
+        $date = \DateTimeImmutable::createFromFormat('!Y-m-d', $m[1]);
+
+        return $date && $date->format('Y-m-d') === $m[1] ? $m[1] : null;
+    }
+
+    /**
      * columns to be selected from database.
      *
      * @return array
@@ -192,6 +208,17 @@ class CompanyJobLister extends CompanyJob
                     break;
                 case 'waiting':
                     $query->where('job.exitcode IS NULL');
+
+                    break;
+
+                default:
+                    // Single calendar day: "day:YYYY-MM-DD" (linked from the dashboard chart)
+                    $day = self::parseDayFilter($this->filterType);
+
+                    if ($day !== null) {
+                        $query->where('job.begin >= ?', $day.' 00:00:00')
+                            ->where('job.begin < ?', (new \DateTimeImmutable($day))->modify('+1 day')->format('Y-m-d').' 00:00:00');
+                    }
 
                     break;
             }
