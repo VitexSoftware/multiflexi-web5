@@ -234,7 +234,11 @@ if (\MultiFlexi\Ui\PageBottom::apiAvailable() && ($jobAlreadyRunning || $expecti
         }
     });
     es.addEventListener('timeout', function () { hideSpinner(); es.close(); });
-    es.onerror = function () { hideSpinner(); es.close(); };
+    // Let EventSource reconnect on transient errors (proxy timeout, restart);
+    // the server resumes from Last-Event-ID. Give up only when it is really closed.
+    es.onerror = function () {
+        if (es.readyState === EventSource.CLOSED) { hideSpinner(); }
+    };
 })();
 
 EOD);
