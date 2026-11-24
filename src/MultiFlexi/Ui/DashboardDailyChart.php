@@ -51,20 +51,23 @@ class DashboardDailyChart extends \Ease\Html\DivTag
 
         foreach ($days as $date => $counts) {
             $day = new \DateTimeImmutable($date);
-            $title = sprintf(
-                '%s — %s %d, %s %d, %s %d, %s %d',
-                $day->format('j. n.'),
-                _('success'),
-                $counts['success'],
-                _('failed'),
-                $counts['fail'],
-                _('waiting'),
-                $counts['waiting'],
-                _('exception'),
-                $counts['exception'],
-            );
+            $title = $day->format('j. n. Y');
+            $rows = '';
+
+            foreach ([
+                [_('Success'), 'var(--color-ok)', $counts['success']],
+                [_('Failed'), 'var(--color-fail)', $counts['fail']],
+                [_('Waiting'), 'var(--color-neutral-600)', $counts['waiting']],
+                [_('Exception'), 'var(--color-exception)', $counts['exception']],
+            ] as [$stateLabel, $stateColor, $stateCount]) {
+                $rows .= '<span class="nc-tip-row"><i class="nc-dot" style="background:'.$stateColor.'"></i>'
+                    .htmlspecialchars($stateLabel).'<b>'.$stateCount.'</b></span>';
+            }
+
+            $tipPos = $n < 4 ? ' nc-tip-left' : ($n >= \count($days) - 4 ? ' nc-tip-right' : '');
+            $tip = '<span class="nc-tip'.$tipPos.'" role="tooltip"><span class="nc-tip-date">'.htmlspecialchars($title).'</span>'.$rows.'</span>';
             $pct = static fn (int $v): string => number_format($v / $top * 100, 2, '.', '').'%';
-            $bars .= '<a class="nc-bar-col" href="jobs.php?filter='.rawurlencode('day:'.$date).'" title="'.htmlspecialchars($title).'">'
+            $bars .= '<a class="nc-bar-col" href="jobs.php?filter='.rawurlencode('day:'.$date).'" aria-label="'.htmlspecialchars($title).'">'.$tip
                 .'<div class="nc-seg nc-seg-fail" style="height:'.$pct($counts['fail']).'"></div>'
                 .'<div class="nc-seg nc-seg-ok" style="height:'.$pct($counts['success']).'"></div>'
                 .'<div class="nc-seg nc-seg-exc" style="height:'.$pct($counts['exception']).'"></div>'
