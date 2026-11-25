@@ -1,3 +1,11 @@
+multiflexi-web (2.6.1) unstable; urgency=medium
+
+  * Company can be enabled or disabled by an administrator; an unchecked
+    "enabled" of an application is stored.
+  * No jobs of a disabled company can be launched.
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 25 Nov 2026 02:30:00 +0100
+
 multiflexi-web (2.6.0) unstable; urgency=medium
 
   * Nocturne dark theme for the whole web UI (css/nocturne.css): Bootstrap 5.3

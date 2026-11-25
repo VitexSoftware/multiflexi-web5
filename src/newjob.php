@@ -29,6 +29,15 @@ $runTemplate = new \MultiFlexi\RunTemplate();
 $runTemplateId = $runTemplate->runTemplateID($appId, $companyId);
 $runTemplate->setMyKey($runTemplateId);
 
+$runTemplate->loadFromSQL($runTemplate->getMyKey());
+
+if (!$runTemplate->isCompanyEnabled()) {
+    $runTemplate->addStatusMessage(_('Company is disabled: no jobs can be launched or scheduled'), 'warning');
+    WebPage::singleton()->redirect('companies.php');
+
+    exit;
+}
+
 $jobber = new \MultiFlexi\Job();
 
 $uploadEnv = [];

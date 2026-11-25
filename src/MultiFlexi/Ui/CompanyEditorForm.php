@@ -19,6 +19,7 @@ use Ease\Html\InputEmailTag;
 use Ease\Html\InputHiddenTag;
 use Ease\Html\InputTextTag;
 use Ease\TWB5\SubmitButton;
+use Ease\TWB5\Widgets\Toggle;
 
 /**
  * Registered AbraFlexi instance editor Form.
@@ -29,6 +30,14 @@ use Ease\TWB5\SubmitButton;
  */
 class CompanyEditorForm extends EngineForm
 {
+    /**
+     * May the current user enable or disable a company?
+     */
+    public static function canChangeEnabled(): bool
+    {
+        return !\MultiFlexi\Security\RbacHelpers::isAvailable() || \MultiFlexi\Security\RbacHelpers::isCurrentUserAdmin();
+    }
+
     public function afterAdd(): void
     {
         $this->setTagProperty('enctype', 'multipart/form-data');
@@ -43,7 +52,11 @@ class CompanyEditorForm extends EngineForm
             $this->addInput(new InputTextTag('zabbix_host'), _('Zabbix Host'), \Ease\Shared::cfg('ZABBIX_HOST'), sprintf(_('Override the default zabbix host %s'), \Ease\Shared::cfg('ZABBIX_HOST')));
         }
 
-        $this->addItem(new InputHiddenTag('enabled', '1'));
+        // Enabling decides about running jobs and billing, so only an administrator may change it
+        if (!empty($this->engine->getMyKey()) && self::canChangeEnabled()) {
+            $this->addInput(new Toggle('enabled', (bool) $this->engine->getDataValue('enabled'), '1'), _('Enabled'), '', _('A disabled company runs no jobs and is not billed'));
+        }
+
         $this->addItem(new SubmitButton(_('Save'), 'success btn-lg w-100', ['title' => _('Save company data'), 'id' => 'savecompanybutton']));
 
         if (null !== $this->engine->getDataValue('id')) {

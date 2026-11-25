@@ -130,6 +130,9 @@ switch ($action) {
 
     default:
         if (WebPage::singleton()->isPosted()) {
+            // An unchecked toggle is not posted at all
+            $_POST['enabled'] ??= 0;
+
             if ($apps->takeData($_POST) && null !== $apps->saveToSQL()) {
                 $apps->addStatusMessage(_('Application Saved'), 'success');
                 //        $apps->prepareRemoteAbraFlexi();

@@ -15,7 +15,7 @@ Provides: multiflexi-web
 Pre-Depends: multiflexi-common
 Depends: ${misc:Depends},
  multiflexi-common,
- php-vitexsoftware-multiflexi-core,
+ php-vitexsoftware-multiflexi-core (>= 2.12.0~),
  php-vitexsoftware-ease-html-widgets (>=1.1.1),
  php-vitexsoftware-ease-bootstrap5-widgets (>=1.4),
  php-goat1000-svggraph,

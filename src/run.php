@@ -25,6 +25,14 @@ WebPage::singleton()->onlyForLogged();
 
 $jobber = new Job();
 $runTemplate = new RunTemplate(WebPage::singleton()->getRequestValue('id', 'int'));
+
+if (!$runTemplate->isCompanyEnabled()) {
+    $runTemplate->addStatusMessage(_('Company is disabled: no jobs can be launched or scheduled'), 'warning');
+    WebPage::singleton()->redirect('companies.php');
+
+    exit;
+}
+
 $jobber->prepareJob($runTemplate, new ConfigFields(), DateTimeHelper::createDateTime());
 echo new H2Tag(str_replace(' ', '&nbsp;', htmlspecialchars((string) $jobber->getCmdline(), \ENT_QUOTES | \ENT_HTML5, 'UTF-8')), ['style' => 'color: green']);
 

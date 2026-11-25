@@ -51,6 +51,14 @@ if (WebPage::singleton()->isPosted()) {
         // Redirect to prevent form resubmission and CSRF token reuse
         WebPage::singleton()->redirect('?id='.$companies->getMyKey());
     } else {
+        if ($isNewCompany || !CompanyEditorForm::canChangeEnabled()) {
+            // New companies start enabled; others may be switched by an administrator only
+            unset($_POST['enabled']);
+        } else {
+            // An unchecked toggle is not posted at all
+            $_POST['enabled'] ??= 0;
+        }
+
         if ($companies->takeData($_POST)) {
             /* try to save company or cath error */
             try {
